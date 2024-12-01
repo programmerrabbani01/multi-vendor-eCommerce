@@ -2,6 +2,7 @@ import { lazy, Suspense } from "react";
 // Use React.lazy for code splitting
 const Login = lazy(() => import("../pages/auth/Login.tsx"));
 const Register = lazy(() => import("../pages/auth/Register.tsx"));
+const AdminLogIn = lazy(() => import("../pages/auth/AdminLogIn.tsx"));
 
 // create public router
 // const publicRouter = [
@@ -33,6 +34,14 @@ const publicRouter = [
     element: (
       <Suspense fallback={<div>Loading...</div>}>
         <Register />
+      </Suspense>
+    ),
+  },
+  {
+    path: "/admin/login",
+    element: (
+      <Suspense fallback={<div>Loading...</div>}>
+        <AdminLogIn />
       </Suspense>
     ),
   },

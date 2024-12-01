@@ -1,8 +1,13 @@
 
 ** packages
+front-end
+==========
 pnpm add react-helmet apexcharts react-apexcharts axios jwt-decode moment react-hot-toast react-icons redux @reduxjs/toolkit react-redux react-spinners react-window redux-thunk socket.io-client
-
 pnpm add --save-dev @types/react-helmet
+
+back-end
+=========
+pnpm add bcryptjs moment socket.io stripe uuid cloudinary formidable body-parser cookie-parser cors express-async-handler jsonwebtoken mongoose morgan multer nodemailer
 
 
 ** registration

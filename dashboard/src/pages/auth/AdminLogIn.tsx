@@ -1,8 +1,11 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import MetaData from "../../components/MetaData.tsx";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { adminLogin } from "../../features/auth/authApiSlice.ts";
 import { AppDispatch } from "../../app/store.ts";
+import { createToaster } from "../../utils/tostify.ts";
+import { getAuthData, setMessageEmpty } from "../../features/auth/authSlice.ts";
+import { useNavigate } from "react-router-dom";
 
 const AdminLogIn: React.FC = () => {
   const title = "Admin Sign-In";
@@ -12,6 +15,8 @@ const AdminLogIn: React.FC = () => {
     password: "",
   });
   const dispatch = useDispatch<AppDispatch>();
+  const { error, message, user } = useSelector(getAuthData);
+  const navigate = useNavigate();
 
   // handle input change
 
@@ -27,8 +32,33 @@ const AdminLogIn: React.FC = () => {
   const handleSubmitForm = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     // handle form submission logic here
-    dispatch(adminLogin(input));
+
+    if (!input.email || !input.password) {
+      createToaster("All Fields Are Required");
+    } else {
+      dispatch(adminLogin(input));
+
+      // clear form
+      setInput({
+        email: "",
+        password: "",
+      });
+    }
   };
+
+  useEffect(() => {
+    if (error) {
+      createToaster(error);
+      dispatch(setMessageEmpty());
+    }
+    if (message) {
+      createToaster(message, "success");
+      dispatch(setMessageEmpty());
+    }
+    if (user) {
+      // navigate("/");
+    }
+  }, [dispatch, error, message, user, navigate]);
   return (
     <>
       <MetaData title={title} />

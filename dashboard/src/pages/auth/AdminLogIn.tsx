@@ -6,6 +6,7 @@ import { AppDispatch } from "../../app/store.ts";
 import { createToaster } from "../../utils/tostify.ts";
 import { getAuthData, setMessageEmpty } from "../../features/auth/authSlice.ts";
 import { useNavigate } from "react-router-dom";
+import { PropagateLoader } from "react-spinners";
 
 const AdminLogIn: React.FC = () => {
   const title = "Admin Sign-In";
@@ -15,7 +16,7 @@ const AdminLogIn: React.FC = () => {
     password: "",
   });
   const dispatch = useDispatch<AppDispatch>();
-  const { error, message, user } = useSelector(getAuthData);
+  const { error, message, user, isLoading } = useSelector(getAuthData);
   const navigate = useNavigate();
 
   // handle input change
@@ -46,6 +47,7 @@ const AdminLogIn: React.FC = () => {
     }
   };
 
+  // for success or errror message
   useEffect(() => {
     if (error) {
       createToaster(error);
@@ -56,9 +58,21 @@ const AdminLogIn: React.FC = () => {
       dispatch(setMessageEmpty());
     }
     if (user) {
-      // navigate("/");
+      navigate("/");
     }
   }, [dispatch, error, message, user, navigate]);
+
+  // style for loader
+
+  const loaderStyle = {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    height: "24px",
+    color: "#fff",
+    message: "0 auto",
+  };
+
   return (
     <>
       <MetaData title={title} />
@@ -73,7 +87,7 @@ const AdminLogIn: React.FC = () => {
                   <img
                     src="http://localhost:3001/images/logo.png"
                     alt="logo"
-                    className="w-full h-full object-cover"
+                    className="object-cover w-full h-full"
                   />
                 </div>
               </div>
@@ -116,10 +130,19 @@ const AdminLogIn: React.FC = () => {
 
                 {/* button */}
                 <button
+                  disabled={isLoading ? true : false}
                   type="submit"
-                  className="w-full py-2 mb-3 text-white bg-blue-500 rounded-md hover:shadow-blue-500/50 hover:shadow-lg px-7 transition-all duration-300 "
+                  className="w-full py-2 mb-3 text-white transition-all duration-300 bg-blue-500 rounded-md hover:shadow-blue-500/50 hover:shadow-lg px-7 "
                 >
-                  Sign In
+                  {isLoading ? (
+                    <PropagateLoader
+                      size={10}
+                      color="#fff"
+                      cssOverride={loaderStyle}
+                    />
+                  ) : (
+                    "Sign In"
+                  )}
                 </button>
               </form>
             </div>

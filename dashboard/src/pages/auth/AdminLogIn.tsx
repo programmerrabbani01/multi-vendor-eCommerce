@@ -9,7 +9,7 @@ import { useNavigate } from "react-router-dom";
 import { PropagateLoader } from "react-spinners";
 
 const AdminLogIn: React.FC = () => {
-  const title = "Admin Sign-In";
+  const title = "Sign-In";
 
   const [input, setInput] = useState({
     email: "",
@@ -17,6 +17,7 @@ const AdminLogIn: React.FC = () => {
   });
   const dispatch = useDispatch<AppDispatch>();
   const { error, message, user, isLoading } = useSelector(getAuthData);
+
   const navigate = useNavigate();
 
   // handle input change
@@ -38,12 +39,6 @@ const AdminLogIn: React.FC = () => {
       createToaster("All Fields Are Required");
     } else {
       dispatch(adminLogin(input));
-
-      // clear form
-      setInput({
-        email: "",
-        password: "",
-      });
     }
   };
 
@@ -56,9 +51,18 @@ const AdminLogIn: React.FC = () => {
     if (message) {
       createToaster(message, "success");
       dispatch(setMessageEmpty());
+      // clear form
+      setInput({
+        email: "",
+        password: "",
+      });
     }
     if (user) {
-      navigate("/");
+      if (user.role?.name === "Admin") {
+        navigate("/admin/dashboard");
+      } else if (user.role?.name === "Seller") {
+        navigate("/seller/dashboard");
+      }
     }
   }, [dispatch, error, message, user, navigate]);
 

@@ -9,12 +9,12 @@ import {
 } from "../utils/secret.js";
 
 /**
- * @desc Admin login
- * @route POST /api/v1/auth/adminLogin
+ * @desc Admin Seller login
+ * @route POST /api/v1/auth/userLogin
  * @access PRIVATE
  */
 
-export const adminLogin = asyncHandler(async (req, res) => {
+export const adminSellerLogin = asyncHandler(async (req, res) => {
   // get body data
 
   const { email, password } = req.body;
@@ -25,37 +25,54 @@ export const adminLogin = asyncHandler(async (req, res) => {
     return res.status(400).json({ message: "all fields are required" });
 
   // Find admin by email
-  const admin = await User.findOne({ email }).populate("role");
+  const user = await User.findOne({ email }).populate("role");
 
   // check if admin not found
 
-  if (!admin) return res.status(400).json({ message: "Admin not found" });
+  if (!user) {
+    return res.status(400).json({ message: "User not found" });
+  }
 
-  // check if you are an admin or not
-
-  if (!admin.role || admin.role.name !== "Admin") {
-    return res.status(400).json({ message: "You Are Not An Admin!" });
+  // Check role and respond appropriately
+  if (
+    !user.role ||
+    (user.role.name !== "Admin" && user.role.name !== "Seller")
+  ) {
+    return res.status(400).json({ message: "Invalid role" });
   }
 
   // password check
 
-  if (!admin.password) {
+  if (!user.password) {
     console.error("Admin password is undefined!");
-    return res.status(500).json({ message: "Admin password is not set" });
+    return res.status(500).json({ message: "Password is not set" });
   }
 
-  const passwordCheck = await bcrypt.compare(password, admin.password);
+  const passwordCheck = await bcrypt.compare(password, user.password);
 
   // password matching
 
   if (!passwordCheck)
     return res.status(400).json({ message: " Wrong Password " });
 
+  // Role-specific messages
+  if (user.role.name === "Admin") {
+    console.log("Admin is logging in...");
+  } else if (user.role.name === "Seller") {
+    console.log("Seller is logging in...");
+  } else {
+    return res.status(400).json({ message: "Unauthorized access" });
+  }
+
   // create access token
 
-  const accessToken = jwt.sign({ email: admin.email }, ACCESS_TOKEN_SECRET, {
-    expiresIn: ACCESS_TOKEN_EXPIRES_IN,
-  });
+  const accessToken = jwt.sign(
+    { email: user.email, role: user.role.name },
+    ACCESS_TOKEN_SECRET,
+    {
+      expiresIn: ACCESS_TOKEN_EXPIRES_IN,
+    }
+  );
 
   // set cookie
   res.cookie("accessToken", accessToken, {
@@ -67,9 +84,11 @@ export const adminLogin = asyncHandler(async (req, res) => {
   });
 
   //response
-  res
-    .status(200)
-    .json({ user: admin, message: "Login Successful 🥳", accessToken });
+  res.status(200).json({
+    user: user,
+    message: `Login Successful as ${user.role.name} 🥳`,
+    accessToken,
+  });
 });
 
 /**
@@ -129,3 +148,12 @@ export const adminLogin = asyncHandler(async (req, res) => {
 //     message: "User Login successful 🥳",
 //   });
 // });
+
+/**
+ * @desc user loggedIn
+ * @route GET /api/v1/auth/me
+ * @access PUBLIC
+ */
+export const loggedInUser = asyncHandler(async (req, res) => {
+  res.status(200).json(req.me);
+});

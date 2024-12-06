@@ -8,12 +8,13 @@ export const adminLogin = createAsyncThunk(
   async (data: { email: string; password: string }) => {
     try {
       const response = await axios.post(
-        "http://localhost:5050/api/v1/auth/adminLogin",
+        "http://localhost:5050/api/v1/auth/adminSellerLogin",
         data,
         {
           withCredentials: true,
         }
       );
+      console.log("Login successful, user:", response.data.user);
       return response.data;
     } catch (error: unknown) {
       // specify the error type as unknown
@@ -27,3 +28,22 @@ export const adminLogin = createAsyncThunk(
     }
   }
 );
+
+//  loggedIn  user
+
+export const loggedInUser = createAsyncThunk("auth/loggedInUser", async () => {
+  try {
+    const response = await axios.get("http://localhost:5050/api/v1/auth/me", {
+      withCredentials: true,
+    });
+
+    return response.data;
+  } catch (error: unknown) {
+    // specify the error type as unknown
+    if (axios.isAxiosError(error)) {
+      // check if it's an AxiosError
+      throw new Error(error.response?.data?.message || "Something went wrong");
+    }
+    throw new Error("An unexpected error occurred");
+  }
+});

@@ -10,5 +10,5 @@ back-end
 pnpm add bcryptjs moment socket.io stripe uuid cloudinary formidable body-parser cookie-parser cors express-async-handler jsonwebtoken mongoose morgan multer nodemailer
 
 
-** registration
-** login
+** Admin login
+** 

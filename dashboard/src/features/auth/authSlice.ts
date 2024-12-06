@@ -1,14 +1,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { adminLogin } from "./authApiSlice.ts";
+import { adminLogin, loggedInUser } from "./authApiSlice.ts";
 import { RootState } from "../../app/store.ts";
-
-// Define the type for the user object
-interface User {
-  id: string;
-  name: string;
-  email: string;
-  role: string;
-}
+import { User } from "../../types.ts";
 
 // Define the state structure for the `auth` slice
 interface AuthState {
@@ -40,8 +33,8 @@ const authSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
-    // admin login
     builder
+      // admin login
       .addCase(adminLogin.pending, (state) => {
         state.isLoading = true;
       })
@@ -57,7 +50,18 @@ const authSlice = createSlice({
           state.user = action.payload.user;
           localStorage.setItem("user", JSON.stringify(action.payload.user));
         }
-      );
+      )
+      // loggedIn User
+      .addCase(loggedInUser.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(loggedInUser.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.error.message || "An error occurred.";
+      })
+      .addCase(loggedInUser.fulfilled, (state, action) => {
+        state.user = action.payload;
+      });
   },
 });
 

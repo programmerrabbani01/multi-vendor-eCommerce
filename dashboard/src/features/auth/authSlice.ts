@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { adminLogin, loggedInUser } from "./authApiSlice.ts";
+import { adminLogin, loggedInUser, logOutUser } from "./authApiSlice.ts";
 import { RootState } from "../../app/store.ts";
 import { User } from "../../types.ts";
 
@@ -31,6 +31,12 @@ const authSlice = createSlice({
       state.message = null;
       state.error = null;
     },
+    setLogOut: (state) => {
+      state.message = null;
+      state.error = null;
+      state.user = null;
+      localStorage.removeItem("user"); // Ensure local storage is cleared
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -45,9 +51,8 @@ const authSlice = createSlice({
       .addCase(
         adminLogin.fulfilled,
         (state, action: PayloadAction<{ user: User; message: string }>) => {
-          state.isLoading = false;
-          state.message = action.payload.message;
           state.user = action.payload.user;
+          state.message = action.payload.message;
           localStorage.setItem("user", JSON.stringify(action.payload.user));
         }
       )
@@ -61,6 +66,19 @@ const authSlice = createSlice({
       })
       .addCase(loggedInUser.fulfilled, (state, action) => {
         state.user = action.payload;
+      })
+      // user logOut
+      .addCase(logOutUser.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(logOutUser.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.error.message || "An error occurred.";
+      })
+      .addCase(logOutUser.fulfilled, (state, action) => {
+        state.message = action.payload.message;
+        state.user = null;
+        localStorage.removeItem("user");
       });
   },
 });
@@ -70,7 +88,7 @@ export const getAuthData = (state: RootState): AuthState => state.auth;
 
 // export actions
 
-export const { setMessageEmpty } = authSlice.actions;
+export const { setMessageEmpty, setLogOut } = authSlice.actions;
 
 // export auth slice
 

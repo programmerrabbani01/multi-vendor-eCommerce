@@ -1,11 +1,11 @@
 import MetaData from "../../../components/MetaData.tsx";
 
-export default function Orders() {
-  const title = "Orders";
+export default function Categories() {
+  const title = "Categories";
   return (
     <>
       <MetaData title={title} />
-      <div className="text-white">Orders</div>
+      <div className="text-white">Categories</div>
     </>
   );
 }

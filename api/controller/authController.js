@@ -157,3 +157,14 @@ export const adminSellerLogin = asyncHandler(async (req, res) => {
 export const loggedInUser = asyncHandler(async (req, res) => {
   res.status(200).json(req.me);
 });
+
+/**
+ * @desc user logOut
+ * @route POST /api/v1/auth/logOut
+ * @access PUBLIC
+ */
+
+export const userLogOut = asyncHandler(async (req, res) => {
+  res.clearCookie("accessToken");
+  res.status(200).json({ message: "Logout successful 🥳" });
+});

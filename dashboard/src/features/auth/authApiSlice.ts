@@ -1,7 +1,8 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
+import { setLogOut } from "./authSlice.ts";
 
-//  admin login
+//  admin & seller login
 
 export const adminLogin = createAsyncThunk(
   "auth/loginUser",
@@ -47,3 +48,33 @@ export const loggedInUser = createAsyncThunk("auth/loggedInUser", async () => {
     throw new Error("An unexpected error occurred");
   }
 });
+
+// user logOut
+
+export const logOutUser = createAsyncThunk(
+  "auth/logOutUser",
+  async (_, { dispatch }) => {
+    try {
+      const response = await axios.post(
+        "http://localhost:5050/api/v1/auth/logOut",
+        "",
+        {
+          withCredentials: true,
+        }
+      );
+
+      // Dispatch additional reducers (e.g., clearing other states if needed)
+      dispatch(setLogOut());
+      return response.data;
+    } catch (error: unknown) {
+      // specify the error type as unknown
+      if (axios.isAxiosError(error)) {
+        // check if it's an AxiosError
+        throw new Error(
+          error.response?.data?.message || "Something went wrong"
+        );
+      }
+      throw new Error("An unexpected error occurred");
+    }
+  }
+);

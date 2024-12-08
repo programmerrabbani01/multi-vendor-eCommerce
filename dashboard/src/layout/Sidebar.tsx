@@ -1,8 +1,14 @@
 import { Link, useLocation } from "react-router-dom";
 import useAuthUser from "../hooks/useAuthUser.tsx";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { getNavs } from "../navigations/index.ts";
 import { IconType } from "react-icons/lib";
+import { BiLogInCircle } from "react-icons/bi";
+import { useDispatch } from "react-redux";
+import { logOutUser } from "../features/auth/authApiSlice.ts";
+import { AppDispatch } from "../app/store.ts";
+// import { createToaster } from "../utils/tostify.ts";
+// import { getAuthData, setMessageEmpty } from "../features/auth/authSlice.ts";
 
 // Define the navigation item type
 interface NavItem {
@@ -14,17 +20,40 @@ interface NavItem {
 }
 
 export default function Sidebar() {
+  const location = useLocation();
+  const { user } = useAuthUser();
+  const dispatch = useDispatch<AppDispatch>();
   const [allNav, setAllNav] = useState<NavItem[]>([]);
 
+  // const { error, message } = useSelector(getAuthData);
+
+  // log out user
+
+  const handleLogout = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+
+    dispatch(logOutUser());
+
+    localStorage.removeItem("user"); // Clear user data
+    window.location.href = "/admin/login"; // Redirect to login
+  };
+
+  // get all menus
   useEffect(() => {
-    const navs = getNavs("Admin");
+    const navs = getNavs(user?.role?.name || "");
     setAllNav(navs);
-  }, []);
+  }, [user]);
 
-  const location = useLocation();
-
-  // const { user } = useAuthUser();
-  const { user } = useAuthUser();
+  // useEffect(() => {
+  //   if (error) {
+  //     createToaster(error);
+  //     dispatch(setMessageEmpty());
+  //   }
+  //   if (message) {
+  //     createToaster(message, "success");
+  //     dispatch(setMessageEmpty());
+  //   }
+  // }, [dispatch, error, message]);
 
   return (
     <>
@@ -65,6 +94,16 @@ export default function Sidebar() {
                     </li>
                   );
                 })}
+                <li>
+                  <button
+                    onClick={handleLogout}
+                    type="submit"
+                    className=" px-3 py-[9px] rounded-sm flex justify-start items-center gap-3 hover:pl-4 mb-1 transition-all duration-300 w-full text-[#d0d2d6]"
+                  >
+                    <BiLogInCircle />
+                    Logout
+                  </button>
+                </li>
               </ul>
             )}
             {user?.role?.name === "Seller" && (

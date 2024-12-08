@@ -11,4 +11,7 @@ pnpm add bcryptjs moment socket.io stripe uuid cloudinary formidable body-parser
 
 
 ** Admin login
-** 
+** Seller login
+** Logout
+** Admin Dashboard
+** Seller Dashboard

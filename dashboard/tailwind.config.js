@@ -4,18 +4,6 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        primaryBlack: ["Black"],
-        primaryBlackItalic: ["BlackItalic"],
-
-        primaryBold: ["Bold"],
-        primaryBoldItalic: ["BoldItalic"],
-
-        primaryExtraBold: ["ExtraBold"],
-        primaryExtraBoldItalic: ["ExtraBoldItalic"],
-
-        primaryExtraLight: ["ExtraLight"],
-        primaryExtraLightItalic: ["ExtraLightItalic"],
-
         primaryMedium: ["Medium"],
         primaryMediumItalic: ["MediumItalic"],
 

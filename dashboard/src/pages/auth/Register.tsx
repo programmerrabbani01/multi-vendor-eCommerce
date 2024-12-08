@@ -41,8 +41,9 @@ const Register: React.FC = () => {
       <div className="min-h-screen min-w-screen bg-[#161d31] flex items-center justify-center">
         <div className="w-[500px] text-[#d0d2d6] p-2 overflow-y-auto py-5 ">
           <div className="bg-[#283046] p-4 rounded-md">
+            {/* header */}
             <div className="mb-3 header">
-              <h2 className="mb-2 text-xl font-bold text-center uppercase bg-gradient-to-r from-blue-500 to-purple-500 text-transparent bg-clip-text">
+              <h2 className="mb-2 text-2xl font-bold text-center text-transparent uppercase font-primarySemiBold bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text">
                 Welcome to e-commerce
               </h2>
               <p className="text-sm text-center text-gray-500 font-primaryItalic">
@@ -54,14 +55,17 @@ const Register: React.FC = () => {
               <form onSubmit={handleSubmitForm}>
                 {/* first name */}
                 <div className="flex flex-col my-3">
-                  <label htmlFor="firstName" className="mb-2">
+                  <label
+                    htmlFor="firstName"
+                    className="mb-2 font-primarySemiBold"
+                  >
                     First Name
                   </label>
                   <input
                     type="text"
                     id="firstName"
                     placeholder="First Name"
-                    className="px-3 py-2 bg-transparent border outline-none border-slate-700 text-[#d0d2d6] focus:border-indigo-500 rounded-md overflow-hidden "
+                    className="px-3 py-2 bg-transparent border outline-none border-slate-700 text-[#d0d2d6] focus:border-indigo-500 rounded-md overflow-hidden font-primaryRegular"
                     name="firstName"
                     value={input.firstName}
                     onChange={handleInputChange}
@@ -70,14 +74,17 @@ const Register: React.FC = () => {
                 </div>
                 {/* last name */}
                 <div className="flex flex-col my-3">
-                  <label htmlFor="lastName" className="mb-2">
+                  <label
+                    htmlFor="lastName"
+                    className="mb-2 font-primarySemiBold"
+                  >
                     Last Name
                   </label>
                   <input
                     type="text"
                     id="lastName"
                     placeholder="Last Name"
-                    className="px-3 py-2 bg-transparent border outline-none border-slate-700 text-[#d0d2d6] focus:border-indigo-500 rounded-md overflow-hidden "
+                    className="px-3 py-2 bg-transparent border outline-none border-slate-700 text-[#d0d2d6] focus:border-indigo-500 rounded-md overflow-hidden font-primaryRegular "
                     name="lastName"
                     value={input.lastName}
                     onChange={handleInputChange}
@@ -86,14 +93,14 @@ const Register: React.FC = () => {
                 </div>
                 {/* email */}
                 <div className="flex flex-col my-3">
-                  <label htmlFor="email" className="mb-2">
+                  <label htmlFor="email" className="mb-2 font-primarySemiBold">
                     Email Address
                   </label>
                   <input
                     type="email"
                     id="email"
                     placeholder="Email Address"
-                    className="px-3 py-2 bg-transparent border outline-none border-slate-700 text-[#d0d2d6] focus:border-indigo-500 rounded-md overflow-hidden "
+                    className="px-3 py-2 bg-transparent border outline-none border-slate-700 text-[#d0d2d6] focus:border-indigo-500 rounded-md overflow-hidden font-primaryRegular "
                     name="email"
                     value={input.email}
                     onChange={handleInputChange}
@@ -103,14 +110,17 @@ const Register: React.FC = () => {
 
                 {/* password */}
                 <div className="flex flex-col my-3">
-                  <label htmlFor="password" className="mb-2">
+                  <label
+                    htmlFor="password"
+                    className="mb-2 font-primarySemiBold"
+                  >
                     Password
                   </label>
                   <input
                     type="password"
                     id="password"
                     placeholder="Password"
-                    className="px-3 py-2 bg-transparent border outline-none border-slate-700 text-[#d0d2d6] focus:border-indigo-500 rounded-md overflow-hidden "
+                    className="px-3 py-2 bg-transparent border outline-none border-slate-700 text-[#d0d2d6] focus:border-indigo-500 rounded-md overflow-hidden font-primaryRegular "
                     name="password"
                     value={input.password}
                     onChange={handleInputChange}
@@ -126,34 +136,34 @@ const Register: React.FC = () => {
                     className="w-4 h-4 overflow-hidden text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-600"
                     required
                   />
-                  <label htmlFor="checkbox">
+                  <label htmlFor="checkbox" className="font-primaryMedium">
                     I agree to privacy policy & terms
                   </label>
                 </div>
                 {/* button */}
                 <button
                   type="submit"
-                  className="w-full py-2 mb-3 text-white bg-blue-500 rounded-md hover:shadow-blue-500/50 hover:shadow-lg px-7 transition-all duration-300 "
+                  className="w-full py-2 mb-3 text-white transition-all duration-300 bg-blue-500 rounded-md hover:shadow-blue-500/50 hover:shadow-lg px-7 font-primarySemiBold"
                 >
                   Sign Up
                 </button>
                 {/* already have an account */}
                 <div className="my-3">
-                  <p className="flex items-center justify-center gap-1">
+                  <p className="flex items-center justify-center gap-1 font-primaryMedium">
                     Already have an account ?
                     <Link
                       to="/login"
-                      className="text-blue-500 hover:underline transition-all duration-200 inline-block text-sm"
+                      className="inline-block text-sm text-blue-500 transition-all duration-200 hover:underline font-primaryRegular"
                     >
                       Sign In
                     </Link>
                   </p>
                 </div>
                 {/* -or- */}
-                <div className="w-full flex items-center justify-center my-3 ">
+                <div className="flex items-center justify-center w-full my-3 ">
                   <div className="w-[45%] bg-slate-700 h-[1px] "></div>
                   <div className="w-[10%] flex items-center justify-center">
-                    <span className="pb-1">Or</span>
+                    <span className="pb-1 font-primaryMedium">Or</span>
                   </div>
                   <div className="w-[45%] bg-slate-700 h-[1px] "></div>
                 </div>

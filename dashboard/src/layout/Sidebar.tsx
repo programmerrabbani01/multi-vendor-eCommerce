@@ -7,6 +7,7 @@ import { BiLogInCircle } from "react-icons/bi";
 import { useDispatch } from "react-redux";
 import { logOutUser } from "../features/auth/authApiSlice.ts";
 import { AppDispatch } from "../app/store.ts";
+import { HeaderProps } from "../types.ts";
 // import { createToaster } from "../utils/tostify.ts";
 // import { getAuthData, setMessageEmpty } from "../features/auth/authSlice.ts";
 
@@ -19,13 +20,11 @@ interface NavItem {
   role: string;
 }
 
-export default function Sidebar() {
+export default function Sidebar({ showSidebar, setShowSidebar }: HeaderProps) {
   const location = useLocation();
   const { user } = useAuthUser();
   const dispatch = useDispatch<AppDispatch>();
   const [allNav, setAllNav] = useState<NavItem[]>([]);
-
-  // const { error, message } = useSelector(getAuthData);
 
   // log out user
 
@@ -33,9 +32,6 @@ export default function Sidebar() {
     e.preventDefault();
 
     dispatch(logOutUser());
-
-    localStorage.removeItem("user"); // Clear user data
-    window.location.href = "/admin/login"; // Redirect to login
   };
 
   // get all menus
@@ -44,23 +40,19 @@ export default function Sidebar() {
     setAllNav(navs);
   }, [user]);
 
-  // useEffect(() => {
-  //   if (error) {
-  //     createToaster(error);
-  //     dispatch(setMessageEmpty());
-  //   }
-  //   if (message) {
-  //     createToaster(message, "success");
-  //     dispatch(setMessageEmpty());
-  //   }
-  // }, [dispatch, error, message]);
-
   return (
     <>
       <div className="">
-        <div className=""></div>
         <div
-          className={`w-[260px] fixed bg-[#283046] z-50 top-0 h-screen shadow-[0_0_15x_0_rgba(34_41_47_/_5%)] transition-all duration-300 `}
+          onClick={() => setShowSidebar(false)}
+          className={`fixed transition-all duration-200 w-screen h-screen bg-[#22292f80] top-0 left-0 z-10 cursor-pointer ${
+            !showSidebar ? "invisible" : "visible"
+          } `}
+        ></div>
+        <div
+          className={` sidebar w-[260px] fixed bg-[#283046] z-50 top-0 h-screen shadow-[0_0_15x_0_rgba(34_41_47_/_5%)] transition-all duration-300 overflow-y-auto ${
+            showSidebar ? "left-0" : "-left-[260px] lg:left-0"
+          } `}
         >
           {/* logo */}
           <div className="h-[70px] flex justify-center items-center ">
@@ -86,7 +78,7 @@ export default function Sidebar() {
                           location.pathname === nav.path
                             ? "bg-slate-600 shadow-indigo-500/50 duration-500 text-white  "
                             : "text-[#d0d2d6] duration-200"
-                        }  px-3 py-[9px] rounded-sm flex justify-start items-center gap-3 hover:pl-4 mb-1 transition-all duration-300 w-full`}
+                        }  px-3 py-[9px] rounded-sm flex justify-start items-center gap-3 hover:pl-4 mb-1 transition-all duration-300 w-full font-primarySemiBold`}
                       >
                         <Icon size={20} />
                         {nav.title}
@@ -98,7 +90,7 @@ export default function Sidebar() {
                   <button
                     onClick={handleLogout}
                     type="submit"
-                    className=" px-3 py-[9px] rounded-sm flex justify-start items-center gap-3 hover:pl-4 mb-1 transition-all duration-300 w-full text-[#d0d2d6]"
+                    className=" px-3 py-[9px] rounded-sm flex justify-start items-center gap-3 hover:pl-4 mb-1 transition-all duration-300 w-full text-[#d0d2d6] font-primarySemiBold"
                   >
                     <BiLogInCircle />
                     Logout
@@ -109,6 +101,16 @@ export default function Sidebar() {
             {user?.role?.name === "Seller" && (
               <ul>
                 <li>Seller Dashboard</li>
+                <li>
+                  <button
+                    onClick={handleLogout}
+                    type="submit"
+                    className=" px-3 py-[9px] rounded-sm flex justify-start items-center gap-3 hover:pl-4 mb-1 transition-all duration-300 w-full text-[#d0d2d6] font-primarySemiBold"
+                  >
+                    <BiLogInCircle />
+                    Logout
+                  </button>
+                </li>
               </ul>
             )}
           </div>

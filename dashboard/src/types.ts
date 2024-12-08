@@ -5,7 +5,17 @@ export interface Role {
 
 export interface User {
   id: string;
-  name: string;
+  firstName: string;
+  lastName: string;
   email: string;
+  mobile: string;
+  password: string;
+  gender: string;
+  photo: string;
   role?: Role; // Optional chaining allows undefined roles
+}
+
+export interface HeaderProps {
+  showSidebar: boolean;
+  setShowSidebar: React.Dispatch<React.SetStateAction<boolean>>;
 }

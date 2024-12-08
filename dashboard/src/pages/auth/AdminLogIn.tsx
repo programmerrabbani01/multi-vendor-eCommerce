@@ -85,6 +85,7 @@ const AdminLogIn: React.FC = () => {
       <div className="min-h-screen min-w-screen bg-[#161d31] flex items-center justify-center">
         <div className="w-[500px] text-[#d0d2d6] p-2 overflow-y-auto py-5 ">
           <div className="bg-[#283046] p-4 rounded-md">
+            {/* header */}
             <div className="mb-3 header">
               <div className="h-[70px] flex justify-center items-center ">
                 <div className="w-[180px] h-[50px] ">
@@ -101,14 +102,14 @@ const AdminLogIn: React.FC = () => {
               <form onSubmit={handleSubmitForm}>
                 {/* email */}
                 <div className="flex flex-col my-3">
-                  <label htmlFor="email" className="mb-2">
+                  <label htmlFor="email" className="mb-2 font-primarySemiBold">
                     Email Address
                   </label>
                   <input
                     type="email"
                     id="email"
                     placeholder="Email Address"
-                    className="px-3 py-2 bg-transparent border outline-none border-slate-700 text-[#d0d2d6] focus:border-indigo-500 rounded-md overflow-hidden "
+                    className="px-3 py-2 bg-transparent border outline-none border-slate-700 text-[#d0d2d6] focus:border-indigo-500 rounded-md overflow-hidden font-primaryMedium"
                     name="email"
                     value={input.email}
                     onChange={handleInputChange}
@@ -117,14 +118,17 @@ const AdminLogIn: React.FC = () => {
                 </div>
                 {/* password */}
                 <div className="flex flex-col my-3">
-                  <label htmlFor="password" className="mb-2">
+                  <label
+                    htmlFor="password"
+                    className="mb-2 font-primarySemiBold"
+                  >
                     Password
                   </label>
                   <input
                     type="password"
                     id="password"
                     placeholder="Password"
-                    className="px-3 py-2 bg-transparent border outline-none border-slate-700 text-[#d0d2d6] focus:border-indigo-500 rounded-md overflow-hidden "
+                    className="px-3 py-2 bg-transparent border outline-none border-slate-700 text-[#d0d2d6] focus:border-indigo-500 rounded-md overflow-hidden font-primaryMedium"
                     name="password"
                     value={input.password}
                     onChange={handleInputChange}
@@ -136,7 +140,7 @@ const AdminLogIn: React.FC = () => {
                 <button
                   disabled={isLoading ? true : false}
                   type="submit"
-                  className="w-full py-2 mb-3 text-white transition-all duration-300 bg-blue-500 rounded-md hover:shadow-blue-500/50 hover:shadow-lg px-7 "
+                  className="w-full py-2 mb-3 text-white transition-all duration-300 bg-blue-500 rounded-md hover:shadow-blue-500/50 hover:shadow-lg px-7 font-primarySemiBold"
                 >
                   {isLoading ? (
                     <PropagateLoader

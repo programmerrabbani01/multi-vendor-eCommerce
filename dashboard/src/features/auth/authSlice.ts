@@ -35,7 +35,6 @@ const authSlice = createSlice({
       state.message = null;
       state.error = null;
       state.user = null;
-      localStorage.removeItem("user"); // Ensure local storage is cleared
     },
   },
   extraReducers: (builder) => {
@@ -52,6 +51,7 @@ const authSlice = createSlice({
         adminLogin.fulfilled,
         (state, action: PayloadAction<{ user: User; message: string }>) => {
           state.user = action.payload.user;
+          state.isLoading = false;
           state.message = action.payload.message;
           localStorage.setItem("user", JSON.stringify(action.payload.user));
         }
@@ -78,6 +78,7 @@ const authSlice = createSlice({
       .addCase(logOutUser.fulfilled, (state, action) => {
         state.message = action.payload.message;
         state.user = null;
+        state.isLoading = false;
         localStorage.removeItem("user");
       });
   },
@@ -88,7 +89,7 @@ export const getAuthData = (state: RootState): AuthState => state.auth;
 
 // export actions
 
-export const { setMessageEmpty, setLogOut } = authSlice.actions;
+export const { setMessageEmpty } = authSlice.actions;
 
 // export auth slice
 

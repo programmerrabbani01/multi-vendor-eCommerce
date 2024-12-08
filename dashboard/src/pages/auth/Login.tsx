@@ -37,12 +37,13 @@ const Login: React.FC = () => {
       <div className="min-h-screen min-w-screen bg-[#161d31] flex items-center justify-center">
         <div className="w-[500px] text-[#d0d2d6] p-2 overflow-y-auto py-5 ">
           <div className="bg-[#283046] p-4 rounded-md">
+            {/* header */}
             <div className="mb-3 header">
-              <h2 className="mb-2 text-xl font-bold text-center uppercase bg-gradient-to-r from-blue-500 to-purple-500 text-transparent bg-clip-text">
+              <h2 className="mb-2 text-2xl font-bold text-center text-transparent uppercase bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text font-primarySemiBold">
                 Welcome to e-commerce
               </h2>
 
-              <p className="text-sm text-center text-gray-500 font-primaryItalic">
+              <p className="text-sm text-center text-gray-500 font-primaryItalic ">
                 Login To Your Account And Start Today
               </p>
             </div>
@@ -51,14 +52,14 @@ const Login: React.FC = () => {
               <form onSubmit={handleSubmitForm}>
                 {/* email */}
                 <div className="flex flex-col my-3">
-                  <label htmlFor="email" className="mb-2">
+                  <label htmlFor="email" className="mb-2 font-primarySemiBold">
                     Email Address
                   </label>
                   <input
                     type="email"
                     id="email"
                     placeholder="Email Address"
-                    className="px-3 py-2 bg-transparent border outline-none border-slate-700 text-[#d0d2d6] focus:border-indigo-500 rounded-md overflow-hidden "
+                    className="px-3 py-2 bg-transparent border outline-none border-slate-700 text-[#d0d2d6] focus:border-indigo-500 rounded-md overflow-hidden font-primaryRegular"
                     name="email"
                     value={input.email}
                     onChange={handleInputChange}
@@ -67,14 +68,17 @@ const Login: React.FC = () => {
                 </div>
                 {/* password */}
                 <div className="flex flex-col my-3">
-                  <label htmlFor="password" className="mb-2">
+                  <label
+                    htmlFor="password"
+                    className="mb-2 font-primarySemiBold"
+                  >
                     Password
                   </label>
                   <input
                     type="password"
                     id="password"
                     placeholder="Password"
-                    className="px-3 py-2 bg-transparent border outline-none border-slate-700 text-[#d0d2d6] focus:border-indigo-500 rounded-md overflow-hidden "
+                    className="px-3 py-2 bg-transparent border outline-none border-slate-700 text-[#d0d2d6] focus:border-indigo-500 rounded-md overflow-hidden font-primaryRegular"
                     name="password"
                     value={input.password}
                     onChange={handleInputChange}
@@ -85,27 +89,27 @@ const Login: React.FC = () => {
                 {/* button */}
                 <button
                   type="submit"
-                  className="w-full py-2 mb-3 text-white bg-blue-500 rounded-md hover:shadow-blue-500/50 hover:shadow-lg px-7 transition-all duration-300 "
+                  className="w-full py-2 mb-3 text-white transition-all duration-300 bg-blue-500 rounded-md hover:shadow-blue-500/50 hover:shadow-lg px-7 font-primarySemiBold"
                 >
                   Sign In
                 </button>
                 {/* already have an account */}
                 <div className="my-3">
-                  <p className="flex items-center justify-center gap-1">
+                  <p className="flex items-center justify-center gap-1 font-primaryMedium">
                     Don't have an account ?
                     <Link
                       to="/register"
-                      className="text-blue-500 hover:underline transition-all duration-200 inline-block text-sm"
+                      className="inline-block text-sm text-blue-500 transition-all duration-200 hover:underline font-primaryRegular"
                     >
                       Sign Up
                     </Link>
                   </p>
                 </div>
                 {/* -or- */}
-                <div className="w-full flex items-center justify-center my-3 ">
+                <div className="flex items-center justify-center w-full my-3 ">
                   <div className="w-[45%] bg-slate-700 h-[1px] "></div>
                   <div className="w-[10%] flex items-center justify-center">
-                    <span className="pb-1">Or</span>
+                    <span className="pb-1 font-primaryMedium">Or</span>
                   </div>
                   <div className="w-[45%] bg-slate-700 h-[1px] "></div>
                 </div>

@@ -19,3 +19,11 @@ export interface HeaderProps {
   showSidebar: boolean;
   setShowSidebar: React.Dispatch<React.SetStateAction<boolean>>;
 }
+
+export interface PaginationProps {
+  pageNumber: number;
+  setPageNumber: React.Dispatch<React.SetStateAction<number>>;
+  totalItem: number;
+  parPage: number;
+  showItem: number; // Optional prop
+}

@@ -380,7 +380,63 @@ export default function AdminDashboard() {
                 </Link>
               </div>
               {/* table */}
-              <div className=""></div>
+              <div className="relative overflow-x-auto">
+                <table className="w-full text-sm text-[#d0d2d6] text-left ">
+                  <thead className="text-sm text-[#d0d2d6] border-b border-slate-700 uppercase font-primaryMedium">
+                    <tr>
+                      <th className="py-3 px-4" scope="col">
+                        order id
+                      </th>
+                      <th className="py-3 px-4" scope="col">
+                        price
+                      </th>
+                      <th className="py-3 px-4" scope="col">
+                        payment status
+                      </th>
+                      <th className="py-3 px-4" scope="col">
+                        order status
+                      </th>
+                      <th className="py-3 px-4" scope="col">
+                        action
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="">
+                    <tr>
+                      <td
+                        className="py-3 px-4 whitespace-nowrap font-primaryRegular"
+                        scope="col"
+                      >
+                        #4568953264
+                      </td>
+                      <td
+                        className="py-3 px-4 whitespace-nowrap font-primaryRegular"
+                        scope="col"
+                      >
+                        $ 656
+                      </td>
+                      <td
+                        className="py-3 px-4 whitespace-nowrap font-primaryRegular"
+                        scope="col"
+                      >
+                        <span className="">pending</span>
+                      </td>
+                      <td
+                        className="py-3 px-4 whitespace-nowrap font-primaryRegular"
+                        scope="col"
+                      >
+                        <span className="">pending</span>
+                      </td>
+                      <td
+                        className="py-3 px-4 whitespace-nowrap font-primaryRegular"
+                        scope="col"
+                      >
+                        <Link to="">view</Link>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
         </>

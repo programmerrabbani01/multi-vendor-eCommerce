@@ -12,6 +12,8 @@ import { CgDollar } from "react-icons/cg";
 import { IoCartOutline } from "react-icons/io5";
 import { FaUsers } from "react-icons/fa";
 import { RiProductHuntLine } from "react-icons/ri";
+import Chart from "react-apexcharts";
+import { Link } from "react-router-dom";
 
 export default function AdminDashboard() {
   const title = "Admin Dashboard";
@@ -22,6 +24,102 @@ export default function AdminDashboard() {
 
   const dispatch = useDispatch<AppDispatch>();
 
+  // chart data
+
+  const state = {
+    series: [
+      {
+        name: "Orders",
+        data: [34, 65, 34, 65, 34, 34, 34, 56, 23, 67, 23, 45],
+      },
+      {
+        name: "Revenue",
+        data: [34, 32, 45, 32, 34, 34, 43, 56, 65, 67, 43, 78],
+      },
+      {
+        name: "Sellers",
+        data: [78, 32, 34, 54, 65, 34, 54, 21, 54, 43, 45, 43],
+      },
+    ],
+    options: {
+      colors: ["#00E396", "#FEB019", "#775DD0"],
+      plotOptions: {
+        bar: {
+          borderRadius: 4,
+          columnWidth: "60%", // Adjust column width
+        },
+      },
+      chart: {
+        type: "bar",
+        background: "transparent",
+        foreColor: "#d0d2d6",
+        height: 350,
+      },
+      dataLabels: {
+        enabled: false,
+      },
+      stroke: {
+        show: true,
+        curve: "smooth",
+        color: "#f0f0f0",
+        width: 5,
+        dashArray: 0,
+      },
+      xaxis: {
+        categories: [
+          "Jan",
+          "Feb",
+          "Mar",
+          "Apr",
+          "May",
+          "Jun",
+          "Jul",
+          "Aug",
+          "Sep",
+          "Oct",
+          "Nov",
+          "Dec",
+        ],
+      },
+      legend: {
+        position: "top", // Corrected position value
+        horizontalAlign: "center",
+      },
+      responsive: [
+        {
+          breakpoint: 600,
+          yaxis: {
+            categories: [
+              "Jan",
+              "Feb",
+              "Mar",
+              "Apr",
+              "May",
+              "Jun",
+              "Jul",
+              "Aug",
+              "Sep",
+              "Oct",
+              "Nov",
+              "Dec",
+            ],
+          },
+          options: {
+            plotOptions: {
+              bar: {
+                borderRadius: 4,
+                horizontal: true,
+              },
+            },
+            chart: {
+              height: 300,
+            },
+          },
+        },
+      ],
+    },
+  };
+
   // for success or errror message
   useEffect(() => {
     if (message) {
@@ -29,6 +127,7 @@ export default function AdminDashboard() {
       dispatch(setMessageEmpty());
     }
   }, [dispatch, message]);
+
   return (
     <>
       {user?.role?.name === "Admin" && (
@@ -89,8 +188,198 @@ export default function AdminDashboard() {
             {/* chart & seller Message */}
             <div className="flex flex-wrap w-full mt-7">
               {/* chart */}
-              <div className=""></div>
+              <div className="w-full lg:w-7/12 lg:pr-3">
+                <div className="w-full bg-[#283046] p-4 rounded-md">
+                  <Chart
+                    options={state.options}
+                    series={state.series}
+                    type="bar"
+                    height={350}
+                  />
+                </div>
+              </div>
               {/* message */}
+              <div className="w-full mt-6 lg:w-5/12 lg:pl-2 lg:mt-0">
+                <div className="w-full bg-[#283046] p-4 rounded-md text-[#d0d2d6] h-[398px] overflow-hidden">
+                  {/* top message */}
+                  <div className="flex items-center justify-between pb-6 ">
+                    <h2 className="text-base font-primarySemiBold">
+                      Recent Seller Messages
+                    </h2>
+                    <Link
+                      to=""
+                      className="text-sm transition-all duration-300 font-primaryRegular hover:underline hover:text-indigo-600"
+                    >
+                      View All
+                    </Link>
+                  </div>
+                  {/* message list */}
+                  <div className="flex flex-col gap-2  overflow-y-auto sidebar h-[398px]">
+                    <ol className="relative pb-20 ml-4 border-1 border-slate-600">
+                      <li className="mb-3 ml-7">
+                        <div className="flex justify-center items-center absolute -left-4 shadow-lg w-10 h-10 p-[6px] bg-[#00d1e848] rounded-full z-10 ">
+                          <img
+                            src="/images/admin.png"
+                            alt="admin-photo"
+                            className="w-full h-full rounded-full shadow-lg "
+                          />
+                        </div>
+                        <div className="p-3 border rounded-lg shadow-sm bg-slate-800 border-slate-600">
+                          <div className="flex items-center justify-between mb-2">
+                            <h2 className="text-base font-primarySemiBold">
+                              Admin
+                            </h2>
+                            <time className="mb-1 text-sm font-primaryMedium sm:order-last sm:mb-0">
+                              4 Days Ago
+                            </time>
+                          </div>
+                          <div className="p-2 text-sm border rounded-lg bg-slate-700 border-slate-800 font-primaryMediumItalic">
+                            How are you?
+                          </div>
+                        </div>
+                      </li>
+
+                      <li className="mb-3 ml-7">
+                        <div className="flex justify-center items-center absolute -left-4 shadow-lg w-10 h-10 p-[6px] bg-[#00d1e848] rounded-full z-10 ">
+                          <img
+                            src="/images/admin.png"
+                            alt="admin-photo"
+                            className="w-full h-full rounded-full shadow-lg "
+                          />
+                        </div>
+                        <div className="p-3 border rounded-lg shadow-sm bg-slate-800 border-slate-600">
+                          <div className="flex items-center justify-between mb-2">
+                            <h2 className="text-base font-primarySemiBold">
+                              Admin
+                            </h2>
+                            <time className="mb-1 text-sm font-primaryMedium sm:order-last sm:mb-0">
+                              4 Days Ago
+                            </time>
+                          </div>
+                          <div className="p-2 text-sm border rounded-lg bg-slate-700 border-slate-800 font-primaryMediumItalic">
+                            How are you?
+                          </div>
+                        </div>
+                      </li>
+
+                      <li className="mb-3 ml-7">
+                        <div className="flex justify-center items-center absolute -left-4 shadow-lg w-10 h-10 p-[6px] bg-[#00d1e848] rounded-full z-10 ">
+                          <img
+                            src="/images/admin.png"
+                            alt="admin-photo"
+                            className="w-full h-full rounded-full shadow-lg "
+                          />
+                        </div>
+                        <div className="p-3 border rounded-lg shadow-sm bg-slate-800 border-slate-600">
+                          <div className="flex items-center justify-between mb-2">
+                            <h2 className="text-base font-primarySemiBold">
+                              Admin
+                            </h2>
+                            <time className="mb-1 text-sm font-primaryMedium sm:order-last sm:mb-0">
+                              4 Days Ago
+                            </time>
+                          </div>
+                          <div className="p-2 text-sm border rounded-lg bg-slate-700 border-slate-800 font-primaryMediumItalic">
+                            How are you?
+                          </div>
+                        </div>
+                      </li>
+
+                      <li className="mb-3 ml-7">
+                        <div className="flex justify-center items-center absolute -left-4 shadow-lg w-10 h-10 p-[6px] bg-[#00d1e848] rounded-full z-10 ">
+                          <img
+                            src="/images/admin.png"
+                            alt="admin-photo"
+                            className="w-full h-full rounded-full shadow-lg "
+                          />
+                        </div>
+                        <div className="p-3 border rounded-lg shadow-sm bg-slate-800 border-slate-600">
+                          <div className="flex items-center justify-between mb-2">
+                            <h2 className="text-base font-primarySemiBold">
+                              Admin
+                            </h2>
+                            <time className="mb-1 text-sm font-primaryMedium sm:order-last sm:mb-0">
+                              4 Days Ago
+                            </time>
+                          </div>
+                          <div className="p-2 text-sm border rounded-lg bg-slate-700 border-slate-800 font-primaryMediumItalic">
+                            How are you?
+                          </div>
+                        </div>
+                      </li>
+
+                      <li className="mb-3 ml-7">
+                        <div className="flex justify-center items-center absolute -left-4 shadow-lg w-10 h-10 p-[6px] bg-[#00d1e848] rounded-full z-10 ">
+                          <img
+                            src="/images/admin.png"
+                            alt="admin-photo"
+                            className="w-full h-full rounded-full shadow-lg "
+                          />
+                        </div>
+                        <div className="p-3 border rounded-lg shadow-sm bg-slate-800 border-slate-600">
+                          <div className="flex items-center justify-between mb-2">
+                            <h2 className="text-base font-primarySemiBold">
+                              Admin
+                            </h2>
+                            <time className="mb-1 text-sm font-primaryMedium sm:order-last sm:mb-0">
+                              4 Days Ago
+                            </time>
+                          </div>
+                          <div className="p-2 text-sm text-justify border rounded-lg bg-slate-700 border-slate-800 font-primaryMediumItalic">
+                            Lorem ipsum dolor sit amet, consectetur adipisicing
+                            elit. Blanditiis dicta repellat sequi quae sapiente,
+                            porro sunt optio iste aliquid quis possimus
+                            pariatur, labore, magni laboriosam eveniet?
+                            Repudiandae eveniet placeat cupiditate.
+                          </div>
+                        </div>
+                      </li>
+
+                      <li className="mb-3 ml-7">
+                        <div className="flex justify-center items-center absolute -left-4 shadow-lg w-10 h-10 p-[6px] bg-[#00d1e848] rounded-full z-10 ">
+                          <img
+                            src="/images/admin.png"
+                            alt="admin-photo"
+                            className="w-full h-full rounded-full shadow-lg "
+                          />
+                        </div>
+                        <div className="p-3 border rounded-lg shadow-sm bg-slate-800 border-slate-600">
+                          <div className="flex items-center justify-between mb-2">
+                            <h2 className="text-base font-primarySemiBold">
+                              Admin
+                            </h2>
+                            <time className="mb-1 text-sm font-primaryMedium sm:order-last sm:mb-0">
+                              4 Days Ago
+                            </time>
+                          </div>
+                          <div className="p-2 text-sm text-justify border rounded-lg bg-slate-700 border-slate-800 font-primaryMediumItalic">
+                            Lorem ipsum dolor sit amet, consectetur adipisicing
+                            elit. Blanditiis dicta repellat sequi quae sapiente,
+                            porro sunt optio iste aliquid quis possimus
+                            pariatur, labore, magni laboriosam eveniet?
+                            Repudiandae eveniet placeat cupiditate.
+                          </div>
+                        </div>
+                      </li>
+                    </ol>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/*  */}
+            <div className="w-full p-4 bg-[#283046] text-[#d0d2d6] rounded-md mt-6 ">
+              {/* header */}
+              <div className="flex items-center justify-between">
+                <h2 className="text-2xl font-primarySemiBold">Recent Orders</h2>
+                <Link
+                  to=""
+                  className="text-lg transition-all duration-300 font-primaryRegular hover:underline hover:text-indigo-600"
+                >
+                  View All
+                </Link>
+              </div>
+              {/* table */}
               <div className=""></div>
             </div>
           </div>

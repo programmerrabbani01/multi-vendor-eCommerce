@@ -13,7 +13,7 @@ export default function Header({ showSidebar, setShowSidebar }: HeaderProps) {
     user?.photo || (user?.role?.name === "Admin" ? adminPhoto : sellerPhoto);
   return (
     <>
-      <div className="fixed top-0 left-0 w-full px-2 py-5 lg:px-7 ">
+      <div className="fixed top-0 left-0 z-10 w-full px-2 py-5 lg:px-7 ">
         <div className="ml-0 lg:ml-[260px] rounded-md h-[65px] flex justify-between items-center bg-[#283046] text-[#d0d2d6] px-5 transition-all duration-300">
           {/* side bar open & close */}
           <div

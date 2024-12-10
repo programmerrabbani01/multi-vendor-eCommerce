@@ -1,5 +1,5 @@
 import { BsChevronDoubleLeft, BsChevronDoubleRight } from "react-icons/bs";
-import { PaginationProps } from "../../../types.ts";
+import { PaginationProps } from "../types.ts";
 
 export default function Pagination({
   pageNumber,

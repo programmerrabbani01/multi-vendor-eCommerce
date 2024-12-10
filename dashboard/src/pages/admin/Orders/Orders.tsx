@@ -2,7 +2,7 @@ import { useState } from "react";
 import MetaData from "../../../components/MetaData.tsx";
 import { BsArrowBarDown } from "react-icons/bs";
 import { Link } from "react-router-dom";
-import Pagination from "./Pagination.tsx";
+import Pagination from "../../../components/Pagination.tsx";
 
 export default function Orders() {
   const title = "Orders";
@@ -21,7 +21,7 @@ export default function Orders() {
       <div className="px-2 pt-5 lg:px-7">
         <div className="w-full p-4 bg-[#283046] rounded-md ">
           {/* select option & search option */}
-          <div className="flex items-center justify-between">
+          <div className="flex flex-wrap lg:flex-nowrap gap-2 items-center justify-between mb-4">
             {/* select */}
             <select
               onChange={(e) => setParPage(parseInt(e.target.value))}
@@ -41,7 +41,7 @@ export default function Orders() {
           </div>
           {/* table */}
           <div className="relative mt-5 overflow-x-auto">
-            <div className="w-full text-sm text-left text-[#d0d2d6">
+            <div className="min-w-[800px] w-full text-sm text-left text-[#d0d2d6]">
               {/* table header */}
               <div className="items">
                 <div className="text-sm text-[#d0d2d6] border-b border-slate-700 uppercase font-primaryMedium">

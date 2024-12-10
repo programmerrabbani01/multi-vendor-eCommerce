@@ -40,13 +40,13 @@ export default function Header({ showSidebar, setShowSidebar }: HeaderProps) {
 
           <div className="flex items-center justify-center gap-8 ">
             {/* chat icon */}
-            <div className="icon">
+            <div className="icon hidden lg:block">
               <CiChat1 className="w-[23px] h-[23px] " />
             </div>
             {/* details */}
             <div className="flex items-center justify-between gap-4">
               <div className="info">
-                <h2 className="text-base font-primaryBold">
+                <h2 className="text-base  font-primaryMedium">
                   {`${user?.firstName || "Unknown"} ${
                     user?.lastName || "User"
                   }`}

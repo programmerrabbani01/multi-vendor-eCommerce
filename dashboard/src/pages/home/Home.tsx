@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import useAuthUser from "../../hooks/useAuthUser.tsx";
+import { ClockLoader } from "react-spinners";
 
 export default function Home() {
   const { user } = useAuthUser();
@@ -15,8 +16,10 @@ export default function Home() {
   }, [user, navigate]);
 
   return (
-    <div>
-      <h1>Loading...</h1>
-    </div>
+    <>
+      <div className="min-h-[80vh] min-w-screen flex items-center justify-center">
+        <ClockLoader size={100} color="#2EA3DC" />
+      </div>
+    </>
   );
 }

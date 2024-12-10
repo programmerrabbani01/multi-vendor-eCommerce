@@ -217,7 +217,7 @@ export default function AdminDashboard() {
                   <div className="flex flex-col gap-2  overflow-y-auto sidebar h-[398px]">
                     <ol className="relative pb-20 ml-4 border-1 border-slate-600">
                       <li className="mb-3 ml-7">
-                        <div className="flex justify-center items-center absolute -left-4 shadow-lg w-10 h-10 p-[6px] bg-[#00d1e848] rounded-full z-10 ">
+                        <div className="flex justify-center items-center absolute -left-4 shadow-lg w-10 h-10 p-[6px] bg-[#00d1e848] rounded-full ">
                           <img
                             src="/images/admin.png"
                             alt="admin-photo"
@@ -240,7 +240,7 @@ export default function AdminDashboard() {
                       </li>
 
                       <li className="mb-3 ml-7">
-                        <div className="flex justify-center items-center absolute -left-4 shadow-lg w-10 h-10 p-[6px] bg-[#00d1e848] rounded-full z-10 ">
+                        <div className="flex justify-center items-center absolute -left-4 shadow-lg w-10 h-10 p-[6px] bg-[#00d1e848] rounded-full ">
                           <img
                             src="/images/admin.png"
                             alt="admin-photo"
@@ -263,7 +263,7 @@ export default function AdminDashboard() {
                       </li>
 
                       <li className="mb-3 ml-7">
-                        <div className="flex justify-center items-center absolute -left-4 shadow-lg w-10 h-10 p-[6px] bg-[#00d1e848] rounded-full z-10 ">
+                        <div className="flex justify-center items-center absolute -left-4 shadow-lg w-10 h-10 p-[6px] bg-[#00d1e848] rounded-full ">
                           <img
                             src="/images/admin.png"
                             alt="admin-photo"
@@ -286,7 +286,7 @@ export default function AdminDashboard() {
                       </li>
 
                       <li className="mb-3 ml-7">
-                        <div className="flex justify-center items-center absolute -left-4 shadow-lg w-10 h-10 p-[6px] bg-[#00d1e848] rounded-full z-10 ">
+                        <div className="flex justify-center items-center absolute -left-4 shadow-lg w-10 h-10 p-[6px] bg-[#00d1e848] rounded-full ">
                           <img
                             src="/images/admin.png"
                             alt="admin-photo"
@@ -309,7 +309,7 @@ export default function AdminDashboard() {
                       </li>
 
                       <li className="mb-3 ml-7">
-                        <div className="flex justify-center items-center absolute -left-4 shadow-lg w-10 h-10 p-[6px] bg-[#00d1e848] rounded-full z-10 ">
+                        <div className="flex justify-center items-center absolute -left-4 shadow-lg w-10 h-10 p-[6px] bg-[#00d1e848] rounded-full ">
                           <img
                             src="/images/admin.png"
                             alt="admin-photo"
@@ -336,7 +336,7 @@ export default function AdminDashboard() {
                       </li>
 
                       <li className="mb-3 ml-7">
-                        <div className="flex justify-center items-center absolute -left-4 shadow-lg w-10 h-10 p-[6px] bg-[#00d1e848] rounded-full z-10 ">
+                        <div className="flex justify-center items-center absolute -left-4 shadow-lg w-10 h-10 p-[6px] bg-[#00d1e848] rounded-full">
                           <img
                             src="/images/admin.png"
                             alt="admin-photo"
@@ -367,7 +367,7 @@ export default function AdminDashboard() {
               </div>
             </div>
 
-            {/*  */}
+            {/* Recent orders */}
             <div className="w-full p-4 bg-[#283046] text-[#d0d2d6] rounded-md mt-6 ">
               {/* header */}
               <div className="flex items-center justify-between">
@@ -381,7 +381,7 @@ export default function AdminDashboard() {
               </div>
               {/* table */}
               <div className="relative overflow-x-auto">
-                <table className="w-full text-sm text-[#d0d2d6] text-left ">
+                <table className="min-w-[800px] w-full text-sm text-[#d0d2d6] text-left ">
                   <thead className="text-sm text-[#d0d2d6] border-b border-slate-700 uppercase font-primaryMedium">
                     <tr>
                       <th className="py-3 px-4" scope="col">

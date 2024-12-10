@@ -40,7 +40,7 @@ export default function Orders() {
             />
           </div>
           {/* table */}
-          <div className="relative mt-5 overflow-x-auto">
+          <div className="relative mt-5 overflow-x-auto sidebar2">
             <div className="min-w-[800px] w-full text-sm text-left text-[#d0d2d6]">
               {/* table header */}
               <div className="items">

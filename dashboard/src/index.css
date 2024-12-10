@@ -65,4 +65,22 @@
   .sidebar::-webkit-scrollbar-track {
     background-color: transparent;
   }
+  .sidebar2 {
+    overflow-y: auto;
+  }
+
+  /* Customize scrollbar */
+  .sidebar2::-webkit-scrollbar {
+    width: 8px;
+    height: 4px;
+  }
+
+  .sidebar2::-webkit-scrollbar-thumb {
+    background-color: #2ea3dc;
+    border-radius: 10px;
+  }
+
+  .sidebar2::-webkit-scrollbar-track {
+    background-color: transparent;
+  }
 }

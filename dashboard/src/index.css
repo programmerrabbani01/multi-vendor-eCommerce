@@ -65,6 +65,8 @@
   .sidebar::-webkit-scrollbar-track {
     background-color: transparent;
   }
+
+  /* sidebar 2 */
   .sidebar2 {
     overflow-y: auto;
   }

@@ -2,8 +2,10 @@
 ** packages
 front-end
 ==========
-pnpm add react-helmet apexcharts react-apexcharts axios jwt-decode moment react-hot-toast react-icons redux @reduxjs/toolkit react-redux react-spinners react-window redux-thunk socket.io-client
+pnpm add react-helmet apexcharts react-apexcharts axios jwt-decode moment react-hot-toast react-icons redux @reduxjs/toolkit react-redux react-spinners react-window redux-thunk socket.io-client react-window
 pnpm add --save-dev @types/react-helmet
+pnpm add --save-dev @types/react-window
+
 
 back-end
 =========

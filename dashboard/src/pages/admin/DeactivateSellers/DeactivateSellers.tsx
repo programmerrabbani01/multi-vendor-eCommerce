@@ -6,6 +6,7 @@ export default function DeactivateSellers() {
     <div>
       <MetaData title={title} />
 
+      {/* start */}
       <div className="text-white">DeactivateSellers</div>
     </div>
   );

@@ -2,6 +2,7 @@ import { useState } from "react";
 import MetaData from "../../../components/MetaData.tsx";
 import Pagination from "../../../components/Pagination.tsx";
 import { FaUsersViewfinder } from "react-icons/fa6";
+import { Link } from "react-router-dom";
 
 export default function Sellers() {
   const title = "Sellers";
@@ -13,10 +14,10 @@ export default function Sellers() {
       <MetaData title={title} />
 
       {/*start  */}
-      <div className="px-2 lg:px-7 pt-5">
+      <div className="px-2 pt-5 lg:px-7">
         <div className="w-full p-4 bg-[#283046] text-[#d0d2d6] rounded-md ">
           {/* select option & search option */}
-          <div className="flex flex-wrap lg:flex-nowrap gap-2 items-center justify-between mb-4">
+          <div className="flex flex-wrap items-center justify-between gap-2 mb-4 lg:flex-nowrap">
             {/* select */}
             <select
               onChange={(e) => setParPage(parseInt(e.target.value))}
@@ -39,45 +40,45 @@ export default function Sellers() {
             <table className="min-w-[800px] w-full text-sm text-[#d0d2d6] text-left ">
               <thead className="text-sm text-[#d0d2d6] border-b border-slate-700 uppercase font-primaryMedium">
                 <tr>
-                  <th className="py-3 px-4" scope="col">
+                  <th className="px-4 py-3" scope="col">
                     no
                   </th>
-                  <th className="py-3 px-4" scope="col">
+                  <th className="px-4 py-3" scope="col">
                     image
                   </th>
-                  <th className="py-3 px-4" scope="col">
+                  <th className="px-4 py-3" scope="col">
                     name
                   </th>
-                  <th className="py-3 px-4" scope="col">
+                  <th className="px-4 py-3" scope="col">
                     email
                   </th>
-                  <th className="py-3 px-4" scope="col">
+                  <th className="px-4 py-3" scope="col">
                     shop name
                   </th>
-                  <th className="py-3 px-4" scope="col">
+                  <th className="px-4 py-3" scope="col">
                     payment status
                   </th>
-                  <th className="py-3 px-4" scope="col">
+                  <th className="px-4 py-3" scope="col">
                     division
                   </th>
-                  <th className="py-3 px-4" scope="col">
+                  <th className="px-4 py-3" scope="col">
                     district
                   </th>
-                  <th className="py-3 px-4" scope="col">
+                  <th className="px-4 py-3" scope="col">
                     action
                   </th>
                 </tr>
               </thead>
               <tbody className="">
-                <tr className=" border-b border-slate-700">
+                <tr className="border-b border-slate-700">
                   <td
-                    className="py-2 px-4 whitespace-nowrap font-primaryRegular"
+                    className="px-4 py-2 whitespace-nowrap font-primaryRegular"
                     scope="col"
                   >
                     1
                   </td>
                   <td
-                    className="py-2 px-4 whitespace-nowrap font-primaryRegular"
+                    className="px-4 py-2 whitespace-nowrap font-primaryRegular"
                     scope="col"
                   >
                     <img
@@ -87,49 +88,52 @@ export default function Sellers() {
                     />
                   </td>
                   <td
-                    className="py-2 px-4 whitespace-nowrap font-primaryRegular"
+                    className="px-4 py-2 whitespace-nowrap font-primaryRegular"
                     scope="col"
                   >
                     <span className="">Rabbani</span>
                   </td>
                   <td
-                    className="py-2 px-4 whitespace-nowrap font-primaryRegular"
+                    className="px-4 py-2 whitespace-nowrap font-primaryRegular"
                     scope="col"
                   >
                     <span className="">rab@gmail.com</span>
                   </td>
                   <td
-                    className="py-2 px-4 whitespace-nowrap font-primaryRegular break-words"
+                    className="px-4 py-2 break-words whitespace-nowrap font-primaryRegular"
                     scope="col"
                   >
                     <span className="">Rabbani Multi Variate Store</span>
                   </td>
                   <td
-                    className="py-2 px-4 whitespace-nowrap font-primaryRegular"
+                    className="px-4 py-2 whitespace-nowrap font-primaryRegular"
                     scope="col"
                   >
                     <span className="">Pending</span>
                   </td>
                   <td
-                    className="py-2 px-4 whitespace-nowrap font-primaryRegular"
+                    className="px-4 py-2 whitespace-nowrap font-primaryRegular"
                     scope="col"
                   >
                     <span className="">Barishal</span>
                   </td>
                   <td
-                    className="py-2 px-4 whitespace-nowrap font-primaryRegular"
+                    className="px-4 py-2 whitespace-nowrap font-primaryRegular"
                     scope="col"
                   >
                     <span className="">Patuakhali</span>
                   </td>
                   <td
-                    className="py-2 px-4 whitespace-nowrap font-primaryRegular"
+                    className="px-4 py-2 whitespace-nowrap font-primaryRegular"
                     scope="col"
                   >
-                    <div className="">
-                      <button className="px-3 py-2 bg-cyan-500 text-white rounded hover:shadow-lg hover:shadow-cyan-500/50 ">
+                    <div className="flex items-center justify-start gap-4">
+                      <Link
+                        to={`/admin/seller/details/1`}
+                        className="p-[6px] text-white rounded bg-cyan-500 hover:shadow-lg hover:shadow-cyan-500/50 "
+                      >
                         <FaUsersViewfinder />
-                      </button>
+                      </Link>
                     </div>
                   </td>
                 </tr>

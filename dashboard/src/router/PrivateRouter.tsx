@@ -2,6 +2,7 @@ import { lazy, Suspense } from "react";
 import MainLayout from "../layout/MainLayout.tsx";
 import PrivateGard from "./privateGard.tsx";
 import { ClockLoader } from "react-spinners";
+
 const Home = lazy(() => import("../pages/home/Home.tsx"));
 
 // admin routes
@@ -25,6 +26,7 @@ const SellersRequest = lazy(
 const ChatSeller = lazy(
   () => import("../pages/admin/ChatWithSeller/ChatWithSeller.tsx")
 );
+const SellerDetails = lazy(() => import("../components/SellerDetails.tsx"));
 
 // seller routes
 const SellerDashboard = lazy(
@@ -148,6 +150,20 @@ const privateRouter = [
                 }
               >
                 <SellersRequest />
+              </Suspense>
+            ),
+          },
+          {
+            path: "/admin/seller/details/:id",
+            element: (
+              <Suspense
+                fallback={
+                  <div className="min-h-[80vh] min-w-screen flex items-center justify-center">
+                    <ClockLoader size={100} color="#2EA3DC" />
+                  </div>
+                }
+              >
+                <SellerDetails />
               </Suspense>
             ),
           },

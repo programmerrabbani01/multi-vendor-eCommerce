@@ -37,7 +37,7 @@ export default function Categories() {
 
       {/* start */}
 
-      <div className="px-2 lg:px-7 pt-5">
+      <div className="px-2 pt-5 lg:px-7">
         <div className="flex lg:hidden justify-between items-center mb-5 p-4 bg-[#283046] rounded-md ">
           <h2 className="text-[#d0d2d6] text-base font-primaryMedium ">
             Categories
@@ -49,12 +49,12 @@ export default function Categories() {
             Add
           </button>
         </div>
-        <div className="flex flex-wrap lg:flex-nowrap w-full gap-6">
+        <div className="flex flex-wrap w-full gap-6 lg:flex-nowrap">
           {/* left side */}
           <div className="w-full lg:w-7/12">
             <div className="w-full p-4 bg-[#283046] rounded-md ">
               {/* select option & search option */}
-              <div className="flex flex-wrap lg:flex-nowrap gap-2 items-center justify-between mb-4">
+              <div className="flex flex-wrap items-center justify-between gap-2 mb-4 lg:flex-nowrap">
                 {/* select */}
                 <select
                   onChange={(e) => setParPage(parseInt(e.target.value))}
@@ -77,30 +77,30 @@ export default function Categories() {
                 <table className="w-full text-sm text-[#d0d2d6] text-left ">
                   <thead className="text-sm text-[#d0d2d6] border-b border-slate-700 uppercase font-primaryMedium">
                     <tr>
-                      <th className="py-3 px-4" scope="col">
+                      <th className="px-4 py-3" scope="col">
                         no
                       </th>
-                      <th className="py-3 px-4" scope="col">
+                      <th className="px-4 py-3" scope="col">
                         image
                       </th>
-                      <th className="py-3 px-4" scope="col">
+                      <th className="px-4 py-3" scope="col">
                         name
                       </th>
-                      <th className="py-3 px-4" scope="col">
+                      <th className="px-4 py-3" scope="col">
                         action
                       </th>
                     </tr>
                   </thead>
                   <tbody className="">
-                    <tr className=" border-b border-slate-700">
+                    <tr className="border-b  border-slate-700">
                       <td
-                        className="py-2 px-4 whitespace-nowrap font-primaryRegular"
+                        className="px-4 py-2 whitespace-nowrap font-primaryRegular"
                         scope="col"
                       >
                         1
                       </td>
                       <td
-                        className="py-2 px-4 whitespace-nowrap font-primaryRegular"
+                        className="px-4 py-2 whitespace-nowrap font-primaryRegular"
                         scope="col"
                       >
                         <img
@@ -110,34 +110,34 @@ export default function Categories() {
                         />
                       </td>
                       <td
-                        className="py-2 px-4 whitespace-nowrap font-primaryRegular"
+                        className="px-4 py-2 whitespace-nowrap font-primaryRegular"
                         scope="col"
                       >
                         <span className="">perfume</span>
                       </td>
                       <td
-                        className="py-2 px-4 whitespace-nowrap font-primaryRegular"
+                        className="px-4 py-2 whitespace-nowrap font-primaryRegular"
                         scope="col"
                       >
-                        <div className="flex justify-start items-center gap-4">
-                          <button className="px-3 py-2 bg-blue-500 text-white rounded hover:shadow-lg hover:shadow-blue-500/50 ">
+                        <div className="flex items-center justify-start gap-4">
+                          <button className="px-3 py-2 text-white bg-blue-500 rounded hover:shadow-lg hover:shadow-blue-500/50 ">
                             <FaEdit />
                           </button>
-                          <button className="px-3 py-2 bg-red-500 text-white rounded hover:shadow-lg hover:shadow-red-500/50">
+                          <button className="px-3 py-2 text-white bg-red-500 rounded hover:shadow-lg hover:shadow-red-500/50">
                             <FaTrash />
                           </button>
                         </div>
                       </td>
                     </tr>
-                    <tr className=" border-b border-slate-700">
+                    <tr className="border-b  border-slate-700">
                       <td
-                        className="py-2 px-4 whitespace-nowrap font-primaryRegular"
+                        className="px-4 py-2 whitespace-nowrap font-primaryRegular"
                         scope="col"
                       >
                         2
                       </td>
                       <td
-                        className="py-2 px-4 whitespace-nowrap font-primaryRegular"
+                        className="px-4 py-2 whitespace-nowrap font-primaryRegular"
                         scope="col"
                       >
                         <img
@@ -147,34 +147,34 @@ export default function Categories() {
                         />
                       </td>
                       <td
-                        className="py-2 px-4 whitespace-nowrap font-primaryRegular"
+                        className="px-4 py-2 whitespace-nowrap font-primaryRegular"
                         scope="col"
                       >
                         <span className="">makeup</span>
                       </td>
                       <td
-                        className="py-2 px-4 whitespace-nowrap font-primaryRegular"
+                        className="px-4 py-2 whitespace-nowrap font-primaryRegular"
                         scope="col"
                       >
-                        <div className="flex justify-start items-center gap-4">
-                          <button className="px-3 py-2 bg-blue-500 text-white rounded hover:shadow-lg hover:shadow-blue-500/50 ">
+                        <div className="flex items-center justify-start gap-4">
+                          <button className="px-3 py-2 text-white bg-blue-500 rounded hover:shadow-lg hover:shadow-blue-500/50 ">
                             <FaEdit />
                           </button>
-                          <button className="px-3 py-2 bg-red-500 text-white rounded hover:shadow-lg hover:shadow-red-500/50">
+                          <button className="px-3 py-2 text-white bg-red-500 rounded hover:shadow-lg hover:shadow-red-500/50">
                             <FaTrash />
                           </button>
                         </div>
                       </td>
                     </tr>
-                    <tr className=" border-b border-slate-700">
+                    <tr className="border-b  border-slate-700">
                       <td
-                        className="py-2 px-4 whitespace-nowrap font-primaryRegular"
+                        className="px-4 py-2 whitespace-nowrap font-primaryRegular"
                         scope="col"
                       >
                         3
                       </td>
                       <td
-                        className="py-2 px-4 whitespace-nowrap font-primaryRegular"
+                        className="px-4 py-2 whitespace-nowrap font-primaryRegular"
                         scope="col"
                       >
                         <img
@@ -184,34 +184,34 @@ export default function Categories() {
                         />
                       </td>
                       <td
-                        className="py-2 px-4 whitespace-nowrap font-primaryRegular"
+                        className="px-4 py-2 whitespace-nowrap font-primaryRegular"
                         scope="col"
                       >
                         <span className="">shoes</span>
                       </td>
                       <td
-                        className="py-2 px-4 whitespace-nowrap font-primaryRegular"
+                        className="px-4 py-2 whitespace-nowrap font-primaryRegular"
                         scope="col"
                       >
-                        <div className="flex justify-start items-center gap-4">
-                          <button className="px-3 py-2 bg-blue-500 text-white rounded hover:shadow-lg hover:shadow-blue-500/50 ">
+                        <div className="flex items-center justify-start gap-4">
+                          <button className="px-3 py-2 text-white bg-blue-500 rounded hover:shadow-lg hover:shadow-blue-500/50 ">
                             <FaEdit />
                           </button>
-                          <button className="px-3 py-2 bg-red-500 text-white rounded hover:shadow-lg hover:shadow-red-500/50">
+                          <button className="px-3 py-2 text-white bg-red-500 rounded hover:shadow-lg hover:shadow-red-500/50">
                             <FaTrash />
                           </button>
                         </div>
                       </td>
                     </tr>
-                    <tr className=" border-b border-slate-700">
+                    <tr className="border-b  border-slate-700">
                       <td
-                        className="py-2 px-4 whitespace-nowrap font-primaryRegular"
+                        className="px-4 py-2 whitespace-nowrap font-primaryRegular"
                         scope="col"
                       >
                         4
                       </td>
                       <td
-                        className="py-2 px-4 whitespace-nowrap font-primaryRegular"
+                        className="px-4 py-2 whitespace-nowrap font-primaryRegular"
                         scope="col"
                       >
                         <img
@@ -221,34 +221,34 @@ export default function Categories() {
                         />
                       </td>
                       <td
-                        className="py-2 px-4 whitespace-nowrap font-primaryRegular"
+                        className="px-4 py-2 whitespace-nowrap font-primaryRegular"
                         scope="col"
                       >
                         <span className="">headphone</span>
                       </td>
                       <td
-                        className="py-2 px-4 whitespace-nowrap font-primaryRegular"
+                        className="px-4 py-2 whitespace-nowrap font-primaryRegular"
                         scope="col"
                       >
-                        <div className="flex justify-start items-center gap-4">
-                          <button className="px-3 py-2 bg-blue-500 text-white rounded hover:shadow-lg hover:shadow-blue-500/50 ">
+                        <div className="flex items-center justify-start gap-4">
+                          <button className="px-3 py-2 text-white bg-blue-500 rounded hover:shadow-lg hover:shadow-blue-500/50 ">
                             <FaEdit />
                           </button>
-                          <button className="px-3 py-2 bg-red-500 text-white rounded hover:shadow-lg hover:shadow-red-500/50">
+                          <button className="px-3 py-2 text-white bg-red-500 rounded hover:shadow-lg hover:shadow-red-500/50">
                             <FaTrash />
                           </button>
                         </div>
                       </td>
                     </tr>
-                    <tr className=" border-b border-slate-700">
+                    <tr className="border-b  border-slate-700">
                       <td
-                        className="py-2 px-4 whitespace-nowrap font-primaryRegular"
+                        className="px-4 py-2 whitespace-nowrap font-primaryRegular"
                         scope="col"
                       >
                         5
                       </td>
                       <td
-                        className="py-2 px-4 whitespace-nowrap font-primaryRegular"
+                        className="px-4 py-2 whitespace-nowrap font-primaryRegular"
                         scope="col"
                       >
                         <img
@@ -258,34 +258,34 @@ export default function Categories() {
                         />
                       </td>
                       <td
-                        className="py-2 px-4 whitespace-nowrap font-primaryRegular"
+                        className="px-4 py-2 whitespace-nowrap font-primaryRegular"
                         scope="col"
                       >
                         <span className="">camera</span>
                       </td>
                       <td
-                        className="py-2 px-4 whitespace-nowrap font-primaryRegular"
+                        className="px-4 py-2 whitespace-nowrap font-primaryRegular"
                         scope="col"
                       >
-                        <div className="flex justify-start items-center gap-4">
-                          <button className="px-3 py-2 bg-blue-500 text-white rounded hover:shadow-lg hover:shadow-blue-500/50 ">
+                        <div className="flex items-center justify-start gap-4">
+                          <button className="px-3 py-2 text-white bg-blue-500 rounded hover:shadow-lg hover:shadow-blue-500/50 ">
                             <FaEdit />
                           </button>
-                          <button className="px-3 py-2 bg-red-500 text-white rounded hover:shadow-lg hover:shadow-red-500/50">
+                          <button className="px-3 py-2 text-white bg-red-500 rounded hover:shadow-lg hover:shadow-red-500/50">
                             <FaTrash />
                           </button>
                         </div>
                       </td>
                     </tr>
-                    <tr className=" border-b border-slate-700">
+                    <tr className="border-b  border-slate-700">
                       <td
-                        className="py-2 px-4 whitespace-nowrap font-primaryRegular"
+                        className="px-4 py-2 whitespace-nowrap font-primaryRegular"
                         scope="col"
                       >
                         6
                       </td>
                       <td
-                        className="py-2 px-4 whitespace-nowrap font-primaryRegular"
+                        className="px-4 py-2 whitespace-nowrap font-primaryRegular"
                         scope="col"
                       >
                         <img
@@ -295,20 +295,20 @@ export default function Categories() {
                         />
                       </td>
                       <td
-                        className="py-2 px-4 whitespace-nowrap font-primaryRegular"
+                        className="px-4 py-2 whitespace-nowrap font-primaryRegular"
                         scope="col"
                       >
                         <span className="">t-shirt</span>
                       </td>
                       <td
-                        className="py-2 px-4 whitespace-nowrap font-primaryRegular"
+                        className="px-4 py-2 whitespace-nowrap font-primaryRegular"
                         scope="col"
                       >
-                        <div className="flex justify-start items-center gap-4">
-                          <button className="px-3 py-2 bg-blue-500 text-white rounded hover:shadow-lg hover:shadow-blue-500/50 ">
+                        <div className="flex items-center justify-start gap-4">
+                          <button className="px-3 py-2 text-white bg-blue-500 rounded hover:shadow-lg hover:shadow-blue-500/50 ">
                             <FaEdit />
                           </button>
-                          <button className="px-3 py-2 bg-red-500 text-white rounded hover:shadow-lg hover:shadow-red-500/50">
+                          <button className="px-3 py-2 text-white bg-red-500 rounded hover:shadow-lg hover:shadow-red-500/50">
                             <FaTrash />
                           </button>
                         </div>
@@ -338,13 +338,13 @@ export default function Categories() {
             <div className="w-full pl-">
               <div className="bg-[#283046] lg:rounded-md h-screen lg:h-auto px-3 py-2 text-[#d0d2d6] ">
                 <div className="flex items-center justify-between">
-                  <h1 className="w-full lg:text-center text-xl font-primaryMedium mb-4 ">
+                  <h1 className="w-full mb-4 text-xl lg:text-center font-primaryMedium ">
                     Add A New Category
                   </h1>
 
                   <button
                     onClick={() => setShow(false)}
-                    className="absolute top-3 right-2 bg-red-500 hover:bg-red-600 text-white rounded-full p-2 shadow-md z-20 lg:hidden block "
+                    className="absolute z-20 block p-2 text-white bg-red-500 rounded-full shadow-md top-3 right-2 hover:bg-red-600 lg:hidden "
                   >
                     <ImCross size={10} />
                   </button>
@@ -352,7 +352,7 @@ export default function Categories() {
                 {/* form */}
                 <form>
                   {/* name */}
-                  <div className="my-3 flex flex-col w-full gap-2 mb-3">
+                  <div className="flex flex-col w-full gap-2 my-3 mb-3">
                     <label
                       htmlFor="name"
                       className="text-lg font-primaryMedium"
@@ -372,7 +372,7 @@ export default function Categories() {
                       className="text-lg font-primaryMedium flex flex-col justify-center items-center w-full h-[238px] border border-dashed border-[#d0d2d6] hover:border-indigo-500 cursor-pointer "
                     >
                       {imagePreview ? (
-                        <div className="relative w-full h-full flex justify-center items-center">
+                        <div className="relative flex items-center justify-center w-full h-full">
                           <img
                             src={imagePreview}
                             alt="Preview"
@@ -381,7 +381,7 @@ export default function Categories() {
                           <button
                             type="button"
                             onClick={handleRemoveImage}
-                            className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
+                            className="absolute p-1 text-white bg-red-500 rounded-full top-2 right-2 hover:bg-red-600"
                           >
                             <ImCross size={10} />
                           </button>
@@ -404,7 +404,7 @@ export default function Categories() {
                   <div className="my-3">
                     <button
                       type="submit"
-                      className="w-full bg-blue-500 hover:shadow-blue-500/50 hover:shadow-lg rounded-md py-2 font-primaryMedium text-lg "
+                      className="w-full py-2 text-lg bg-blue-500 rounded-md hover:shadow-blue-500/50 hover:shadow-lg font-primaryMedium "
                     >
                       Add Category
                     </button>

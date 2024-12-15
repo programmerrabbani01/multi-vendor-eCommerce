@@ -1,10 +1,13 @@
 import { useDispatch, useSelector } from "react-redux";
-import { getAuthData, setMessageEmpty } from "../../features/auth/authSlice.ts";
+import {
+  getAuthData,
+  setMessageEmpty,
+} from "../../../features/auth/authSlice.ts";
 import { useEffect } from "react";
-import { createToaster } from "../../utils/tostify.ts";
-import { AppDispatch } from "../../app/store.ts";
-import MetaData from "../../components/MetaData.tsx";
-import useAuthUser from "../../hooks/useAuthUser.tsx";
+import { createToaster } from "../../../utils/tostify.ts";
+import { AppDispatch } from "../../../app/store.ts";
+import MetaData from "../../../components/MetaData.tsx";
+import useAuthUser from "../../../hooks/useAuthUser.tsx";
 export default function SellerDashboard() {
   const title = "Seller Dashboard";
   const { user } = useAuthUser();

@@ -30,7 +30,7 @@ const SellerDetails = lazy(() => import("../components/SellerDetails.tsx"));
 
 // seller routes
 const SellerDashboard = lazy(
-  () => import("../pages/seller/SellerDashboard.tsx")
+  () => import("../pages/seller/Dashboard/SellerDashboard.tsx")
 );
 
 // create public router

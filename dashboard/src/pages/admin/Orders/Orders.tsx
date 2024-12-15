@@ -67,7 +67,7 @@ export default function Orders() {
                   <div className="py-4 w-[18%] whitespace-nowrap">pending</div>
                   <div className="py-4 w-[18%] whitespace-nowrap">pending</div>
                   <div className="py-4 w-[18%] whitespace-nowrap">
-                    <Link to="">view</Link>
+                    <Link to="/admin/orders/orderDetails/1">view</Link>
                   </div>
                   <div
                     onClick={() => setShow(!show)}

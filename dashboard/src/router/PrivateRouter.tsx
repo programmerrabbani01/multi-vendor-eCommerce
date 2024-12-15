@@ -10,6 +10,9 @@ const AdminDashboard = lazy(
   () => import("../pages/admin/Dashoard/AdminDashboard.tsx")
 );
 const Orders = lazy(() => import("../pages/admin/Orders/Orders.tsx"));
+const OrderDetails = lazy(
+  () => import("../pages/admin/Orders/OrderDetails.tsx")
+);
 const Categories = lazy(
   () => import("../pages/admin/Categories/Categories.tsx")
 );
@@ -80,6 +83,20 @@ const privateRouter = [
                 }
               >
                 <Orders />
+              </Suspense>
+            ),
+          },
+          {
+            path: "/admin/orders/orderDetails/:id",
+            element: (
+              <Suspense
+                fallback={
+                  <div className="min-h-[80vh] min-w-screen flex items-center justify-center">
+                    <ClockLoader size={100} color="#2EA3DC" />
+                  </div>
+                }
+              >
+                <OrderDetails />
               </Suspense>
             ),
           },

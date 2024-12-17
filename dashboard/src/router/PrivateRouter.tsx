@@ -35,6 +35,27 @@ const SellerDetails = lazy(() => import("../components/SellerDetails.tsx"));
 const SellerDashboard = lazy(
   () => import("../pages/seller/Dashboard/SellerDashboard.tsx")
 );
+const AddProduct = lazy(
+  () => import("../pages/seller/AddProduct/AddProduct.tsx")
+);
+
+const AllProducts = lazy(
+  () => import("../pages/seller/AllProducts/AllProducts.tsx")
+);
+const DiscountProducts = lazy(
+  () => import("../pages/seller/DiscountProducts/DiscountProducts.tsx")
+);
+const SOrders = lazy(() => import("../pages/seller/SOrders/SOrders.tsx"));
+
+const Payments = lazy(() => import("../pages/seller/Payments/Payments.tsx"));
+
+const ChatCustomer = lazy(
+  () => import("../pages/seller/ChatCustomer/ChatCustomer.tsx")
+);
+const ChatSupport = lazy(
+  () => import("../pages/seller/ChatSupport/ChatSupport.tsx")
+);
+const Profile = lazy(() => import("../pages/seller/Profile/Profile.tsx"));
 
 // create public router
 const privateRouter = [
@@ -198,7 +219,7 @@ const privateRouter = [
               </Suspense>
             ),
           },
-
+          // seller start
           {
             path: "/seller/dashboard",
             element: (
@@ -210,6 +231,118 @@ const privateRouter = [
                 }
               >
                 <SellerDashboard />
+              </Suspense>
+            ),
+          },
+          {
+            path: "/seller/addProduct",
+            element: (
+              <Suspense
+                fallback={
+                  <div className="min-h-[80vh] min-w-screen flex items-center justify-center">
+                    <ClockLoader size={100} color="#2EA3DC" />
+                  </div>
+                }
+              >
+                <AddProduct />
+              </Suspense>
+            ),
+          },
+          {
+            path: "/seller/allProducts",
+            element: (
+              <Suspense
+                fallback={
+                  <div className="min-h-[80vh] min-w-screen flex items-center justify-center">
+                    <ClockLoader size={100} color="#2EA3DC" />
+                  </div>
+                }
+              >
+                <AllProducts />
+              </Suspense>
+            ),
+          },
+          {
+            path: "/seller/discountProducts",
+            element: (
+              <Suspense
+                fallback={
+                  <div className="min-h-[80vh] min-w-screen flex items-center justify-center">
+                    <ClockLoader size={100} color="#2EA3DC" />
+                  </div>
+                }
+              >
+                <DiscountProducts />
+              </Suspense>
+            ),
+          },
+          {
+            path: "/seller/orders",
+            element: (
+              <Suspense
+                fallback={
+                  <div className="min-h-[80vh] min-w-screen flex items-center justify-center">
+                    <ClockLoader size={100} color="#2EA3DC" />
+                  </div>
+                }
+              >
+                <SOrders />
+              </Suspense>
+            ),
+          },
+          {
+            path: "/seller/payments",
+            element: (
+              <Suspense
+                fallback={
+                  <div className="min-h-[80vh] min-w-screen flex items-center justify-center">
+                    <ClockLoader size={100} color="#2EA3DC" />
+                  </div>
+                }
+              >
+                <Payments />
+              </Suspense>
+            ),
+          },
+          {
+            path: "/seller/chatCustomer",
+            element: (
+              <Suspense
+                fallback={
+                  <div className="min-h-[80vh] min-w-screen flex items-center justify-center">
+                    <ClockLoader size={100} color="#2EA3DC" />
+                  </div>
+                }
+              >
+                <ChatCustomer />
+              </Suspense>
+            ),
+          },
+          {
+            path: "/seller/chatSupport",
+            element: (
+              <Suspense
+                fallback={
+                  <div className="min-h-[80vh] min-w-screen flex items-center justify-center">
+                    <ClockLoader size={100} color="#2EA3DC" />
+                  </div>
+                }
+              >
+                <ChatSupport />
+              </Suspense>
+            ),
+          },
+          {
+            path: "/seller/profile",
+            element: (
+              <Suspense
+                fallback={
+                  <div className="min-h-[80vh] min-w-screen flex items-center justify-center">
+                    <ClockLoader size={100} color="#2EA3DC" />
+                  </div>
+                }
+              >
+                <Profile />
               </Suspense>
             ),
           },

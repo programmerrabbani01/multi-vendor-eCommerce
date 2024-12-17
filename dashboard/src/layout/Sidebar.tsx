@@ -100,7 +100,24 @@ export default function Sidebar({ showSidebar, setShowSidebar }: HeaderProps) {
             )}
             {user?.role?.name === "Seller" && (
               <ul>
-                <li>Seller Dashboard</li>
+                {allNav.map((nav, i) => {
+                  const Icon = nav.icon;
+                  return (
+                    <li key={i}>
+                      <Link
+                        to={nav.path}
+                        className={`${
+                          location.pathname === nav.path
+                            ? "bg-slate-600 shadow-indigo-500/50 duration-500 text-white  "
+                            : "text-[#d0d2d6] duration-200"
+                        }  px-3 py-[9px] rounded-sm flex justify-start items-center gap-3 hover:pl-4 mb-1 transition-all duration-300 w-full font-primarySemiBold`}
+                      >
+                        <Icon size={20} />
+                        {nav.title}
+                      </Link>
+                    </li>
+                  );
+                })}
                 <li>
                   <button
                     onClick={handleLogout}

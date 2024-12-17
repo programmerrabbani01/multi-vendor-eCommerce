@@ -1,10 +1,12 @@
 import { BiCategory, BiLoaderCircle } from "react-icons/bi";
 import { AiFillDashboard } from "react-icons/ai";
 import { IoCartOutline } from "react-icons/io5";
-import { FaUsersSlash } from "react-icons/fa";
+import { FaUsersSlash, FaPlus } from "react-icons/fa";
 import { FiUsers } from "react-icons/fi";
-import { CgDollar } from "react-icons/cg";
+import { CgDollar, CgProfile } from "react-icons/cg";
 import { CiChat1 } from "react-icons/ci";
+import { RiProductHuntLine, RiDiscountPercentLine } from "react-icons/ri";
+import { BsChat } from "react-icons/bs";
 
 export const allNav = [
   {
@@ -62,5 +64,69 @@ export const allNav = [
     path: "/admin/chatSeller",
     icon: CiChat1,
     role: "Admin",
+  },
+  // seller start
+  {
+    id: 9,
+    title: "Dashboard",
+    path: "/seller/dashboard",
+    icon: AiFillDashboard,
+    role: "Seller",
+  },
+  {
+    id: 10,
+    title: "Add Product",
+    path: "/seller/addProduct",
+    icon: FaPlus,
+    role: "Seller",
+  },
+  {
+    id: 11,
+    title: "All Products",
+    path: "/seller/allProducts",
+    icon: RiProductHuntLine,
+    role: "Seller",
+  },
+  {
+    id: 12,
+    title: "Discount Products",
+    path: "/seller/discountProducts",
+    icon: RiDiscountPercentLine,
+    role: "Seller",
+  },
+  {
+    id: 13,
+    title: "Orders",
+    path: "/seller/orders",
+    icon: IoCartOutline,
+    role: "Seller",
+  },
+  {
+    id: 14,
+    title: "Payments",
+    path: "/seller/payments",
+    icon: CgDollar,
+    role: "Seller",
+  },
+  {
+    id: 15,
+    title: "Chat Customer",
+    path: "/seller/chatCustomer",
+    icon: BsChat,
+    role: "Seller",
+  },
+  {
+    id: 16,
+    title: "Chat Support",
+    path: "/seller/chatSupport",
+    icon: CiChat1,
+    role: "Seller",
+  },
+  {
+    id: 17,
+    title: "Profile",
+    path: "/seller/profile",
+    icon: CgProfile,
+    role: "Seller",
   },
 ];

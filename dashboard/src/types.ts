@@ -27,3 +27,8 @@ export interface PaginationProps {
   parPage: number;
   showItem: number; // Optional prop
 }
+
+export interface Category {
+  id: number;
+  name: string;
+}

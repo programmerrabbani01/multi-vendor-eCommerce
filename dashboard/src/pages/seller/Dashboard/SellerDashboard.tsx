@@ -11,8 +11,8 @@ import useAuthUser from "../../../hooks/useAuthUser.tsx";
 import { Link } from "react-router-dom";
 import Chart from "react-apexcharts";
 import { IoCartOutline } from "react-icons/io5";
-import { FaUsers } from "react-icons/fa";
 import { RiProductHuntLine } from "react-icons/ri";
+import { MdPendingActions } from "react-icons/md";
 import { CgDollar } from "react-icons/cg";
 
 export default function SellerDashboard() {
@@ -35,7 +35,7 @@ export default function SellerDashboard() {
         data: [34, 32, 45, 32, 34, 34, 43, 56, 65, 67, 43, 78],
       },
       {
-        name: "Sellers",
+        name: "Sales",
         data: [78, 32, 34, 54, 65, 34, 54, 21, 54, 43, 45, 43],
       },
     ],
@@ -137,7 +137,7 @@ export default function SellerDashboard() {
               {/* item */}
               <div className="flex items-center justify-between p-5 bg-[#283046] rounded-md gap-3 ">
                 <div className="flex flex-col justify-start items-start text-[#d0d2d6]">
-                  <h2 className="text-3xl font-primarySemiBold ">$ 1350</h2>
+                  <h2 className="text-3xl font-primarySemiBold ">$ 148</h2>
                   <h4 className="text-base font-primaryRegular">Total Sales</h4>
                 </div>
                 <div className="w-[46px] h-[47px] bg-[#28c76f1f] rounded-full flex justify-center items-center animate-pulse">
@@ -147,7 +147,7 @@ export default function SellerDashboard() {
               {/* item */}
               <div className="flex items-center justify-between p-5 bg-[#283046] rounded-md gap-3 ">
                 <div className="flex flex-col justify-start items-start text-[#d0d2d6]">
-                  <h2 className="text-3xl font-primarySemiBold ">16</h2>
+                  <h2 className="text-3xl font-primarySemiBold ">5</h2>
                   <h4 className="text-base font-primaryRegular">Products</h4>
                 </div>
                 <div className="w-[46px] h-[47px] bg-[#e000e81f] rounded-full flex justify-center items-center animate-pulse">
@@ -161,22 +161,27 @@ export default function SellerDashboard() {
               <div className="flex items-center justify-between p-5 bg-[#283046] rounded-md gap-3 ">
                 <div className="flex flex-col justify-start items-start text-[#d0d2d6]">
                   <h2 className="text-3xl font-primarySemiBold ">3</h2>
-                  <h4 className="text-base font-primaryRegular">Sellers</h4>
-                </div>
-                <div className="w-[46px] h-[47px] bg-[#00cfe81f] rounded-full flex justify-center items-center animate-pulse">
-                  <FaUsers size={23} className="text-[#00cfe8] shadow-lg" />
-                </div>
-              </div>
-              {/* item */}
-              <div className="flex items-center justify-between p-5 bg-[#283046] rounded-md gap-3 ">
-                <div className="flex flex-col justify-start items-start text-[#d0d2d6]">
-                  <h2 className="text-3xl font-primarySemiBold ">6</h2>
                   <h4 className="text-base font-primaryRegular">Orders</h4>
                 </div>
                 <div className="w-[46px] h-[47px] bg-[#7367f01f] rounded-full flex justify-center items-center animate-pulse">
                   <IoCartOutline
                     size={23}
                     className="text-[#7367f0] shadow-lg"
+                  />
+                </div>
+              </div>
+              {/* item */}
+              <div className="flex items-center justify-between p-5 bg-[#283046] rounded-md gap-3 ">
+                <div className="flex flex-col justify-start items-start text-[#d0d2d6]">
+                  <h2 className="text-3xl font-primarySemiBold ">0</h2>
+                  <h4 className="text-base font-primaryRegular">
+                    Pending Orders
+                  </h4>
+                </div>
+                <div className="w-[46px] h-[47px] bg-[#00cfe81f] rounded-full flex justify-center items-center animate-pulse">
+                  <MdPendingActions
+                    size={23}
+                    className="text-[#00cfe8] shadow-lg"
                   />
                 </div>
               </div>
@@ -200,7 +205,7 @@ export default function SellerDashboard() {
                   {/* top message */}
                   <div className="flex items-center justify-between pb-6 ">
                     <h2 className="text-base font-primarySemiBold">
-                      Recent Seller Messages
+                      Recent Customer Messages
                     </h2>
                     <Link
                       to=""
@@ -223,7 +228,7 @@ export default function SellerDashboard() {
                         <div className="p-3 border rounded-lg shadow-sm bg-slate-800 border-slate-600">
                           <div className="flex items-center justify-between mb-2">
                             <h2 className="text-base font-primarySemiBold">
-                              Admin
+                              Customer
                             </h2>
                             <time className="mb-1 text-sm font-primaryMedium sm:order-last sm:mb-0">
                               4 Days Ago
@@ -246,7 +251,7 @@ export default function SellerDashboard() {
                         <div className="p-3 border rounded-lg shadow-sm bg-slate-800 border-slate-600">
                           <div className="flex items-center justify-between mb-2">
                             <h2 className="text-base font-primarySemiBold">
-                              Admin
+                              Seller
                             </h2>
                             <time className="mb-1 text-sm font-primaryMedium sm:order-last sm:mb-0">
                               4 Days Ago
@@ -269,7 +274,7 @@ export default function SellerDashboard() {
                         <div className="p-3 border rounded-lg shadow-sm bg-slate-800 border-slate-600">
                           <div className="flex items-center justify-between mb-2">
                             <h2 className="text-base font-primarySemiBold">
-                              Admin
+                              Customer
                             </h2>
                             <time className="mb-1 text-sm font-primaryMedium sm:order-last sm:mb-0">
                               4 Days Ago
@@ -292,7 +297,7 @@ export default function SellerDashboard() {
                         <div className="p-3 border rounded-lg shadow-sm bg-slate-800 border-slate-600">
                           <div className="flex items-center justify-between mb-2">
                             <h2 className="text-base font-primarySemiBold">
-                              Admin
+                              Seller
                             </h2>
                             <time className="mb-1 text-sm font-primaryMedium sm:order-last sm:mb-0">
                               4 Days Ago
@@ -315,7 +320,7 @@ export default function SellerDashboard() {
                         <div className="p-3 border rounded-lg shadow-sm bg-slate-800 border-slate-600">
                           <div className="flex items-center justify-between mb-2">
                             <h2 className="text-base font-primarySemiBold">
-                              Admin
+                              Customer
                             </h2>
                             <time className="mb-1 text-sm font-primaryMedium sm:order-last sm:mb-0">
                               4 Days Ago
@@ -342,7 +347,7 @@ export default function SellerDashboard() {
                         <div className="p-3 border rounded-lg shadow-sm bg-slate-800 border-slate-600">
                           <div className="flex items-center justify-between mb-2">
                             <h2 className="text-base font-primarySemiBold">
-                              Admin
+                              Seller
                             </h2>
                             <time className="mb-1 text-sm font-primaryMedium sm:order-last sm:mb-0">
                               4 Days Ago

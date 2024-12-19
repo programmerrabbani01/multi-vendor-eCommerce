@@ -2,6 +2,8 @@ import { Link } from "react-router-dom";
 import MetaData from "../../../components/MetaData.tsx";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Category } from "../../../types.ts";
+import { BsImage } from "react-icons/bs";
+import { IoCloseSharp } from "react-icons/io5";
 
 export default function AddProduct() {
   const title = "Add Product";
@@ -20,6 +22,8 @@ export default function AddProduct() {
   const [category, setCategory] = useState<string>("");
   const [allCategory, setAllCategory] = useState<Category[]>([]);
   const [searchValue, setSearchValue] = useState<string>("");
+  const [images, setImages] = useState<File[]>([]);
+  const [imagePreview, setImagePreview] = useState<{ url: string }[]>([]);
 
   const dropdownRef = useRef<HTMLDivElement>(null); // Ref for the dropdown container
 
@@ -79,6 +83,28 @@ export default function AddProduct() {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
+
+  // handle image
+
+  const handleImage = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files; // `files` is FileList | null
+    if (files && files.length > 0) {
+      const filesArray = Array.from(files); // Convert FileList to an array
+      setImages((prev) => [...prev, ...filesArray]);
+
+      const imageURLs = filesArray.map((file) => ({
+        url: URL.createObjectURL(file),
+      }));
+      setImagePreview((prev) => [...prev, ...imageURLs]);
+    }
+  };
+
+  //  handle remove images
+  const removeImage = (index: number) => {
+    setImages((prev) => prev.filter((_, i) => i !== index)); // Remove the selected image from the `images` array
+    setImagePreview((prev) => prev.filter((_, i) => i !== index)); // Remove the corresponding preview
+  };
+
   return (
     <>
       <MetaData title={title} />
@@ -86,7 +112,7 @@ export default function AddProduct() {
       {/* Start */}
 
       <div className="px-2 py-5 md:px-7">
-        <div className="w-full p-4 bg-[#283046] text-[#d0d2d6] rounded-md ">
+        <div className="w-full pt-4 pl-4 pr-4 pb-6 bg-[#283046] text-[#d0d2d6] rounded-md ">
           {/* top */}
           <div className="flex justify-between items-center pb-4">
             <h1 className="text-2xl font-primarySemiBold">Add Product</h1>
@@ -229,7 +255,7 @@ export default function AddProduct() {
                 </div>
               </div>
               {/* description */}
-              <div className="flex flex-col gap-1 w-full">
+              <div className="flex flex-col gap-1 mb-5 w-full">
                 <label htmlFor="description">Product Description</label>
                 <textarea
                   name="description"
@@ -242,8 +268,50 @@ export default function AddProduct() {
                 ></textarea>
               </div>
               {/* image */}
-              <div className=""></div>
+              <div className="grid grid-cols-1 lg:grid-cols-4 md:grid-cols-3 sm:grid-cols-2 gap-3 md:gap-4 sm:gap-4 w-full mb-4">
+                {/* image preview */}
+                {imagePreview.map((img, i) => {
+                  return (
+                    <div key={i} className="h-[180px] relative">
+                      <img
+                        src={img.url}
+                        alt="preview"
+                        className="object-cover w-full h-full rounded-md"
+                      />
+                      <div
+                        className="absolute top-1 right-1 p-2 z-10 bg-slate-700 hover:shadow-lg hover:shadow-slate-400/50 cursor-pointer rounded-full "
+                        onClick={() => removeImage(i)}
+                      >
+                        <IoCloseSharp />
+                      </div>
+                    </div>
+                  );
+                })}
+                {/* select image */}
+                <label
+                  className=" flex justify-center items-center flex-col h-[180px] cursor-pointer border border-dashed hover:border-indigo-500 w-full "
+                  htmlFor="image"
+                >
+                  <span>
+                    <BsImage />
+                  </span>
+                  <span className="font-primaryMedium">Select Image</span>
+                </label>
+                <input
+                  multiple
+                  type="file"
+                  id="image"
+                  className="hidden"
+                  onChange={handleImage}
+                />
+              </div>
               {/* button */}
+              <button
+                type="submit"
+                className="w-full py-2 text-lg bg-blue-500 rounded-md hover:shadow-blue-500/50 hover:shadow-lg font-primaryMedium "
+              >
+                Add Product
+              </button>
             </form>
           </div>
           {/* form */}

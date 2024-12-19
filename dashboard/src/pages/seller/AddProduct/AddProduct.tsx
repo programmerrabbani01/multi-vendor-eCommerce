@@ -114,11 +114,11 @@ export default function AddProduct() {
       <div className="px-2 py-5 md:px-7">
         <div className="w-full pt-4 pl-4 pr-4 pb-6 bg-[#283046] text-[#d0d2d6] rounded-md ">
           {/* top */}
-          <div className="flex justify-between items-center pb-4">
+          <div className="flex items-center justify-between pb-4">
             <h1 className="text-2xl font-primarySemiBold">Add Product</h1>
             <Link
               to="/seller/allProducts"
-              className="px-7 py-2 my-2 text-lg bg-indigo-500 rounded-md hover:shadow-indigo-500/50 hover:shadow-lg font-primaryMedium"
+              className="py-2 my-2 text-lg bg-indigo-500 rounded-md px-7 hover:shadow-indigo-500/50 hover:shadow-lg font-primaryMedium"
             >
               Products
             </Link>
@@ -127,10 +127,12 @@ export default function AddProduct() {
           <div className="">
             <form action="">
               {/* product & brand */}
-              <div className="flex flex-col mb-3 md:flex-row gap-4 w-full">
+              <div className="flex flex-col w-full gap-4 mb-3 md:flex-row">
                 {/* name */}
-                <div className="flex flex-col gap-1 w-full">
-                  <label htmlFor="name">Product Name</label>
+                <div className="flex flex-col w-full gap-1">
+                  <label htmlFor="name" className="font-primarySemiBold">
+                    Product Name
+                  </label>
                   <input
                     type="text"
                     name="name"
@@ -142,8 +144,10 @@ export default function AddProduct() {
                   />
                 </div>
                 {/* brand */}
-                <div className="flex flex-col gap-1 w-full">
-                  <label htmlFor="brand">Product Brand</label>
+                <div className="flex flex-col w-full gap-1">
+                  <label htmlFor="brand" className="font-primarySemiBold">
+                    Product Brand
+                  </label>
                   <input
                     type="text"
                     name="brand"
@@ -156,10 +160,12 @@ export default function AddProduct() {
                 </div>
               </div>
               {/* category & stock */}
-              <div className="flex flex-col mb-3 md:flex-row gap-4 w-full">
+              <div className="flex flex-col w-full gap-4 mb-3 md:flex-row">
                 {/* category */}
-                <div className="flex flex-col gap-1 w-full relative">
-                  <label htmlFor="category">Product Category</label>
+                <div className="relative flex flex-col w-full gap-1">
+                  <label htmlFor="category" className="font-primarySemiBold">
+                    Product Category
+                  </label>
                   <input
                     type="text"
                     name="category"
@@ -176,7 +182,7 @@ export default function AddProduct() {
                       cateShow ? "scale-100" : "scale-0"
                     } `}
                   >
-                    <div className="px-4 py-2 flex w-full">
+                    <div className="flex w-full px-4 py-2">
                       <input
                         onChange={categorySearch}
                         type="text"
@@ -209,8 +215,10 @@ export default function AddProduct() {
                   </div>
                 </div>
                 {/* stock */}
-                <div className="flex flex-col gap-1 w-full">
-                  <label htmlFor="stock">Product Stock</label>
+                <div className="flex flex-col w-full gap-1">
+                  <label htmlFor="stock" className="font-primarySemiBold">
+                    Product Stock
+                  </label>
                   <input
                     type="number"
                     min="0"
@@ -224,10 +232,12 @@ export default function AddProduct() {
                 </div>
               </div>
               {/* price & discount */}
-              <div className="flex flex-col mb-3 md:flex-row gap-4 w-full">
+              <div className="flex flex-col w-full gap-4 mb-3 md:flex-row">
                 {/* price */}
-                <div className="flex flex-col gap-1 w-full">
-                  <label htmlFor="price">Product Price</label>
+                <div className="flex flex-col w-full gap-1">
+                  <label htmlFor="price" className="font-primarySemiBold">
+                    Product Price
+                  </label>
                   <input
                     type="number"
                     min="0"
@@ -240,8 +250,10 @@ export default function AddProduct() {
                   />
                 </div>
                 {/* discount */}
-                <div className="flex flex-col gap-1 w-full">
-                  <label htmlFor="discount">Product Discount</label>
+                <div className="flex flex-col w-full gap-1">
+                  <label htmlFor="discount" className="font-primarySemiBold">
+                    Product Discount
+                  </label>
                   <input
                     type="number"
                     min="0"
@@ -255,8 +267,10 @@ export default function AddProduct() {
                 </div>
               </div>
               {/* description */}
-              <div className="flex flex-col gap-1 mb-5 w-full">
-                <label htmlFor="description">Product Description</label>
+              <div className="flex flex-col w-full gap-1 mb-5">
+                <label htmlFor="description" className="font-primarySemiBold">
+                  Product Description
+                </label>
                 <textarea
                   name="description"
                   id="description"
@@ -268,7 +282,7 @@ export default function AddProduct() {
                 ></textarea>
               </div>
               {/* image */}
-              <div className="grid grid-cols-1 lg:grid-cols-4 md:grid-cols-3 sm:grid-cols-2 gap-3 md:gap-4 sm:gap-4 w-full mb-4">
+              <div className="grid w-full grid-cols-1 gap-3 mb-4 lg:grid-cols-4 md:grid-cols-3 sm:grid-cols-2 md:gap-4 sm:gap-4">
                 {/* image preview */}
                 {imagePreview.map((img, i) => {
                   return (
@@ -279,7 +293,7 @@ export default function AddProduct() {
                         className="object-cover w-full h-full rounded-md"
                       />
                       <div
-                        className="absolute top-1 right-1 p-2 z-10 bg-slate-700 hover:shadow-lg hover:shadow-slate-400/50 cursor-pointer rounded-full "
+                        className="absolute z-10 p-2 rounded-full cursor-pointer top-1 right-1 bg-slate-700 hover:shadow-lg hover:shadow-slate-400/50 "
                         onClick={() => removeImage(i)}
                       >
                         <IoCloseSharp />

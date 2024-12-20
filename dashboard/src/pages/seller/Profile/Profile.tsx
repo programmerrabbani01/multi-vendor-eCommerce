@@ -1,3 +1,12 @@
+import MetaData from "../../../components/MetaData.tsx";
+
 export default function Profile() {
-  return <div>Profile</div>;
+  const title = "Profile";
+  return (
+    <>
+      <MetaData title={title} />
+
+      {/* start */}
+    </>
+  );
 }

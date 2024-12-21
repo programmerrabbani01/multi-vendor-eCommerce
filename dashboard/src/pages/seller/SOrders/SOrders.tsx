@@ -92,8 +92,8 @@ export default function Orders() {
                   >
                     <div className="flex items-center justify-start gap-4">
                       <Link
-                        to=""
-                        className="px-3 py-2 text-white bg-cyan-500 rounded hover:shadow-lg hover:shadow-cyan-500/50 "
+                        to={`/seller/orders/1`}
+                        className="px-3 py-2 text-white rounded bg-cyan-500 hover:shadow-lg hover:shadow-cyan-500/50 "
                       >
                         <GrOverview />
                       </Link>

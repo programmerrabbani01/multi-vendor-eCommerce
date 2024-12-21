@@ -2,6 +2,7 @@ import { lazy, Suspense } from "react";
 import MainLayout from "../layout/MainLayout.tsx";
 import PrivateGard from "./privateGard.tsx";
 import { ClockLoader } from "react-spinners";
+import ViewOrder from "../pages/seller/SOrders/ViewOrder.tsx";
 
 const Home = lazy(() => import("../pages/home/Home.tsx"));
 
@@ -42,6 +43,15 @@ const AddProduct = lazy(
 const AllProducts = lazy(
   () => import("../pages/seller/AllProducts/AllProducts.tsx")
 );
+
+const EditProduct = lazy(
+  () => import("../pages/seller/AllProducts/EditProduct.tsx")
+);
+
+const ViewProduct = lazy(
+  () => import("../pages/seller/AllProducts/ViewProduct.tsx")
+);
+
 const DiscountProducts = lazy(
   () => import("../pages/seller/DiscountProducts/DiscountProducts.tsx")
 );
@@ -263,6 +273,34 @@ const privateRouter = [
             ),
           },
           {
+            path: "/seller/allProducts/editProduct/:id",
+            element: (
+              <Suspense
+                fallback={
+                  <div className="min-h-[80vh] min-w-screen flex items-center justify-center">
+                    <ClockLoader size={100} color="#2EA3DC" />
+                  </div>
+                }
+              >
+                <EditProduct />
+              </Suspense>
+            ),
+          },
+          {
+            path: "/seller/allProducts/:id",
+            element: (
+              <Suspense
+                fallback={
+                  <div className="min-h-[80vh] min-w-screen flex items-center justify-center">
+                    <ClockLoader size={100} color="#2EA3DC" />
+                  </div>
+                }
+              >
+                <ViewProduct />
+              </Suspense>
+            ),
+          },
+          {
             path: "/seller/discountProducts",
             element: (
               <Suspense
@@ -287,6 +325,20 @@ const privateRouter = [
                 }
               >
                 <SOrders />
+              </Suspense>
+            ),
+          },
+          {
+            path: "/seller/orders/:id",
+            element: (
+              <Suspense
+                fallback={
+                  <div className="min-h-[80vh] min-w-screen flex items-center justify-center">
+                    <ClockLoader size={100} color="#2EA3DC" />
+                  </div>
+                }
+              >
+                <ViewOrder />
               </Suspense>
             ),
           },

@@ -81,7 +81,7 @@ export default function AllProducts() {
                 </tr>
               </thead>
               <tbody className="">
-                <tr className="border-b  border-slate-700">
+                <tr className="border-b border-slate-700">
                   <td
                     className="px-4 py-2 whitespace-nowrap font-primaryRegular"
                     scope="col"
@@ -145,13 +145,13 @@ export default function AllProducts() {
                   >
                     <div className="flex items-center justify-start gap-4">
                       <Link
-                        to=""
-                        className="px-3 py-2 text-white bg-cyan-500 rounded hover:shadow-lg hover:shadow-cyan-500/50 "
+                        to={`/seller/viewProduct/1`}
+                        className="px-3 py-2 text-white rounded bg-cyan-500 hover:shadow-lg hover:shadow-cyan-500/50 "
                       >
                         <GrOverview />
                       </Link>
                       <Link
-                        to=""
+                        to={`/seller/allProducts/editProduct/1`}
                         className="px-3 py-2 text-white bg-blue-500 rounded hover:shadow-lg hover:shadow-blue-500/50 "
                       >
                         <FaEdit />

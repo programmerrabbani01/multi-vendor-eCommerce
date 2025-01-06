@@ -41,16 +41,27 @@ const userSchema = mongoose.Schema(
     role: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Role",
-      // required: true,
-      // enum: ["Admin", "User", "Author"],
+      default: "User",
     },
     active: {
       type: Boolean,
       default: false,
     },
     status: {
-      type: Boolean,
-      default: true,
+      type: String,
+      default: "pending",
+    },
+    paymentStatus: {
+      type: String,
+      default: "inactive",
+    },
+    method: {
+      type: String,
+      required: true,
+    },
+    shopInfo: {
+      type: Object,
+      default: {},
     },
     trash: {
       type: Boolean,

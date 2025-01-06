@@ -58,7 +58,7 @@ export default function Sidebar({ showSidebar, setShowSidebar }: HeaderProps) {
           <div className="h-[70px] flex justify-center items-center ">
             <Link to="/">
               <img
-                src="http://localhost:3001/images/logo.png"
+                src="http://localhost:4001/images/logo.png"
                 alt="logo"
                 className="object-cover w-[180px] h-[50px]"
               />

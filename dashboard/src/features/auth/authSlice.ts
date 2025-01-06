@@ -1,5 +1,11 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { adminLogin, loggedInUser, logOutUser } from "./authApiSlice.ts";
+import {
+  adminLogin,
+  loggedInUser,
+  logOutUser,
+  sellerLogin,
+  sellerRegistration,
+} from "./authApiSlice.ts";
 import { RootState } from "../../app/store.ts";
 import { User } from "../../types.ts";
 
@@ -39,6 +45,20 @@ const authSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
+      // seller registration
+      .addCase(sellerRegistration.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(sellerRegistration.rejected, (state, action) => {
+        state.error = action.error.message || "An error occurred.";
+        state.isLoading = false;
+      })
+      .addCase(sellerRegistration.fulfilled, (state, action) => {
+        state.user = action.payload.user;
+        state.message = action.payload.message;
+        state.error = null;
+        state.isLoading = false;
+      })
       // admin login
       .addCase(adminLogin.pending, (state) => {
         state.isLoading = true;
@@ -49,6 +69,23 @@ const authSlice = createSlice({
       })
       .addCase(
         adminLogin.fulfilled,
+        (state, action: PayloadAction<{ user: User; message: string }>) => {
+          state.user = action.payload.user;
+          state.isLoading = false;
+          state.message = action.payload.message;
+          localStorage.setItem("user", JSON.stringify(action.payload.user));
+        }
+      )
+      // seller login
+      .addCase(sellerLogin.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(sellerLogin.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.error.message || "An error occurred.";
+      })
+      .addCase(
+        sellerLogin.fulfilled,
         (state, action: PayloadAction<{ user: User; message: string }>) => {
           state.user = action.payload.user;
           state.isLoading = false;

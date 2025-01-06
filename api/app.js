@@ -7,6 +7,7 @@ import authRoute from "./route/authRoute.js";
 import userRoute from "./route/userRoute.js";
 import permissionRoute from "./route/permissionRoute.js";
 import roleRoute from "./route/roleRoute.js";
+import categoryRoute from "./route/categoryRoute.js";
 import bodyParser from "body-parser";
 import path from "path";
 import notFound from "./middlewares/notFound.js";
@@ -21,7 +22,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(
   cors({
-    origin: ["http://localhost:3000", "http://localhost:3001"],
+    origin: ["http://localhost:4000", "http://localhost:4001"],
     credentials: true,
   })
 );
@@ -38,6 +39,7 @@ app.use(express.static(path.join(path.resolve() + "/public")));
 app.use("/api/v1/user", userRoute);
 app.use("/api/v1/permission", permissionRoute);
 app.use("/api/v1/role", roleRoute);
+app.use("/api/v1/category", categoryRoute);
 app.use("/api/v1/auth", authRoute);
 
 // error handlers

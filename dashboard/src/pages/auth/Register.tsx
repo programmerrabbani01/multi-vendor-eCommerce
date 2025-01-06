@@ -1,9 +1,15 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { AiOutlineGithub, AiOutlineGooglePlus } from "react-icons/ai";
 import { FiFacebook } from "react-icons/fi";
 import { CiTwitter } from "react-icons/ci";
 import MetaData from "../../components/MetaData.tsx";
+import { useDispatch, useSelector } from "react-redux";
+import { getAuthData, setMessageEmpty } from "../../features/auth/authSlice.ts";
+import { PropagateLoader } from "react-spinners";
+import { sellerRegistration } from "../../features/auth/authApiSlice.ts";
+import { AppDispatch } from "../../app/store.ts";
+import { createToaster } from "../../utils/tostify.ts";
 
 const Register: React.FC = () => {
   const title = "Sign-Up";
@@ -14,6 +20,10 @@ const Register: React.FC = () => {
     email: "",
     password: "",
   });
+
+  const { isLoading, error, message } = useSelector(getAuthData);
+  const dispatch = useDispatch<AppDispatch>();
+  const navigate = useNavigate();
 
   // handle input change
 
@@ -29,8 +39,33 @@ const Register: React.FC = () => {
   const handleSubmitForm = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     // handle form submission logic here
-    console.log(input);
+    dispatch(sellerRegistration(input));
   };
+
+  // style for loader
+
+  const loaderStyle = {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    height: "24px",
+    color: "#fff",
+    message: "0 auto",
+  };
+
+  //   handle messages
+  useEffect(() => {
+    if (error) {
+      createToaster(error);
+      dispatch(setMessageEmpty());
+    }
+    if (message) {
+      console.log(message);
+      createToaster(message, "success");
+      dispatch(setMessageEmpty());
+      navigate("/login");
+    }
+  }, [dispatch, error, message, navigate]);
 
   return (
     <>
@@ -142,10 +177,19 @@ const Register: React.FC = () => {
                 </div>
                 {/* button */}
                 <button
+                  disabled={isLoading ? true : false}
                   type="submit"
                   className="w-full py-2 mb-3 text-white transition-all duration-300 bg-blue-500 rounded-md hover:shadow-blue-500/50 hover:shadow-lg px-7 font-primarySemiBold"
                 >
-                  Sign Up
+                  {isLoading ? (
+                    <PropagateLoader
+                      size={10}
+                      color="#fff"
+                      cssOverride={loaderStyle}
+                    />
+                  ) : (
+                    "Sign Up"
+                  )}
                 </button>
                 {/* already have an account */}
                 <div className="my-3">

@@ -1,9 +1,15 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { AiOutlineGithub, AiOutlineGooglePlus } from "react-icons/ai";
 import { CiTwitter } from "react-icons/ci";
 import { FiFacebook } from "react-icons/fi";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import MetaData from "../../components/MetaData.tsx";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch } from "../../app/store.ts";
+import { getAuthData, setMessageEmpty } from "../../features/auth/authSlice.ts";
+import { createToaster } from "../../utils/tostify.ts";
+import { sellerLogin } from "../../features/auth/authApiSlice.ts";
+import { PropagateLoader } from "react-spinners";
 
 const Login: React.FC = () => {
   const title = "Sign-In";
@@ -12,6 +18,10 @@ const Login: React.FC = () => {
     email: "",
     password: "",
   });
+
+  const dispatch = useDispatch<AppDispatch>();
+  const { error, message, user, isLoading } = useSelector(getAuthData);
+  const navigate = useNavigate();
 
   // handle input change
 
@@ -27,8 +37,48 @@ const Login: React.FC = () => {
   const handleSubmitForm = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     // handle form submission logic here
-    console.log(input);
+    if (!input.email || !input.password) {
+      createToaster("All Fields Are Required");
+    } else {
+      dispatch(sellerLogin(input));
+    }
   };
+
+  // for success or error message
+  useEffect(() => {
+    if (error) {
+      createToaster(error);
+      dispatch(setMessageEmpty());
+    }
+    if (message) {
+      createToaster(message, "success");
+      dispatch(setMessageEmpty());
+      // clear form
+      setInput({
+        email: "",
+        password: "",
+      });
+    }
+    if (user) {
+      if (user.role?.name === "Admin") {
+        navigate("/admin/dashboard");
+      } else if (user.role?.name === "Seller") {
+        navigate("/seller/dashboard");
+      }
+    }
+  }, [dispatch, error, message, user, navigate]);
+
+  // style for loader
+
+  const loaderStyle = {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    height: "24px",
+    color: "#fff",
+    message: "0 auto",
+  };
+
   return (
     <>
       <MetaData title={title} />
@@ -91,7 +141,15 @@ const Login: React.FC = () => {
                   type="submit"
                   className="w-full py-2 mb-3 text-white transition-all duration-300 bg-blue-500 rounded-md hover:shadow-blue-500/50 hover:shadow-lg px-7 font-primarySemiBold"
                 >
-                  Sign In
+                  {isLoading ? (
+                    <PropagateLoader
+                      size={10}
+                      color="#fff"
+                      cssOverride={loaderStyle}
+                    />
+                  ) : (
+                    "Sign In"
+                  )}
                 </button>
                 {/* already have an account */}
                 <div className="my-3">

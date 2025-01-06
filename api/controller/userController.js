@@ -2,6 +2,7 @@ import User from "../models/User.js";
 import asyncHandler from "express-async-handler";
 import bcrypt from "bcryptjs";
 // import { sendMail } from "../utils/sendMail.js";
+import SellerCustomerChat from "../models/SellerCustomerChat.js";
 
 /**
  * @desc get all users data
@@ -67,11 +68,19 @@ const createUser = asyncHandler(async (req, res) => {
     password: hash,
     role,
     gender,
+    method: "manually",
+    shopInfo: {},
   });
 
   // confirm create user
 
   const successUser = await User.findById(user.id).populate("role");
+
+  // chatting option
+  const chattingOption = await SellerCustomerChat.create({
+    myId: seller._id,
+    chatType: "seller",
+  });
 
   // send user access to email
 
@@ -84,12 +93,10 @@ const createUser = asyncHandler(async (req, res) => {
 
   // check
   if (user) {
-    return res
-      .status(201)
-      .json({
-        message: `User ${firstName} ${lastName} successfully created`,
-        user: successUser,
-      });
+    return res.status(201).json({
+      message: `User ${firstName} ${lastName} successfully created`,
+      user: successUser,
+    });
   } else {
     return res.status(400).json({ message: "Invalid user data" });
   }

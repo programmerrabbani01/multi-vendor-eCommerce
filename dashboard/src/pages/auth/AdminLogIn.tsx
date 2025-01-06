@@ -42,7 +42,7 @@ const AdminLogIn: React.FC = () => {
     }
   };
 
-  // for success or errror message
+  // for success or error message
   useEffect(() => {
     if (error) {
       createToaster(error);
@@ -90,7 +90,7 @@ const AdminLogIn: React.FC = () => {
               <div className="h-[70px] flex justify-center items-center ">
                 <div className="w-[180px] h-[50px] ">
                   <img
-                    src="http://localhost:3001/images/logo.png"
+                    src="http://localhost:4001/images/logo.png"
                     alt="logo"
                     className="object-cover w-full h-full"
                   />

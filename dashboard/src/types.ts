@@ -32,3 +32,10 @@ export interface Category {
   id: number;
   name: string;
 }
+
+export interface RegistrationData {
+  firstName: string;
+  lastName: string;
+  email: string;
+  password: string;
+}

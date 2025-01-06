@@ -92,64 +92,6 @@ export const adminSellerLogin = asyncHandler(async (req, res) => {
 });
 
 /**
- * @desc user login
- * @route POST /api/v1/auth/login
- * @access PUBLIC
- */
-
-// export const userLogin = asyncHandler(async (req, res) => {
-//   // get data
-//   const { email, password } = req.body;
-
-//   //   validation
-
-//   if (!email || !password)
-//     return res.status(400).json({ message: "All Fields Are Required" });
-
-//   // find login user by email
-
-//   const loginUser = await User.findOne({ email });
-
-//   //   user not found
-
-//   if (!loginUser)
-//     return res.status(400).json({ message: " Wrong Email Address " });
-
-//   // password check
-
-//   const passwordCheck = await bcrypt.compare(password, loginUser.password);
-
-//   // password matching
-
-//   if (!passwordCheck)
-//     return res.status(400).json({ message: " Wrong Password " });
-
-//   // create access token
-
-//   const accessToken = jwt.sign(
-//     { email: loginUser.email },
-//     ACCESS_TOKEN_SECRET,
-//     {
-//       expiresIn: ACCESS_TOKEN_EXPIRES_IN,
-//     }
-//   );
-
-//   res.cookie("accessToken", accessToken, {
-//     httpOnly: true,
-//     secure: process.env.APP_ENV == "Development" ? false : true,
-//     sameSite: "strict",
-//     maxAge: 7 * 24 * 60 * 60 * 1000,
-//     path: "/",
-//   });
-
-//   res.status(200).json({
-//     accessToken,
-//     user: loginUser,
-//     message: "User Login successful 🥳",
-//   });
-// });
-
-/**
  * @desc user loggedIn
  * @route GET /api/v1/auth/me
  * @access PUBLIC
@@ -167,4 +109,47 @@ export const loggedInUser = asyncHandler(async (req, res) => {
 export const userLogOut = asyncHandler(async (req, res) => {
   res.clearCookie("accessToken");
   res.status(200).json({ message: "Logout successful 🥳" });
+});
+
+/**
+ * @desc user registration
+ * @route POST /api/v1/auth/register
+ * @access PUBLIC
+ */
+
+export const userRegistration = asyncHandler(async (req, res) => {
+  // get data
+  const { firstName, lastName, email, password, role, gender } = req.body;
+
+  // check validation
+  if (!firstName || !lastName || !password || !email) {
+    return res.status(400).json({ message: "All fields are required" });
+  }
+
+  // email existence
+  const emailCheck = await User.findOne({ email });
+
+  if (emailCheck) {
+    return res.status(400).json({ message: "Email already exists" });
+  }
+
+  // hash password
+  const hash = await bcrypt.hash(password, 10);
+
+  //create new user
+  const newUser = await User.create({
+    firstName,
+    lastName,
+    email,
+    password: hash,
+    role,
+    gender,
+    method: "manually",
+    shopInfo: {},
+  });
+
+  // response
+  res
+    .status(201)
+    .json({ user: newUser, message: "User Registration successfully" });
 });

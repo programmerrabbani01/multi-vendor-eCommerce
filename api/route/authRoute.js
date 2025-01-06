@@ -3,6 +3,7 @@ import {
   adminSellerLogin,
   loggedInUser,
   userLogOut,
+  userRegistration,
 } from "../controller/authController.js";
 import { tokenVerify } from "../middlewares/verifyToken.js";
 
@@ -11,6 +12,7 @@ const router = express.Router();
 
 //create routes
 router.route("/adminSellerLogin").post(adminSellerLogin);
+router.route("/register").post(userRegistration);
 router.route("/logOut").post(userLogOut);
 // router.route("/userLogin").post(userLogin);
 

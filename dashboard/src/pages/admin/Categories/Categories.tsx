@@ -92,7 +92,7 @@ export default function Categories() {
                     </tr>
                   </thead>
                   <tbody className="">
-                    <tr className="border-b  border-slate-700">
+                    <tr className="border-b border-slate-700">
                       <td
                         className="px-4 py-2 whitespace-nowrap font-primaryRegular"
                         scope="col"
@@ -129,7 +129,7 @@ export default function Categories() {
                         </div>
                       </td>
                     </tr>
-                    <tr className="border-b  border-slate-700">
+                    <tr className="border-b border-slate-700">
                       <td
                         className="px-4 py-2 whitespace-nowrap font-primaryRegular"
                         scope="col"
@@ -166,7 +166,7 @@ export default function Categories() {
                         </div>
                       </td>
                     </tr>
-                    <tr className="border-b  border-slate-700">
+                    <tr className="border-b border-slate-700">
                       <td
                         className="px-4 py-2 whitespace-nowrap font-primaryRegular"
                         scope="col"
@@ -203,7 +203,7 @@ export default function Categories() {
                         </div>
                       </td>
                     </tr>
-                    <tr className="border-b  border-slate-700">
+                    <tr className="border-b border-slate-700">
                       <td
                         className="px-4 py-2 whitespace-nowrap font-primaryRegular"
                         scope="col"
@@ -240,7 +240,7 @@ export default function Categories() {
                         </div>
                       </td>
                     </tr>
-                    <tr className="border-b  border-slate-700">
+                    <tr className="border-b border-slate-700">
                       <td
                         className="px-4 py-2 whitespace-nowrap font-primaryRegular"
                         scope="col"
@@ -262,43 +262,6 @@ export default function Categories() {
                         scope="col"
                       >
                         <span className="">camera</span>
-                      </td>
-                      <td
-                        className="px-4 py-2 whitespace-nowrap font-primaryRegular"
-                        scope="col"
-                      >
-                        <div className="flex items-center justify-start gap-4">
-                          <button className="px-3 py-2 text-white bg-blue-500 rounded hover:shadow-lg hover:shadow-blue-500/50 ">
-                            <FaEdit />
-                          </button>
-                          <button className="px-3 py-2 text-white bg-red-500 rounded hover:shadow-lg hover:shadow-red-500/50">
-                            <FaTrash />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                    <tr className="border-b  border-slate-700">
-                      <td
-                        className="px-4 py-2 whitespace-nowrap font-primaryRegular"
-                        scope="col"
-                      >
-                        6
-                      </td>
-                      <td
-                        className="px-4 py-2 whitespace-nowrap font-primaryRegular"
-                        scope="col"
-                      >
-                        <img
-                          src="/images/product6.jpg"
-                          alt="image"
-                          className="w-[45px] h-[45px] object-cover"
-                        />
-                      </td>
-                      <td
-                        className="px-4 py-2 whitespace-nowrap font-primaryRegular"
-                        scope="col"
-                      >
-                        <span className="">t-shirt</span>
                       </td>
                       <td
                         className="px-4 py-2 whitespace-nowrap font-primaryRegular"

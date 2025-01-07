@@ -64,9 +64,12 @@ export const cloudUploadsMultiple = async (filePaths, options = {}) => {
  * @param {string} publicId - The public ID of the file to delete in Cloudinary.
  * @returns {Promise<void>} - Resolves when the file is successfully deleted.
  */
+
 export const cloudDelete = async (publicId) => {
   try {
-    await cloudinary.v2.uploader.destroy(publicId);
+    const result = await cloudinary.v2.uploader.destroy(publicId);
+    console.log("Cloudinary Deletion Result:", result);
+    return result;
   } catch (error) {
     console.error("Error during file deletion:", error);
     throw new Error("Failed to delete file from Cloudinary.");

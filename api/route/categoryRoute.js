@@ -4,6 +4,7 @@ import { tokenVerify } from "../middlewares/verifyToken.js";
 import { categoryMulter } from "../utils/multer.js";
 import {
   createCategory,
+  deleteCategory,
   getAllCategory,
 } from "../controller/categoryController.js";
 
@@ -24,6 +25,8 @@ router.route("/").get(getAllCategory).post(categoryMulter, createCategory);
 //   .delete(deleteCategory)
 //   .patch(categoryMulter, updateCategory)
 //   .put(categoryMulter, updateCategory);
+
+router.route("/:id").delete(deleteCategory);
 
 // router.route("/status/:id").put(updateCategoryStatus);
 

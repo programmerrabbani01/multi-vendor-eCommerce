@@ -6,6 +6,7 @@ import {
   createCategory,
   deleteCategory,
   getAllCategory,
+  updateCategory,
 } from "../controller/categoryController.js";
 
 // create router
@@ -26,7 +27,7 @@ router.route("/").get(getAllCategory).post(categoryMulter, createCategory);
 //   .patch(categoryMulter, updateCategory)
 //   .put(categoryMulter, updateCategory);
 
-router.route("/:id").delete(deleteCategory);
+router.route("/:id").delete(deleteCategory).put(categoryMulter, updateCategory);
 
 // router.route("/status/:id").put(updateCategoryStatus);
 

@@ -108,7 +108,7 @@ export const createCategory = asyncHandler(async (req, res) => {
 /**
  * @desc delete Category data
  * @route DELETE /category/:id
- * @access PUBLIC
+ * @access PRIVATE
  */
 
 export const deleteCategory = asyncHandler(async (req, res) => {
@@ -158,4 +158,113 @@ export const deleteCategory = asyncHandler(async (req, res) => {
 
   // Success response
   res.json({ message: "Category deleted successfully", category });
+});
+
+/**
+ * @desc update Category data
+ * @route PUT /category/:id
+ * @access PRIVATE
+ */
+
+export const updateCategory = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const { name, parentCategory } = req.body;
+
+  // Validation
+  if (!name) {
+    return res.status(400).json({ message: "Category name is required" });
+  }
+
+  // Find the category to update
+  const category = await Category.findById(id);
+
+  if (!category) {
+    return res.status(400).json({ message: "Category not found" });
+  }
+
+  // Handle photo upload and replacement
+  let updatedPhoto = category.photo;
+  if (req.file) {
+    try {
+      // Upload the new photo to Cloudinary in the "multi-vendor-ecommerce/categories" folder
+      const uploadedPhoto = await cloudUploads(req.file.path, {
+        folder: `multi-vendor-ecommerce/categories/${name.toLowerCase()}`, // Nested folder structure
+      });
+
+      updatedPhoto = uploadedPhoto.secure_url; // Update photo URL
+
+      // Delete the old photo from Cloudinary
+      if (category.photo) {
+        const publicId = findPublicId(category.photo);
+        const folderPath = findFolderPath(publicId);
+        const result = await cloudDelete(publicId);
+        console.log("Cloudinary Deletion Result:", result);
+
+        if (result && result.result === "ok") {
+          try {
+            const folderDeleteResult = await cloudinary.v2.api.delete_folder(
+              folderPath
+            );
+            console.log(
+              "Cloudinary Folder Deletion Result:",
+              folderDeleteResult
+            );
+          } catch (folderError) {
+            console.warn(
+              `Folder could not be deleted (likely not empty): ${folderPath}`,
+              folderError.message
+            );
+          }
+        } else if (result && result.result === "not found") {
+          console.warn(
+            `Image not found in Cloudinary: ${publicId}. Skipping folder deletion.`
+          );
+        }
+      }
+    } catch (error) {
+      console.error("Error updating category photo:", error);
+
+      // Ensure the uploaded file is cleaned up
+      if (fs.existsSync(req.file.path)) {
+        fs.unlinkSync(req.file.path);
+      }
+
+      return res
+        .status(500)
+        .json({ message: "Failed to update category photo" });
+    }
+  }
+
+  // Update the category fields
+  category.name = name;
+  category.slug = createSlug(name);
+  category.parentCategory = parentCategory || null;
+  category.photo = updatedPhoto;
+
+  // Save the updated category
+  await category.save();
+
+  // Update parent category with the new subcategory (if applicable)
+  if (
+    parentCategory &&
+    parentCategory !== category.parentCategory?.toString()
+  ) {
+    // Remove the category from the previous parent's subcategories
+    if (category.parentCategory) {
+      await Category.findByIdAndUpdate(category.parentCategory, {
+        $pull: { subCategory: category._id },
+      });
+    }
+
+    // Add the category to the new parent's subcategories
+    await Category.findByIdAndUpdate(parentCategory, {
+      $push: { subCategory: category._id },
+    });
+  }
+
+  // Respond with success
+  res.json({
+    message: "Category updated successfully",
+    category,
+  });
 });

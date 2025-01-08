@@ -39,3 +39,11 @@ export interface RegistrationData {
   email: string;
   password: string;
 }
+
+export interface UpdateCategoryData {
+  DataId: string;
+  formData: {
+    name: string;
+    photo?: string;
+  };
+}

@@ -1,35 +1,92 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import MetaData from "../../../components/MetaData.tsx";
 import { FaEdit, FaTrash } from "react-icons/fa";
 import Pagination from "../../../components/Pagination.tsx";
 import { BsImage } from "react-icons/bs";
 import { ImCross } from "react-icons/im";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  getCategoryData,
+  setMessageEmpty,
+} from "../../../features/category/categorySlice.ts";
+import {
+  createCategory,
+  getAllCategories,
+} from "../../../features/category/categoryApiSlice.ts";
+import useFormFields from "../../../hooks/useFormFields.ts";
+import { createToaster } from "../../../utils/tostify.ts";
+import { AppDispatch } from "../../../app/store.ts";
+
+// Define the shape of the input state
 
 export default function Categories() {
   const title = "Categories";
+
+  const { category, error, message, loader } = useSelector(getCategoryData);
+
+  // Define the initial state directly
+  const { input, handleInputChange, resetForm } = useFormFields({
+    name: "", // Default name is an empty string
+  });
+  const [categoryLogo, setCategoryLogo] = useState<File | null>(null);
 
   const [parPage, setParPage] = useState(5);
   const [currentPage, setCurrentPage] = useState(1);
   const [show, setShow] = useState(false);
 
-  const [imagePreview, setImagePreview] = useState<string | null>(null); // State for image preview
-  const [selectedImage, setSelectedImage] = useState<File | null>(null); // State for selected image
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const dispatch = useDispatch<AppDispatch>();
 
-  // change image
+  // Handle image change
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      const fileURL = URL.createObjectURL(file);
-      setImagePreview(fileURL); // Set the preview URL
-      setSelectedImage(file); // Store the selected file
+      setCategoryLogo(file);
+      setImagePreview(URL.createObjectURL(file));
     }
   };
 
-  // remove select image
+  // Remove selected image
   const handleRemoveImage = () => {
-    setImagePreview(null); // Remove the preview
-    setSelectedImage(null); // Clear the selected image
+    setCategoryLogo(null);
+    setImagePreview(null);
   };
+
+  // Handle category creation
+  const handleCategoryCreate = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    const formData = new FormData();
+
+    // Ensure input.name is a string
+    formData.append("name", input.name);
+
+    // Ensure categoryLogo is a valid File or null
+    if (categoryLogo instanceof File) {
+      // Check if categoryLogo is a File
+      formData.append("categoryPhoto", categoryLogo);
+    }
+
+    dispatch(createCategory(formData));
+    resetForm();
+    setImagePreview(null);
+  };
+
+  // message handler
+  useEffect(() => {
+    if (error) {
+      createToaster(error);
+      dispatch(setMessageEmpty());
+    }
+    if (message) {
+      createToaster(message, "success");
+      dispatch(setMessageEmpty());
+    }
+  }, [dispatch, error, message]);
+
+  useEffect(() => {
+    dispatch(getAllCategories());
+  }, [dispatch]);
 
   return (
     <>
@@ -92,191 +149,57 @@ export default function Categories() {
                     </tr>
                   </thead>
                   <tbody className="">
-                    <tr className="border-b border-slate-700">
-                      <td
-                        className="px-4 py-2 whitespace-nowrap font-primaryRegular"
-                        scope="col"
-                      >
-                        1
-                      </td>
-                      <td
-                        className="px-4 py-2 whitespace-nowrap font-primaryRegular"
-                        scope="col"
-                      >
-                        <img
-                          src="/images/product.png"
-                          alt="image"
-                          className="w-[45px] h-[45px] object-cover"
-                        />
-                      </td>
-                      <td
-                        className="px-4 py-2 whitespace-nowrap font-primaryRegular"
-                        scope="col"
-                      >
-                        <span className="">perfume</span>
-                      </td>
-                      <td
-                        className="px-4 py-2 whitespace-nowrap font-primaryRegular"
-                        scope="col"
-                      >
-                        <div className="flex items-center justify-start gap-4">
-                          <button className="px-3 py-2 text-white bg-blue-500 rounded hover:shadow-lg hover:shadow-blue-500/50 ">
-                            <FaEdit />
-                          </button>
-                          <button className="px-3 py-2 text-white bg-red-500 rounded hover:shadow-lg hover:shadow-red-500/50">
-                            <FaTrash />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                    <tr className="border-b border-slate-700">
-                      <td
-                        className="px-4 py-2 whitespace-nowrap font-primaryRegular"
-                        scope="col"
-                      >
-                        2
-                      </td>
-                      <td
-                        className="px-4 py-2 whitespace-nowrap font-primaryRegular"
-                        scope="col"
-                      >
-                        <img
-                          src="/images/product2.avif"
-                          alt="image"
-                          className="w-[45px] h-[45px] object-cover"
-                        />
-                      </td>
-                      <td
-                        className="px-4 py-2 whitespace-nowrap font-primaryRegular"
-                        scope="col"
-                      >
-                        <span className="">makeup</span>
-                      </td>
-                      <td
-                        className="px-4 py-2 whitespace-nowrap font-primaryRegular"
-                        scope="col"
-                      >
-                        <div className="flex items-center justify-start gap-4">
-                          <button className="px-3 py-2 text-white bg-blue-500 rounded hover:shadow-lg hover:shadow-blue-500/50 ">
-                            <FaEdit />
-                          </button>
-                          <button className="px-3 py-2 text-white bg-red-500 rounded hover:shadow-lg hover:shadow-red-500/50">
-                            <FaTrash />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                    <tr className="border-b border-slate-700">
-                      <td
-                        className="px-4 py-2 whitespace-nowrap font-primaryRegular"
-                        scope="col"
-                      >
-                        3
-                      </td>
-                      <td
-                        className="px-4 py-2 whitespace-nowrap font-primaryRegular"
-                        scope="col"
-                      >
-                        <img
-                          src="/images/product3.jpeg"
-                          alt="image"
-                          className="w-[45px] h-[45px] object-cover"
-                        />
-                      </td>
-                      <td
-                        className="px-4 py-2 whitespace-nowrap font-primaryRegular"
-                        scope="col"
-                      >
-                        <span className="">shoes</span>
-                      </td>
-                      <td
-                        className="px-4 py-2 whitespace-nowrap font-primaryRegular"
-                        scope="col"
-                      >
-                        <div className="flex items-center justify-start gap-4">
-                          <button className="px-3 py-2 text-white bg-blue-500 rounded hover:shadow-lg hover:shadow-blue-500/50 ">
-                            <FaEdit />
-                          </button>
-                          <button className="px-3 py-2 text-white bg-red-500 rounded hover:shadow-lg hover:shadow-red-500/50">
-                            <FaTrash />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                    <tr className="border-b border-slate-700">
-                      <td
-                        className="px-4 py-2 whitespace-nowrap font-primaryRegular"
-                        scope="col"
-                      >
-                        4
-                      </td>
-                      <td
-                        className="px-4 py-2 whitespace-nowrap font-primaryRegular"
-                        scope="col"
-                      >
-                        <img
-                          src="/images/product4.webp"
-                          alt="image"
-                          className="w-[45px] h-[45px] object-cover"
-                        />
-                      </td>
-                      <td
-                        className="px-4 py-2 whitespace-nowrap font-primaryRegular"
-                        scope="col"
-                      >
-                        <span className="">headphone</span>
-                      </td>
-                      <td
-                        className="px-4 py-2 whitespace-nowrap font-primaryRegular"
-                        scope="col"
-                      >
-                        <div className="flex items-center justify-start gap-4">
-                          <button className="px-3 py-2 text-white bg-blue-500 rounded hover:shadow-lg hover:shadow-blue-500/50 ">
-                            <FaEdit />
-                          </button>
-                          <button className="px-3 py-2 text-white bg-red-500 rounded hover:shadow-lg hover:shadow-red-500/50">
-                            <FaTrash />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                    <tr className="border-b border-slate-700">
-                      <td
-                        className="px-4 py-2 whitespace-nowrap font-primaryRegular"
-                        scope="col"
-                      >
-                        5
-                      </td>
-                      <td
-                        className="px-4 py-2 whitespace-nowrap font-primaryRegular"
-                        scope="col"
-                      >
-                        <img
-                          src="/images/product5.png"
-                          alt="image"
-                          className="w-[45px] h-[45px] object-cover"
-                        />
-                      </td>
-                      <td
-                        className="px-4 py-2 whitespace-nowrap font-primaryRegular"
-                        scope="col"
-                      >
-                        <span className="">camera</span>
-                      </td>
-                      <td
-                        className="px-4 py-2 whitespace-nowrap font-primaryRegular"
-                        scope="col"
-                      >
-                        <div className="flex items-center justify-start gap-4">
-                          <button className="px-3 py-2 text-white bg-blue-500 rounded hover:shadow-lg hover:shadow-blue-500/50 ">
-                            <FaEdit />
-                          </button>
-                          <button className="px-3 py-2 text-white bg-red-500 rounded hover:shadow-lg hover:shadow-red-500/50">
-                            <FaTrash />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
+                    {category && category.length > 0 ? (
+                      category.map((cat, index) => (
+                        <tr key={index} className="border-b border-slate-700">
+                          <td
+                            className="px-4 py-2 whitespace-nowrap font-primaryRegular"
+                            scope="col"
+                          >
+                            {index + 1}
+                          </td>
+                          <td
+                            className="px-4 py-2 whitespace-nowrap font-primaryRegular"
+                            scope="col"
+                          >
+                            <img
+                              src={
+                                typeof cat.photo === "string" && cat.photo
+                                  ? cat.photo
+                                  : "/images/default-image.png"
+                              }
+                              alt={cat.name || "Category"}
+                              className="w-[45px] h-[45px] object-cover"
+                            />
+                          </td>
+                          <td
+                            className="px-4 py-2 whitespace-nowrap font-primaryRegular"
+                            scope="col"
+                          >
+                            <span>{cat.name}</span>
+                          </td>
+                          <td
+                            className="px-4 py-2 whitespace-nowrap font-primaryRegular"
+                            scope="col"
+                          >
+                            <div className="flex items-center justify-start gap-4">
+                              <button className="px-3 py-2 text-white bg-blue-500 rounded hover:shadow-lg hover:shadow-blue-500/50">
+                                <FaEdit />
+                              </button>
+                              <button className="px-3 py-2 text-white bg-red-500 rounded hover:shadow-lg hover:shadow-red-500/50">
+                                <FaTrash />
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))
+                    ) : (
+                      <tr>
+                        <td colSpan={4} className="px-4 py-2 text-center">
+                          {loader ? "Loading..." : "No categories available"}
+                        </td>
+                      </tr>
+                    )}
                   </tbody>
                 </table>
               </div>
@@ -313,7 +236,7 @@ export default function Categories() {
                   </button>
                 </div>
                 {/* form */}
-                <form>
+                <form onSubmit={handleCategoryCreate}>
                   {/* name */}
                   <div className="flex flex-col w-full gap-2 my-3 mb-3">
                     <label
@@ -326,6 +249,9 @@ export default function Categories() {
                       type="text"
                       className="px-4 py-2 border border-slate-700 focus:border-indigo-500 bg-[#283046] rounded-md outline-none text-[#d0d2d6] font-primaryRegular"
                       placeholder="Type Category Name"
+                      name="name"
+                      value={input.name}
+                      onChange={handleInputChange}
                     />
                   </div>
                   {/* image */}

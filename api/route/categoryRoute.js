@@ -6,6 +6,7 @@ import {
   createCategory,
   deleteCategory,
   getAllCategory,
+  getSingleCategory,
   updateCategory,
 } from "../controller/categoryController.js";
 
@@ -20,16 +21,11 @@ router.use(tokenVerify);
 
 router.route("/").get(getAllCategory).post(categoryMulter, createCategory);
 
-// router
-//   .route("/:id")
-//   .get(getSingleCategory)
-//   .delete(deleteCategory)
-//   .patch(categoryMulter, updateCategory)
-//   .put(categoryMulter, updateCategory);
-
-router.route("/:id").delete(deleteCategory).put(categoryMulter, updateCategory);
-
-// router.route("/status/:id").put(updateCategoryStatus);
+router
+  .route("/:id")
+  .get(getSingleCategory)
+  .delete(deleteCategory)
+  .put(categoryMulter, updateCategory);
 
 // export router
 

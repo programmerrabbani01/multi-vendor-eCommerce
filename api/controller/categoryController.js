@@ -106,6 +106,24 @@ export const createCategory = asyncHandler(async (req, res) => {
 });
 
 /**
+ * @desc get Single Category data
+ * @route GET /category/:id
+ * @access PUBLIC
+ */
+
+export const getSingleCategory = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+
+  const category = await Category.findById(id);
+
+  if (!category) {
+    return res.status(400).json({ message: "No Category found" });
+  }
+
+  res.json(category);
+});
+
+/**
  * @desc delete Category data
  * @route DELETE /category/:id
  * @access PRIVATE

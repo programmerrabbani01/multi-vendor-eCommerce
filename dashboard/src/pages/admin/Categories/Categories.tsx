@@ -33,6 +33,7 @@ export default function Categories() {
   const [parPage, setParPage] = useState(5);
   const [currentPage, setCurrentPage] = useState(1);
   const [show, setShow] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
 
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const dispatch = useDispatch<AppDispatch>();
@@ -71,6 +72,16 @@ export default function Categories() {
     resetForm();
     setImagePreview(null);
   };
+
+  const filteredCategories =
+    category?.filter((cat) =>
+      cat.name.toLowerCase().includes(searchTerm.toLowerCase())
+    ) || [];
+
+  const paginatedCategories = filteredCategories?.slice(
+    (currentPage - 1) * parPage,
+    currentPage * parPage
+  );
 
   // message handler
   useEffect(() => {
@@ -114,7 +125,7 @@ export default function Categories() {
               <div className="flex flex-wrap items-center justify-between gap-2 mb-4 lg:flex-nowrap">
                 {/* select */}
                 <select
-                  onChange={(e) => setParPage(parseInt(e.target.value))}
+                  onChange={(e) => setParPage(parseInt(e.target.value) || 5)}
                   className="px-4 py-2 border border-slate-700 focus:border-indigo-500 bg-[#283046] rounded-md outline-none text-[#d0d2d6] font-primaryRegular "
                 >
                   <option value="">Select Option</option>
@@ -125,6 +136,8 @@ export default function Categories() {
                 {/* search */}
                 <input
                   type="text"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
                   className="px-4 py-2 border border-slate-700 focus:border-indigo-500 bg-[#283046] rounded-md outline-none text-[#d0d2d6] font-primaryRegular"
                   placeholder="search"
                 />
@@ -149,14 +162,14 @@ export default function Categories() {
                     </tr>
                   </thead>
                   <tbody className="">
-                    {category && category.length > 0 ? (
-                      category.map((cat, index) => (
+                    {paginatedCategories && paginatedCategories.length > 0 ? (
+                      paginatedCategories.map((cat, index) => (
                         <tr key={index} className="border-b border-slate-700">
                           <td
                             className="px-4 py-2 whitespace-nowrap font-primaryRegular"
                             scope="col"
                           >
-                            {index + 1}
+                            {index + 1 + (currentPage - 1) * parPage}
                           </td>
                           <td
                             className="px-4 py-2 whitespace-nowrap font-primaryRegular"
@@ -208,7 +221,7 @@ export default function Categories() {
                 <Pagination
                   pageNumber={currentPage}
                   setPageNumber={setCurrentPage}
-                  totalItem={50}
+                  totalItem={filteredCategories.length}
                   parPage={parPage}
                   showItem={3}
                 />

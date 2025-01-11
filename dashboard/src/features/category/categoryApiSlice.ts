@@ -4,31 +4,6 @@ import { UpdateCategoryData } from "../../types.ts";
 
 // get all category
 
-// export const getAllCategories = createAsyncThunk(
-//   "product/getAllCategories",
-//   async () => {
-//     try {
-//       const response = await axios.get(
-//         "http://localhost:5050/api/v1/category",
-//         {
-//           withCredentials: true,
-//         }
-//       );
-
-//       return response.data;
-//     } catch (error: unknown) {
-//       // specify the error type as unknown
-//       if (axios.isAxiosError(error)) {
-//         // check if it's an AxiosError
-//         throw new Error(
-//           error.response?.data?.message || "Something went wrong"
-//         );
-//       }
-//       throw new Error("An unexpected error occurred");
-//     }
-//   }
-// );
-
 export const getAllCategories = createAsyncThunk(
   "category/getAllCategories",
   async (_, { rejectWithValue }) => {
@@ -39,9 +14,15 @@ export const getAllCategories = createAsyncThunk(
           withCredentials: true,
         }
       );
-      return response.data;
+      return response.data; // Return the fetched categories
     } catch (error: unknown) {
       if (axios.isAxiosError(error)) {
+        // Handle 404 specifically
+        if (error.response?.status === 404) {
+          // Return an empty categories array if no categories are found
+          return [];
+        }
+        // Handle other errors
         return rejectWithValue(
           error.response?.data?.message || "Something went wrong"
         );
@@ -92,52 +73,49 @@ export const createCategory = createAsyncThunk<
 
 // delete category
 
-export const deleteCategory = createAsyncThunk(
-  "category/deleteCategory",
-  async (id) => {
-    try {
-      const response = await axios.delete(
-        `http://localhost:5050/api/v1/category/${id}`,
-        {
-          withCredentials: true,
-        }
-      );
-
-      return response.data;
-    } catch (error: unknown) {
-      // specify the error type as unknown
-      if (axios.isAxiosError(error)) {
-        // check if it's an AxiosError
-        throw new Error(
-          error.response?.data?.message || "Something went wrong"
-        );
+export const deleteCategory = createAsyncThunk<
+  { id: string; message: string; success: boolean }, // Add `id` to the resolved type
+  string, // Type for the argument (id)
+  { rejectValue: { message: string } } // Type for rejected value
+>("category/deleteCategory", async (id, { rejectWithValue }) => {
+  try {
+    const response = await axios.delete(
+      `http://localhost:5050/api/v1/category/${id}`,
+      {
+        withCredentials: true,
       }
-      throw new Error("An unexpected error occurred");
+    );
+    return { ...response.data, id }; // Include `id` in the resolved payload
+  } catch (error: unknown) {
+    if (axios.isAxiosError(error)) {
+      return rejectWithValue({
+        message: error.response?.data?.message || "Something went wrong",
+      });
     }
+    return rejectWithValue({ message: "An unexpected error occurred" });
   }
-);
+});
 
 //  category update
 
 export const updateCategory = createAsyncThunk(
   "category/updateCategory",
-  async (data: UpdateCategoryData) => {
+  async (data: UpdateCategoryData, { rejectWithValue }) => {
     try {
       const response = await axios.put(
         `http://localhost:5050/api/v1/category/${data.DataId}`,
         data.formData,
         { withCredentials: true }
       );
+      console.log("API Response:", response.data);
       return response.data;
     } catch (error: unknown) {
-      // specify the error type as unknown
       if (axios.isAxiosError(error)) {
-        // check if it's an AxiosError
-        throw new Error(
+        return rejectWithValue(
           error.response?.data?.message || "Something went wrong"
         );
       }
-      throw new Error("An unexpected error occurred");
+      return rejectWithValue("An unexpected error occurred");
     }
   }
 );

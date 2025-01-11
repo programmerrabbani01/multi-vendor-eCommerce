@@ -39,7 +39,7 @@ export const getAllCategory = asyncHandler(async (req, res) => {
     return res.status(200).json({ categories });
   }
 
-  return res.status(404).json({ message: "No Category found" });
+  return res.status(200).json({ categories: [], message: "No Category found" });
 });
 
 /**
@@ -102,7 +102,7 @@ export const createCategory = asyncHandler(async (req, res) => {
   }
 
   // Respond with success
-  res.status(201).json({ category, message: "Category created successfully" });
+  res.status(201).json({ category, message: "Category successfully created" });
 });
 
 /**
@@ -141,41 +141,50 @@ export const deleteCategory = asyncHandler(async (req, res) => {
 
   try {
     if (category.photo) {
-      // Step 1: Extract Public ID and Folder Path
+      // Extract Public ID and Folder Path
       const publicId = findPublicId(category.photo);
       const folderPath = findFolderPath(publicId);
-      console.log("Extracted Public ID for Deletion:", publicId);
-      console.log("Extracted Folder Path:", folderPath);
 
-      // Step 2: Delete the Image
-      // const result = await cloudinary.v2.uploader.destroy(publicId);
+      // Delete the image
       const result = await cloudDelete(publicId);
-      // console.log("Cloudinary Deletion Result:", result);
 
-      // Step 3: Attempt to Delete the Folder
+      // Check Cloudinary deletion result
       if (result && result.result === "ok") {
         try {
-          const folderDeleteResult = await cloudinary.v2.api.delete_folder(
-            folderPath
-          );
-          console.log("Cloudinary Folder Deletion Result:", folderDeleteResult);
+          // Attempt to delete the folder
+          if (folderPath) {
+            const folderDeleteResult = await cloudinary.v2.api.delete_folder(
+              folderPath
+            );
+            console.log(
+              "Cloudinary Folder Deletion Result:",
+              folderDeleteResult
+            );
+          } else {
+            console.warn("No folder path to delete for Public ID:", publicId);
+          }
         } catch (folderError) {
           console.warn(
-            `Folder could not be deleted (likely not empty): ${folderPath}`,
+            `Error deleting folder (likely not empty): ${folderPath}`,
             folderError.message
           );
         }
+      } else if (result && result.result === "not found") {
+        console.warn("Cloudinary resource not found:", publicId);
       }
     }
   } catch (error) {
-    console.error("Error deleting category image from Cloudinary:", error);
+    console.error(
+      "Error deleting category image or folder from Cloudinary:",
+      error
+    );
     return res.status(500).json({
       message: "Failed to delete category image or folder from Cloudinary",
     });
   }
 
   // Success response
-  res.json({ message: "Category deleted successfully", category });
+  res.json({ message: "Category successfully deleted", category });
 });
 
 /**
@@ -282,7 +291,7 @@ export const updateCategory = asyncHandler(async (req, res) => {
 
   // Respond with success
   res.json({
-    message: "Category updated successfully",
+    message: "Category successfully updated",
     category,
   });
 });

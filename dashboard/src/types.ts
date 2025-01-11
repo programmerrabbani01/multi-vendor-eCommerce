@@ -42,8 +42,5 @@ export interface RegistrationData {
 
 export interface UpdateCategoryData {
   DataId: string;
-  formData: {
-    name: string;
-    photo?: string;
-  };
+  formData: FormData;
 }

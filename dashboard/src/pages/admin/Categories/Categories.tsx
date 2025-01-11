@@ -11,11 +11,14 @@ import {
 } from "../../../features/category/categorySlice.ts";
 import {
   createCategory,
+  deleteCategory,
   getAllCategories,
 } from "../../../features/category/categoryApiSlice.ts";
 import useFormFields from "../../../hooks/useFormFields.ts";
 import { createToaster } from "../../../utils/tostify.ts";
 import { AppDispatch } from "../../../app/store.ts";
+import swal from "sweetalert";
+import { Link } from "react-router-dom";
 
 // Define the shape of the input state
 
@@ -73,11 +76,36 @@ export default function Categories() {
     setImagePreview(null);
   };
 
+  // handle brand delete
+
+  const handleCategoryDelete = (id: string | number) => {
+    if (id) {
+      swal({
+        title: "Are you sure?",
+        text: "You won't be able to revert this!",
+        icon: "warning",
+        buttons: ["Cancel", "Confirm"],
+        dangerMode: true,
+      }).then((willDelete: boolean) => {
+        if (willDelete) {
+          dispatch(deleteCategory(String(id)));
+          // swal  ("Proof! Your Imaginary File Has Been Deleted", {
+          //   icon: "success",
+          // });
+        } else {
+          swal("Your Imaginary File Is Safe!");
+        }
+      });
+    }
+  };
+
+  // category filtering
   const filteredCategories =
     category?.filter((cat) =>
-      cat.name.toLowerCase().includes(searchTerm.toLowerCase())
+      cat?.name?.toLowerCase().includes(searchTerm.toLowerCase())
     ) || [];
 
+  // category pagination
   const paginatedCategories = filteredCategories?.slice(
     (currentPage - 1) * parPage,
     currentPage * parPage
@@ -182,7 +210,7 @@ export default function Categories() {
                                   : "/images/default-image.png"
                               }
                               alt={cat.name || "Category"}
-                              className="w-[45px] h-[45px] object-cover"
+                              className="w-[80px] h-[80px] object-contain"
                             />
                           </td>
                           <td
@@ -196,10 +224,16 @@ export default function Categories() {
                             scope="col"
                           >
                             <div className="flex items-center justify-start gap-4">
-                              <button className="px-3 py-2 text-white bg-blue-500 rounded hover:shadow-lg hover:shadow-blue-500/50">
+                              <Link
+                                to={`/admin/categories/editCategory/${cat._id}`}
+                                className="px-3 py-2 text-white bg-blue-500 rounded hover:shadow-lg hover:shadow-blue-500/50"
+                              >
                                 <FaEdit />
-                              </button>
-                              <button className="px-3 py-2 text-white bg-red-500 rounded hover:shadow-lg hover:shadow-red-500/50">
+                              </Link>
+                              <button
+                                onClick={() => handleCategoryDelete(cat._id)}
+                                className="px-3 py-2 text-white bg-red-500 rounded hover:shadow-lg hover:shadow-red-500/50"
+                              >
                                 <FaTrash />
                               </button>
                             </div>

@@ -17,6 +17,9 @@ const OrderDetails = lazy(
 const Categories = lazy(
   () => import("../pages/admin/Categories/Categories.tsx")
 );
+const EditCategory = lazy(
+  () => import("../pages/admin/Categories/EditCategory.tsx")
+);
 const Sellers = lazy(() => import("../pages/admin/Sellers/Sellers.tsx"));
 const PaymentRequests = lazy(
   () => import("../pages/admin/PaymentRequests/PaymentRequests.tsx")
@@ -142,6 +145,20 @@ const privateRouter = [
                 }
               >
                 <Categories />
+              </Suspense>
+            ),
+          },
+          {
+            path: "/admin/categories/editCategory/:id",
+            element: (
+              <Suspense
+                fallback={
+                  <div className="min-h-[80vh] min-w-screen flex items-center justify-center">
+                    <ClockLoader size={100} color="#2EA3DC" />
+                  </div>
+                }
+              >
+                <EditCategory />
               </Suspense>
             ),
           },

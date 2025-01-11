@@ -24,7 +24,7 @@ interface CategoryState {
 
 // Initial state
 const initialState: CategoryState = {
-  category: null,
+  category: [],
   error: null,
   message: null,
   loader: false,
@@ -88,20 +88,15 @@ const categorySlice = createSlice({
         state.error = action.error.message || "An error occurred.";
         state.loader = false;
       })
-      .addCase(
-        deleteCategory.fulfilled,
-        (
-          state,
-          action: PayloadAction<{ category: Category; message: string }>
-        ) => {
-          state.category =
-            state.category?.filter(
-              (data) => data._id !== action.payload.category._id
-            ) ?? null;
-          state.message = action.payload.message;
-          state.loader = false;
+      .addCase(deleteCategory.fulfilled, (state, action) => {
+        if (state.category) {
+          state.category = state.category.filter(
+            (data) => data._id !== action.payload.id // Use `id` instead of `category._id`
+          );
         }
-      )
+        state.message = action.payload.message;
+        state.loader = false;
+      })
 
       // updateCategory
       .addCase(updateCategory.pending, (state) => {
@@ -111,22 +106,31 @@ const categorySlice = createSlice({
         state.error = action.error.message || "An error occurred.";
         state.loader = false;
       })
-      .addCase(
-        updateCategory.fulfilled,
-        (
-          state,
-          action: PayloadAction<{ category: Category; message: string }>
-        ) => {
-          const index = state.category?.findIndex(
-            (data) => data._id === action.payload.category._id
-          );
-          if (index !== undefined && index !== -1 && state.category) {
-            state.category[index] = action.payload.category;
+
+      .addCase(updateCategory.fulfilled, (state, action) => {
+        if (state.category && Array.isArray(state.category)) {
+          const updatedCategory = action.payload.category; // Ensure this matches the API response
+
+          if (!updatedCategory || !updatedCategory._id) {
+            console.error(
+              "Updated category is missing or malformed:",
+              updatedCategory
+            );
+            return;
           }
-          state.message = action.payload.message;
-          state.loader = false;
+
+          const index = state.category.findIndex(
+            (data) => data._id === updatedCategory._id
+          );
+
+          if (index !== -1) {
+            // Update the category if found
+            state.category[index] = updatedCategory;
+          }
         }
-      );
+        state.message = action.payload.message; // Display success message if needed
+        state.loader = false;
+      });
   },
 });
 

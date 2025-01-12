@@ -1,8 +1,8 @@
 import mongoose from "mongoose";
 
-// create category schema
+// create brand schema
 
-const categorySchema = mongoose.Schema(
+const brandSchema = mongoose.Schema(
   {
     name: {
       type: String,
@@ -21,16 +21,6 @@ const categorySchema = mongoose.Schema(
       default: null,
       trim: true,
     },
-    parentCategory: {
-      type: mongoose.Schema.Types.ObjectId,
-      default: null,
-      ref: "Category",
-    },
-    subCategory: {
-      type: [mongoose.Schema.Types.ObjectId],
-      default: null,
-      ref: "Category",
-    },
     status: {
       type: Boolean,
       default: true,
@@ -47,5 +37,4 @@ const categorySchema = mongoose.Schema(
 
 // export
 
-export default mongoose.models.Category ||
-  mongoose.model("Category", categorySchema);
+export default mongoose.models.Brand || mongoose.model("Brand", brandSchema);

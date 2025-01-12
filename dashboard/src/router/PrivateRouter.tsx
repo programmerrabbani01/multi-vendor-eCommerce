@@ -20,6 +20,8 @@ const Categories = lazy(
 const EditCategory = lazy(
   () => import("../pages/admin/Categories/EditCategory.tsx")
 );
+const Brands = lazy(() => import("../pages/admin/Brand/Brands.tsx"));
+const EditBrand = lazy(() => import("../pages/admin/Brand/EditBrand.tsx"));
 const Sellers = lazy(() => import("../pages/admin/Sellers/Sellers.tsx"));
 const PaymentRequests = lazy(
   () => import("../pages/admin/PaymentRequests/PaymentRequests.tsx")
@@ -159,6 +161,34 @@ const privateRouter = [
                 }
               >
                 <EditCategory />
+              </Suspense>
+            ),
+          },
+          {
+            path: "/admin/brands",
+            element: (
+              <Suspense
+                fallback={
+                  <div className="min-h-[80vh] min-w-screen flex items-center justify-center">
+                    <ClockLoader size={100} color="#2EA3DC" />
+                  </div>
+                }
+              >
+                <Brands />
+              </Suspense>
+            ),
+          },
+          {
+            path: "/admin/brands/editBrand/:id",
+            element: (
+              <Suspense
+                fallback={
+                  <div className="min-h-[80vh] min-w-screen flex items-center justify-center">
+                    <ClockLoader size={100} color="#2EA3DC" />
+                  </div>
+                }
+              >
+                <EditBrand />
               </Suspense>
             ),
           },

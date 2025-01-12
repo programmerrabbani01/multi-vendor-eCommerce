@@ -32,6 +32,10 @@ export interface Category {
   id: number;
   name: string;
 }
+export interface Brand {
+  id: number;
+  name: string;
+}
 
 export interface RegistrationData {
   firstName: string;
@@ -41,6 +45,11 @@ export interface RegistrationData {
 }
 
 export interface UpdateCategoryData {
+  DataId: string;
+  formData: FormData;
+}
+
+export interface UpdateBrandData {
   DataId: string;
   formData: FormData;
 }

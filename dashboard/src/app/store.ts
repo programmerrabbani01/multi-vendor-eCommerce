@@ -2,12 +2,14 @@
 import { configureStore } from "@reduxjs/toolkit";
 import authReducer from "../features/auth/authSlice.ts";
 import categoryReducer from "../features/category/categorySlice.ts";
+import brandReducer from "../features/brand/brandSlice.ts";
 
 // create store
 const store = configureStore({
   reducer: {
     auth: authReducer,
     category: categoryReducer,
+    brand: brandReducer,
   },
   middleware: (getDefaultMiddleware) => getDefaultMiddleware(),
   devTools: true,

@@ -5,33 +5,32 @@ import Pagination from "../../../components/Pagination.tsx";
 import { BsImage } from "react-icons/bs";
 import { ImCross } from "react-icons/im";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  getCategoryData,
-  setMessageEmpty,
-} from "../../../features/category/categorySlice.ts";
-import {
-  createCategory,
-  deleteCategory,
-  getAllCategories,
-} from "../../../features/category/categoryApiSlice.ts";
 import useFormFields from "../../../hooks/useFormFields.ts";
 import { createToaster } from "../../../utils/tostify.ts";
 import { AppDispatch } from "../../../app/store.ts";
 import swal from "sweetalert";
 import { Link } from "react-router-dom";
+import {
+  getBrandData,
+  setMessageEmpty,
+} from "../../../features/brand/brandSlice.ts";
+import {
+  createBrand,
+  deleteBrand,
+  getAllBrands,
+} from "../../../features/brand/brandApiSlice.ts";
+import { ScaleLoader } from "react-spinners";
 
-// Define the shape of the input state
+export default function Brands() {
+  const title = "Brands";
 
-export default function Categories() {
-  const title = "Categories";
-
-  const { category, error, message, loader } = useSelector(getCategoryData);
+  const { brand, error, message, loader } = useSelector(getBrandData);
 
   // Define the initial state directly
   const { input, handleInputChange, resetForm } = useFormFields({
     name: "", // Default name is an empty string
   });
-  const [categoryLogo, setCategoryLogo] = useState<File | null>(null);
+  const [brandLogo, setBrandLogo] = useState<File | null>(null);
 
   const [parPage, setParPage] = useState(5);
   const [currentPage, setCurrentPage] = useState(1);
@@ -45,19 +44,19 @@ export default function Categories() {
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      setCategoryLogo(file);
+      setBrandLogo(file);
       setImagePreview(URL.createObjectURL(file));
     }
   };
 
   // Remove selected image
   const handleRemoveImage = () => {
-    setCategoryLogo(null);
+    setBrandLogo(null);
     setImagePreview(null);
   };
 
-  // Handle category creation
-  const handleCategoryCreate = (e: React.FormEvent<HTMLFormElement>) => {
+  // Handle brand creation
+  const handleBrandCreate = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     const formData = new FormData();
@@ -65,20 +64,20 @@ export default function Categories() {
     // Ensure input.name is a string
     formData.append("name", input.name);
 
-    // Ensure categoryLogo is a valid File or null
-    if (categoryLogo instanceof File) {
-      // Check if categoryLogo is a File
-      formData.append("categoryPhoto", categoryLogo);
+    // Ensure brandLogo is a valid File or null
+    if (brandLogo instanceof File) {
+      // Check if brandLogo is a File
+      formData.append("brandPhoto", brandLogo);
     }
 
-    dispatch(createCategory(formData));
+    dispatch(createBrand(formData));
     resetForm();
     setImagePreview(null);
   };
 
   // handle brand delete
 
-  const handleCategoryDelete = (id: string | number) => {
+  const handleBrandDelete = (id: string | number) => {
     if (id) {
       swal({
         title: "Are you sure?",
@@ -88,7 +87,7 @@ export default function Categories() {
         dangerMode: true,
       }).then((willDelete: boolean) => {
         if (willDelete) {
-          dispatch(deleteCategory(String(id)));
+          dispatch(deleteBrand(String(id)));
           // swal  ("Proof! Your Imaginary File Has Been Deleted", {
           //   icon: "success",
           // });
@@ -99,14 +98,14 @@ export default function Categories() {
     }
   };
 
-  // category filtering
-  const filteredCategories =
-    category?.filter((cat) =>
-      cat?.name?.toLowerCase().includes(searchTerm.toLowerCase())
+  // brand filtering
+  const filteredBrands =
+    brand?.filter((brand) =>
+      brand?.name?.toLowerCase().includes(searchTerm.toLowerCase())
     ) || [];
 
-  // category pagination
-  const paginatedCategories = filteredCategories?.slice(
+  // brand pagination
+  const paginatedBrands = filteredBrands?.slice(
     (currentPage - 1) * parPage,
     currentPage * parPage
   );
@@ -123,10 +122,21 @@ export default function Categories() {
     }
   }, [dispatch, error, message]);
 
-  // get all categories
+  // get all brands
   useEffect(() => {
-    dispatch(getAllCategories());
+    dispatch(getAllBrands());
   }, [dispatch]);
+
+  // style for loader
+
+  const loaderStyle = {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    height: "24px",
+    color: "#fff",
+    message: "0 auto",
+  };
 
   return (
     <>
@@ -137,7 +147,7 @@ export default function Categories() {
       <div className="px-2 pt-5 lg:px-7">
         <div className="flex lg:hidden justify-between items-center mb-5 p-4 bg-[#283046] rounded-md ">
           <h2 className="text-[#d0d2d6] text-base font-primaryMedium ">
-            Categories
+            Brands
           </h2>
           <button
             onClick={() => setShow(true)}
@@ -191,8 +201,8 @@ export default function Categories() {
                     </tr>
                   </thead>
                   <tbody className="">
-                    {paginatedCategories && paginatedCategories.length > 0 ? (
-                      paginatedCategories.map((cat, index) => (
+                    {paginatedBrands && paginatedBrands.length > 0 ? (
+                      paginatedBrands.map((brand, index) => (
                         <tr key={index} className="border-b border-slate-700">
                           <td
                             className="px-4 py-2 whitespace-nowrap font-primaryRegular"
@@ -206,11 +216,11 @@ export default function Categories() {
                           >
                             <img
                               src={
-                                typeof cat.photo === "string" && cat.photo
-                                  ? cat.photo
+                                typeof brand.photo === "string" && brand.photo
+                                  ? brand.photo
                                   : "/images/default-image.png"
                               }
-                              alt={cat.name || "Category"}
+                              alt={brand.name || "brand"}
                               className="w-[80px] h-[80px] object-contain"
                             />
                           </td>
@@ -218,7 +228,7 @@ export default function Categories() {
                             className="px-4 py-2 whitespace-nowrap font-primaryRegular"
                             scope="col"
                           >
-                            <span>{cat.name}</span>
+                            <span>{brand.name}</span>
                           </td>
                           <td
                             className="px-4 py-2 whitespace-nowrap font-primaryRegular"
@@ -226,13 +236,13 @@ export default function Categories() {
                           >
                             <div className="flex items-center justify-start gap-4">
                               <Link
-                                to={`/admin/categories/editCategory/${cat._id}`}
+                                to={`/admin/brands/editBrand/${brand._id}`}
                                 className="px-3 py-2 text-white bg-blue-500 rounded hover:shadow-lg hover:shadow-blue-500/50"
                               >
                                 <FaEdit />
                               </Link>
                               <button
-                                onClick={() => handleCategoryDelete(cat._id)}
+                                onClick={() => handleBrandDelete(brand._id)}
                                 className="px-3 py-2 text-white bg-red-500 rounded hover:shadow-lg hover:shadow-red-500/50"
                               >
                                 <FaTrash />
@@ -244,7 +254,7 @@ export default function Categories() {
                     ) : (
                       <tr>
                         <td colSpan={4} className="px-4 py-2 text-center">
-                          {loader ? "Loading..." : "No categories available"}
+                          {loader ? "Loading..." : "No brand available"}
                         </td>
                       </tr>
                     )}
@@ -256,7 +266,7 @@ export default function Categories() {
                 <Pagination
                   pageNumber={currentPage}
                   setPageNumber={setCurrentPage}
-                  totalItem={filteredCategories.length}
+                  totalItem={filteredBrands.length}
                   parPage={parPage}
                   showItem={3}
                 />
@@ -273,7 +283,7 @@ export default function Categories() {
               <div className="bg-[#283046] lg:rounded-md h-screen lg:h-auto px-3 py-2 text-[#d0d2d6] ">
                 <div className="flex items-center justify-between">
                   <h1 className="w-full mb-4 text-xl lg:text-center font-primaryMedium ">
-                    Add A New Category
+                    Add A New Brand
                   </h1>
 
                   <button
@@ -284,19 +294,19 @@ export default function Categories() {
                   </button>
                 </div>
                 {/* form */}
-                <form onSubmit={handleCategoryCreate}>
+                <form onSubmit={handleBrandCreate}>
                   {/* name */}
                   <div className="flex flex-col w-full gap-2 my-3 mb-3">
                     <label
                       htmlFor="name"
                       className="text-lg font-primaryMedium"
                     >
-                      Category Name
+                      Brand Name
                     </label>
                     <input
                       type="text"
                       className="px-4 py-2 border border-slate-700 focus:border-indigo-500 bg-[#283046] rounded-md outline-none text-[#d0d2d6] font-primaryRegular"
-                      placeholder="Type Category Name"
+                      placeholder="Type Brand Name"
                       name="name"
                       value={input.name}
                       onChange={handleInputChange}
@@ -340,10 +350,19 @@ export default function Categories() {
                   </div>
                   <div className="my-3">
                     <button
+                      disabled={loader ? true : false}
                       type="submit"
                       className="w-full py-2 text-lg bg-blue-500 rounded-md hover:shadow-blue-500/50 hover:shadow-lg font-primaryMedium "
                     >
-                      Add Category
+                      {loader ? (
+                        <ScaleLoader
+                          size={10}
+                          color="#fff"
+                          cssOverride={loaderStyle}
+                        />
+                      ) : (
+                        "Add Brand"
+                      )}
                     </button>
                   </div>
                 </form>

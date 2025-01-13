@@ -1,5 +1,5 @@
 import asyncHandler from "express-async-handler";
-import Category from "../models/category.js";
+import Category from "../models/Category.js";
 import { createSlug } from "../helpers/slug.js";
 import cloudinary from "cloudinary";
 import { cloudDelete, cloudUploads } from "../utils/cloudinary.js";

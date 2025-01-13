@@ -1,5 +1,5 @@
 import asyncHandler from "express-async-handler";
-import Brand from "../models/brand.js";
+import Brand from "../models/Brand.js";
 import { createSlug } from "../helpers/slug.js";
 import cloudinary from "cloudinary";
 import { cloudDelete, cloudUploads } from "../utils/cloudinary.js";

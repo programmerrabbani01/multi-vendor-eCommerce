@@ -29,7 +29,7 @@ export interface PaginationProps {
 }
 
 export interface Category {
-  id: number;
+  id: string | number;
   name: string;
 }
 export interface Brand {

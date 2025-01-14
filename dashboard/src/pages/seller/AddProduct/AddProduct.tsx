@@ -1,50 +1,75 @@
 import { Link } from "react-router-dom";
 import MetaData from "../../../components/MetaData.tsx";
-import { useEffect, useMemo, useRef, useState } from "react";
-import { Category } from "../../../types.ts";
+import { useEffect, useRef, useState } from "react";
 import { BsImage } from "react-icons/bs";
 import { IoCloseSharp } from "react-icons/io5";
+import { useDispatch, useSelector } from "react-redux";
+import { getBrandData } from "../../../features/brand/brandSlice.ts";
+import { getCategoryData } from "../../../features/category/categorySlice.ts";
+import { getProductData } from "../../../features/product/productSlice.ts";
+
+import { Brand, Category } from "../../../types.ts";
+import { AppDispatch, RootState } from "../../../app/store.ts";
+import { getAllBrands } from "../../../features/brand/brandApiSlice.ts";
+import { getAllCategories } from "../../../features/category/categoryApiSlice.ts";
 
 export default function AddProduct() {
   const title = "Add Product";
 
   const [input, setInput] = useState({
-    name: "",
+    title: "",
     category: "",
+    brand: "",
     price: "",
     description: "",
-    brand: "",
     stock: "",
     discount: "",
   });
 
+  const { brand } = useSelector((state: RootState) => getBrandData(state)) || {
+    brand: [],
+  };
+  const { category } = useSelector((state: RootState) =>
+    getCategoryData(state)
+  ) || { category: [] };
+  const { products, error, message, loader } = useSelector(getProductData);
+
   const [cateShow, setCatShow] = useState(false);
-  const [category, setCategory] = useState<string>("");
-  const [allCategory, setAllCategory] = useState<Category[]>([]);
+  const [brandShow, setBrandShow] = useState(false);
   const [searchValue, setSearchValue] = useState<string>("");
   const [images, setImages] = useState<File[]>([]);
   const [imagePreview, setImagePreview] = useState<{ url: string }[]>([]);
+  const [filteredCategories, setFilteredCategories] = useState<Category[]>([]); // Typed state
+  const [filteredBrands, setFilteredBrands] = useState<Brand[]>([]); // Typed state
+  const dispatch = useDispatch<AppDispatch>();
+  const categoryDropdownRef = useRef<HTMLDivElement>(null);
+  const brandDropdownRef = useRef<HTMLDivElement>(null);
+  const [selectedBrand, setSelectedBrand] = useState<string[]>([]);
+  // State for selected category
+  const [selectedCategory, setSelectedCategory] = useState<string[]>([]);
 
-  const dropdownRef = useRef<HTMLDivElement>(null); // Ref for the dropdown container
+  // Update the selection logic for categories
+  const handleCategorySelect = (categoryName: string) => {
+    setSelectedCategory(
+      (prev) =>
+        prev.includes(categoryName)
+          ? prev.filter((c) => c !== categoryName) // Remove if already selected
+          : [...prev, categoryName] // Add to the list
+    );
+  };
 
-  // Memoize the categories array to avoid re-initialization on every render
-  const categories: Category[] = useMemo(
-    () => [
-      { id: 1, name: "Electronics" },
-      { id: 2, name: "Clothing" },
-      { id: 3, name: "Home & Garden" },
-      { id: 4, name: "Sports & Outdoors" },
-      { id: 5, name: "Beauty & Health" },
-      { id: 6, name: "Books & Stationery" },
-      { id: 7, name: "Toys & Hobbies" },
-      { id: 8, name: "Movies & Music" },
-      { id: 9, name: "Business & Finance" },
-      { id: 10, name: "Other" },
-    ],
-    []
-  );
+  // Update the selection logic for brands
+  const handleBrandSelect = (brandName: string) => {
+    setSelectedBrand(
+      (prev) =>
+        prev.includes(brandName)
+          ? prev.filter((b) => b !== brandName) // Remove if already selected
+          : [...prev, brandName] // Add to the list
+    );
+  };
 
-  // handle input change
+  // handle Input Change
+
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
@@ -54,30 +79,86 @@ export default function AddProduct() {
     }));
   };
 
-  // handle search category
-
+  // Handle search category
   const categorySearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     const search = e.target.value.toLowerCase();
     setSearchValue(search);
-    setAllCategory(
-      categories.filter((c) => c.name.toLowerCase().includes(search))
-    );
+
+    // Map categories to ensure they have the right type and fallback id if missing
+    const filteredCategories = (category || [])
+      .map((c) => ({
+        id: c.id || "defaultId", // Ensure id is either string or number
+        name: c.name,
+      }))
+      .filter((c) => c.name.toLowerCase().includes(search));
+
+    // Ensure filteredCategories is typed correctly as Category[].
+    setFilteredCategories(filteredCategories as Category[]); // Type assertion
   };
-  //
+
+  // Handle search brand
+  const brandSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const search = e.target.value.toLowerCase();
+    setSearchValue(search);
+
+    // Map brands to ensure they have the right type and fallback id if missing
+    const filteredBrands = (brand || [])
+      .map((b) => ({
+        id: b.id || "defaultId", // Ensure id is either string or number
+        name: b.name,
+      }))
+      .filter((b) => b.name.toLowerCase().includes(search));
+
+    // Ensure filteredBrands is typed correctly as Brand[].
+    setFilteredBrands(filteredBrands as Brand[]); // Type assertion
+  };
+
   useEffect(() => {
-    setAllCategory(categories);
-  }, [categories]);
+    if (category !== null) {
+      // Assuming category objects don't have id, we can map over them and ensure the proper shape
+      const fixedCategories = category.map((cat) => ({
+        ...cat,
+        id: cat.id || "defaultId", // Add a default id if missing
+      }));
+      setFilteredCategories(fixedCategories as Category[]);
+    } else {
+      setFilteredCategories([]); // Fallback if category is null
+    }
+    if (brand !== null) {
+      // Assuming category objects don't have id, we can map over them and ensure the proper shape
+      const fixedBrands = brand.map((brand) => ({
+        ...brand,
+        id: brand.id || "defaultId", // Add a default id if missing
+      }));
+      setFilteredBrands(fixedBrands as Brand[]);
+    } else {
+      setFilteredBrands([]); // Fallback if category is null
+    }
+  }, [category, brand]);
+
+  // get all category and brand
+  useEffect(() => {
+    dispatch(getAllCategories());
+    dispatch(getAllBrands());
+  }, [dispatch]);
 
   // Close the dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(e.target as Node)
+        categoryDropdownRef.current &&
+        !categoryDropdownRef.current.contains(e.target as Node)
       ) {
         setCatShow(false);
       }
+      if (
+        brandDropdownRef.current &&
+        !brandDropdownRef.current.contains(e.target as Node)
+      ) {
+        setBrandShow(false);
+      }
     };
+
     document.addEventListener("mousedown", handleClickOutside);
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
@@ -87,15 +168,24 @@ export default function AddProduct() {
   // handle image
 
   const handleImage = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files; // `files` is FileList | null
-    if (files && files.length > 0) {
-      const filesArray = Array.from(files); // Convert FileList to an array
-      setImages((prev) => [...prev, ...filesArray]);
+    const files = e.target.files;
+    if (!files) return;
 
-      const imageURLs = filesArray.map((file) => ({
+    const allowedTypes = ["image/jpeg", "image/png", "image/jpg", "image/webp"];
+    const maxSize = 5 * 1024 * 1024; // 5MB
+
+    const validFiles = Array.from(files).filter(
+      (file) => allowedTypes.includes(file.type) && file.size <= maxSize
+    );
+
+    if (validFiles.length > 0) {
+      setImages((prev) => [...prev, ...validFiles]);
+      const imageURLs = validFiles.map((file) => ({
         url: URL.createObjectURL(file),
       }));
       setImagePreview((prev) => [...prev, ...imageURLs]);
+    } else {
+      alert("Only JPG/PNG images under 5MB are allowed.");
     }
   };
 
@@ -139,12 +229,12 @@ export default function AddProduct() {
                     id="name"
                     placeholder="Product Name"
                     onChange={handleInputChange}
-                    value={input.name}
+                    value={input.title}
                     className="px-3 py-2 outline-none border border-slate-700 bg-transparent rounded-md text-[#d0d2d6] focus:border-indigo-500 overflow-hidden font-primaryMedium"
                   />
                 </div>
                 {/* brand */}
-                <div className="flex flex-col w-full gap-1">
+                <div className="relative flex flex-col w-full gap-1">
                   <label htmlFor="brand" className="font-primarySemiBold">
                     Product Brand
                   </label>
@@ -152,11 +242,49 @@ export default function AddProduct() {
                     type="text"
                     name="brand"
                     id="brand"
-                    placeholder="Product brand"
-                    onChange={handleInputChange}
-                    value={input.brand}
+                    placeholder="Search or Select Brand"
+                    onFocus={() => setBrandShow(true)}
+                    value={selectedBrand.join(", ")} // Use the selectedBrand state here
+                    readOnly
                     className="px-3 py-2 outline-none border border-slate-700 bg-transparent rounded-md text-[#d0d2d6] focus:border-indigo-500 overflow-hidden font-primaryMedium"
                   />
+
+                  <div
+                    ref={brandDropdownRef}
+                    className={`absolute top-[101%] bg-slate-800 w-full transition-all duration-300 ${
+                      brandShow ? "scale-100" : "scale-0"
+                    }`}
+                  >
+                    <div className="flex w-full px-4 py-2">
+                      <input
+                        onChange={brandSearch}
+                        type="text"
+                        name="search"
+                        value={searchValue}
+                        placeholder="search"
+                        className="px-3 py-2 outline-none border border-slate-700 bg-transparent rounded-md text-[#d0d2d6] focus:border-indigo-500 overflow-hidden font-primaryMedium"
+                      />
+                    </div>
+                    <div className="pt-4"></div>
+                    <div className="flex flex-col justify-start items-start h-[150px] overflow-y-scroll sidebar">
+                      {Array.isArray(filteredBrands) &&
+                        filteredBrands.map((b, i) => (
+                          <div
+                            key={i}
+                            className={`px-4 py-2 text-sm font-primaryRegular hover:bg-indigo-500 hover:shadow-lg hover:shadow-indigo-500/50 w-full cursor-pointer ${
+                              selectedBrand.includes(b.name) && "bg-indigo-500"
+                            }`}
+                            onClick={() => {
+                              setBrandShow(false);
+                              handleBrandSelect(b.name); // Update selected brand
+                              setSearchValue("");
+                            }}
+                          >
+                            {b.name}
+                          </div>
+                        ))}
+                    </div>
+                  </div>
                 </div>
               </div>
               {/* category & stock */}
@@ -168,19 +296,18 @@ export default function AddProduct() {
                   </label>
                   <input
                     type="text"
-                    name="category"
                     id="category"
                     placeholder="Search or Select Category"
-                    onFocus={() => setCatShow(true)} // Show dropdown on focus
-                    value={category} // Bind selected category
-                    onChange={(e) => setCategory(e.target.value)}
+                    onFocus={() => setCatShow(true)}
+                    readOnly
+                    value={selectedCategory.join(", ")} // Display selected categories
                     className="px-3 py-2 outline-none border border-slate-700 bg-transparent rounded-md text-[#d0d2d6] focus:border-indigo-500 overflow-hidden font-primaryMedium"
                   />
                   <div
-                    ref={dropdownRef}
+                    ref={categoryDropdownRef}
                     className={`absolute top-[101%] bg-slate-800 w-full transition-all duration-300 ${
                       cateShow ? "scale-100" : "scale-0"
-                    } `}
+                    }`}
                   >
                     <div className="flex w-full px-4 py-2">
                       <input
@@ -194,18 +321,18 @@ export default function AddProduct() {
                     </div>
                     <div className="pt-4"></div>
                     <div className="flex flex-col justify-start items-start h-[150px] overflow-y-scroll sidebar">
-                      {Array.isArray(allCategory) &&
-                        allCategory.map((c, i) => (
+                      {Array.isArray(filteredCategories) &&
+                        filteredCategories.map((c, i) => (
                           <div
                             key={i}
                             className={`px-4 py-2 text-sm font-primaryRegular hover:bg-indigo-500 hover:shadow-lg hover:shadow-indigo-500/50 w-full cursor-pointer ${
-                              category === c.name && "bg-indigo-500"
+                              selectedCategory.includes(c.name) &&
+                              "bg-indigo-500"
                             }`}
                             onClick={() => {
                               setCatShow(false);
-                              setCategory(c.name);
+                              handleCategorySelect(c.name);
                               setSearchValue("");
-                              setAllCategory(categories);
                             }}
                           >
                             {c.name}

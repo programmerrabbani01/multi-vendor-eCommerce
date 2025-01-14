@@ -3,6 +3,7 @@ import { configureStore } from "@reduxjs/toolkit";
 import authReducer from "../features/auth/authSlice.ts";
 import categoryReducer from "../features/category/categorySlice.ts";
 import brandReducer from "../features/brand/brandSlice.ts";
+import productReducer from "../features/product/productSlice.ts";
 
 // create store
 const store = configureStore({
@@ -10,6 +11,7 @@ const store = configureStore({
     auth: authReducer,
     category: categoryReducer,
     brand: brandReducer,
+    product: productReducer,
   },
   middleware: (getDefaultMiddleware) => getDefaultMiddleware(),
   devTools: true,

@@ -110,86 +110,97 @@ export const createProduct = asyncHandler(async (req, res) => {
 });
 
 /**
- * @desc get Single Brand data
- * @route GET /brand/:id
+ * @desc get Single product data
+ * @route GET /product/:id
  * @access PUBLIC
  */
 
-// export const getSingleBrand = asyncHandler(async (req, res) => {
-//   const { id } = req.params;
+export const getSingleProduct = asyncHandler(async (req, res) => {
+  const { id } = req.params;
 
-//   const brand = await Brand.findById(id);
+  const product = await Product.findById(id)
+    .populate("brand")
+    .populate("category");
 
-//   if (!brand) {
-//     return res.status(400).json({ message: "No Brand found" });
-//   }
+  if (!product) {
+    return res.status(400).json({ message: "No product found" });
+  }
 
-//   res.json(brand);
-// });
+  res.json(product);
+});
 
 /**
- * @desc delete Brand data
- * @route DELETE /brand/:id
+ * @desc delete Product data
+ * @route DELETE /product/:id
  * @access PRIVATE
  */
 
-// export const deleteBrand = asyncHandler(async (req, res) => {
-//   const { id } = req.params;
+/**
+ * @desc delete Product data
+ * @route DELETE /product/:id
+ * @access PRIVATE
+ */
+/**
+ * @desc delete Product data
+ * @route DELETE /product/:id
+ * @access PRIVATE
+ */
+export const deleteProduct = asyncHandler(async (req, res) => {
+  const { id } = req.params;
 
-//   // Find and delete the brand from the database
-//   const brand = await Brand.findByIdAndDelete(id);
+  // Find the product to delete
+  const product = await Product.findById(id);
 
-//   if (!brand) {
-//     return res.status(400).json({ message: "Brand delete failed" });
-//   }
+  if (!product) {
+    return res.status(404).json({ message: "Product not found" });
+  }
 
-//   try {
-//     if (brand.photo) {
-//       // Extract Public ID and Folder Path
-//       const publicId = findPublicId(brand.photo);
-//       const folderPath = findFolderPath(publicId);
+  try {
+    // Delete product images from Cloudinary
+    if (product.photos && product.photos.length > 0) {
+      for (const photo of product.photos) {
+        try {
+          // Extract public_id from each photo and delete it
+          const result = await cloudDelete(photo.public_id);
 
-//       // Delete the image
-//       const result = await cloudDelete(publicId);
+          // Log result for debugging
+          if (result.result !== "ok") {
+            console.warn(`Failed to delete photo ${photo.public_id}`);
+          }
+        } catch (error) {
+          console.error(
+            `Error deleting photo ${photo.public_id}:`,
+            error.message
+          );
+        }
+      }
 
-//       // Check Cloudinary deletion result
-//       if (result && result.result === "ok") {
-//         try {
-//           // Attempt to delete the folder
-//           if (folderPath) {
-//             const folderDeleteResult = await cloudinary.v2.api.delete_folder(
-//               folderPath
-//             );
-//             console.log(
-//               "Cloudinary Folder Deletion Result:",
-//               folderDeleteResult
-//             );
-//           } else {
-//             console.warn("No folder path to delete for Public ID:", publicId);
-//           }
-//         } catch (folderError) {
-//           console.warn(
-//             `Error deleting folder (likely not empty): ${folderPath}`,
-//             folderError.message
-//           );
-//         }
-//       } else if (result && result.result === "not found") {
-//         console.warn("Cloudinary resource not found:", publicId);
-//       }
-//     }
-//   } catch (error) {
-//     console.error(
-//       "Error deleting brand image or folder from Cloudinary:",
-//       error
-//     );
-//     return res.status(500).json({
-//       message: "Failed to delete brand image or folder from Cloudinary",
-//     });
-//   }
+      // Attempt to delete the folder if applicable
+      if (product.photos.length > 0) {
+        const folderPath = findFolderPath(product.photos[0].public_id);
+        if (folderPath) {
+          try {
+            await cloudinary.v2.api.delete_folder(folderPath);
+            console.log(`Folder ${folderPath} deleted successfully.`);
+          } catch (error) {
+            console.warn(`Error deleting folder ${folderPath}:`, error.message);
+          }
+        }
+      }
+    }
 
-//   // Success response
-//   res.json({ message: "Brand successfully deleted", brand });
-// });
+    // Delete the product from the database
+    await Product.deleteOne({ _id: id });
+
+    // Success response
+    res.json({ message: "Product successfully deleted", product });
+  } catch (error) {
+    console.error("Error during product deletion:", error.message);
+    res
+      .status(500)
+      .json({ message: "An error occurred while deleting the product." });
+  }
+});
 
 /**
  * @desc update Product data
@@ -199,7 +210,16 @@ export const createProduct = asyncHandler(async (req, res) => {
 
 export const updateProduct = asyncHandler(async (req, res) => {
   const { id } = req.params;
-  const { title, desc, price, stock, discount, brand, category } = req.body;
+  const {
+    title,
+    desc,
+    price,
+    stock,
+    discount,
+    brand,
+    category,
+    photosToRemove,
+  } = req.body;
 
   // Validation
   if (!title || !price || !stock) {
@@ -208,7 +228,7 @@ export const updateProduct = asyncHandler(async (req, res) => {
       .json({ message: "Title, price, and stock are required" });
   }
 
-  // Convert price to a number (handle strings with commas)
+  // Convert price to a number
   let parsedPrice;
   try {
     parsedPrice =
@@ -222,16 +242,30 @@ export const updateProduct = asyncHandler(async (req, res) => {
 
   // Find the product to update
   const product = await Product.findById(id);
-
   if (!product) {
     return res.status(404).json({ message: "Product not found" });
   }
 
-  // Handle photo uploads and replacements
+  // Remove specific photos from Cloudinary and the database
   let updatedPhotos = [...product.photos];
+  if (photosToRemove && Array.isArray(photosToRemove)) {
+    for (const publicId of photosToRemove) {
+      try {
+        // Remove photo from Cloudinary
+        await cloudDelete(publicId);
+        // Remove photo from the database array
+        updatedPhotos = updatedPhotos.filter(
+          (photo) => photo.public_id !== publicId
+        );
+      } catch (error) {
+        console.warn(`Error removing photo ${publicId}:`, error.message);
+      }
+    }
+  }
+
+  // Handle new photo uploads
   if (req.files && req.files.length > 0) {
     try {
-      // Upload new photos to Cloudinary
       const uploadedPhotos = [];
       for (const file of req.files) {
         const uploadedFile = await cloudUploads(file.path, {
@@ -244,28 +278,10 @@ export const updateProduct = asyncHandler(async (req, res) => {
           public_id: uploadedFile.public_id,
         });
       }
-
-      // Add new photos to the list
       updatedPhotos = [...updatedPhotos, ...uploadedPhotos];
-
-      // Delete old photos from Cloudinary
-      for (const oldPhoto of product.photos) {
-        try {
-          const result = await cloudDelete(oldPhoto.public_id);
-          console.log("Deleted old photo from Cloudinary:", result);
-        } catch (error) {
-          console.warn(
-            "Error deleting old photo:",
-            oldPhoto.public_id,
-            error.message
-          );
-        }
-      }
     } catch (error) {
-      console.error("Error updating product photos:", error);
-      return res
-        .status(500)
-        .json({ message: "Failed to update product photos" });
+      console.error("Error uploading new photos:", error.message);
+      return res.status(500).json({ message: "Failed to upload new photos" });
     }
   }
 

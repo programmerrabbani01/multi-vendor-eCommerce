@@ -11,6 +11,7 @@ import useFormFields from "../../../hooks/useFormFields.ts";
 import { updateCategory } from "../../../features/category/categoryApiSlice.ts";
 import { ImCross } from "react-icons/im";
 import { createToaster } from "../../../utils/tostify.ts";
+import { RiseLoader } from "react-spinners";
 
 export default function EditCategory() {
   const title = "Edit Category";
@@ -18,7 +19,7 @@ export default function EditCategory() {
   const { id } = useParams<{ id: string }>();
   console.log("Editing Category ID:", id);
 
-  const { category, error, message } = useSelector(getCategoryData);
+  const { category, error, message, loader } = useSelector(getCategoryData);
 
   const { input, handleInputChange, setInput } = useFormFields({
     name: "", // Default name is an empty string
@@ -110,6 +111,16 @@ export default function EditCategory() {
     }
   }, [dispatch, error, message]);
 
+  // style for loader
+
+  const loaderStyle = {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    height: "24px",
+    color: "#fff",
+    message: "0 auto",
+  };
   return (
     <>
       <MetaData title={title} />
@@ -188,9 +199,18 @@ export default function EditCategory() {
               {/* button */}
               <button
                 type="submit"
+                disabled={loader ? true : false}
                 className="py-2 text-lg bg-blue-500 rounded-md px-7 hover:shadow-blue-500/50 hover:shadow-lg font-primaryMedium "
               >
-                Update Category
+                {loader ? (
+                  <RiseLoader
+                    size={10}
+                    color="#fff"
+                    cssOverride={loaderStyle}
+                  />
+                ) : (
+                  "Update Category"
+                )}
               </button>
             </form>
           </div>

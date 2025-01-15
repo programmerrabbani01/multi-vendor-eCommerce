@@ -2,7 +2,7 @@ import { useState } from "react";
 
 // Interface for form state with flexible keys
 interface FormState {
-  [key: string]: string | number | boolean;
+  [key: string]: string | number;
 }
 
 const useFormFields = (initState: FormState) => {

@@ -10,6 +10,8 @@ import roleRoute from "./route/roleRoute.js";
 import categoryRoute from "./route/categoryRoute.js";
 import brandRoute from "./route/brandRoute.js";
 import productRoute from "./route/productRoute.js";
+import colorRoute from "./route/colorRoute.js";
+import sizeRoute from "./route/sizeRoute.js";
 import bodyParser from "body-parser";
 import path from "path";
 import notFound from "./middlewares/notFound.js";
@@ -44,6 +46,8 @@ app.use("/api/v1/role", roleRoute);
 app.use("/api/v1/category", categoryRoute);
 app.use("/api/v1/brand", brandRoute);
 app.use("/api/v1/product", productRoute);
+app.use("/api/v1/color", colorRoute);
+app.use("/api/v1/size", sizeRoute);
 app.use("/api/v1/auth", authRoute);
 
 // error handlers

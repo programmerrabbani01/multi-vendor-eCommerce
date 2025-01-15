@@ -2,84 +2,45 @@ import { useEffect, useState } from "react";
 import MetaData from "../../../components/MetaData.tsx";
 import { FaEdit, FaTrash } from "react-icons/fa";
 import Pagination from "../../../components/Pagination.tsx";
-import { BsImage } from "react-icons/bs";
 import { ImCross } from "react-icons/im";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  getCategoryData,
-  setMessageEmpty,
-} from "../../../features/category/categorySlice.ts";
-import {
-  createCategory,
-  deleteCategory,
-  getAllCategories,
-} from "../../../features/category/categoryApiSlice.ts";
 import useFormFields from "../../../hooks/useFormFields.ts";
 import { createToaster } from "../../../utils/tostify.ts";
 import { AppDispatch } from "../../../app/store.ts";
 import swal from "sweetalert";
 import { Link } from "react-router-dom";
+import {
+  getColorData,
+  setMessageEmpty,
+} from "../../../features/color/colorSlice.ts";
+import {
+  createColor,
+  deleteColor,
+  getAllColors,
+} from "../../../features/color/colorApiSlice.ts";
 import { ScaleLoader } from "react-spinners";
 
-// Define the shape of the input state
+export default function Colors() {
+  const title = "Colors";
 
-export default function Categories() {
-  const title = "Categories";
-
-  const { category, error, message, loader } = useSelector(getCategoryData);
+  const { colors, error, message, loader } = useSelector(getColorData);
 
   // Define the initial state directly
   const { input, handleInputChange, resetForm } = useFormFields({
-    name: "", // Default name is an empty string
+    name: "",
+    colorCode: "",
   });
-  const [categoryLogo, setCategoryLogo] = useState<File | null>(null);
 
   const [parPage, setParPage] = useState(5);
   const [currentPage, setCurrentPage] = useState(1);
   const [show, setShow] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
 
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
   const dispatch = useDispatch<AppDispatch>();
 
-  // Handle image change
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setCategoryLogo(file);
-      setImagePreview(URL.createObjectURL(file));
-    }
-  };
+  // handle color delete
 
-  // Remove selected image
-  const handleRemoveImage = () => {
-    setCategoryLogo(null);
-    setImagePreview(null);
-  };
-
-  // Handle category creation
-  const handleCategoryCreate = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-
-    const formData = new FormData();
-
-    // Ensure input.name is a string
-    formData.append("name", input.name);
-
-    // Ensure categoryLogo is a valid File or null
-    if (categoryLogo instanceof File) {
-      // Check if categoryLogo is a File
-      formData.append("categoryPhoto", categoryLogo);
-    }
-
-    dispatch(createCategory(formData));
-    resetForm();
-    setImagePreview(null);
-  };
-
-  // handle brand delete
-
-  const handleCategoryDelete = (id: string | number) => {
+  const handleColorDelete = (id: string | number) => {
     if (id) {
       swal({
         title: "Are you sure?",
@@ -89,7 +50,7 @@ export default function Categories() {
         dangerMode: true,
       }).then((willDelete: boolean) => {
         if (willDelete) {
-          dispatch(deleteCategory(String(id)));
+          dispatch(deleteColor(String(id)));
           // swal  ("Proof! Your Imaginary File Has Been Deleted", {
           //   icon: "success",
           // });
@@ -100,14 +61,24 @@ export default function Categories() {
     }
   };
 
+  // handle color creation
+  const handleCategoryCreate = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    dispatch(createColor(input as { name: string; colorCode: string }));
+
+    resetForm();
+    setShow(false);
+  };
+
   // category filtering
-  const filteredCategories =
-    category?.filter((cat) =>
-      cat?.name?.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredColors =
+    colors?.filter((color) =>
+      color?.name?.toLowerCase().includes(searchTerm.toLowerCase())
     ) || [];
 
-  // category pagination
-  const paginatedCategories = filteredCategories?.slice(
+  // color pagination
+  const paginatedColors = filteredColors?.slice(
     (currentPage - 1) * parPage,
     currentPage * parPage
   );
@@ -126,7 +97,7 @@ export default function Categories() {
 
   // get all categories
   useEffect(() => {
-    dispatch(getAllCategories());
+    dispatch(getAllColors());
   }, [dispatch]);
 
   // style for loader
@@ -143,13 +114,11 @@ export default function Categories() {
   return (
     <>
       <MetaData title={title} />
-
       {/* start */}
-
       <div className="px-2 pt-5 lg:px-7">
         <div className="flex lg:hidden justify-between items-center mb-5 p-4 bg-[#283046] rounded-md ">
           <h2 className="text-[#d0d2d6] text-base font-primaryMedium ">
-            Categories
+            Colors
           </h2>
           <button
             onClick={() => setShow(true)}
@@ -192,10 +161,10 @@ export default function Categories() {
                         no
                       </th>
                       <th className="px-4 py-3" scope="col">
-                        image
+                        name
                       </th>
                       <th className="px-4 py-3" scope="col">
-                        name
+                        color code
                       </th>
                       <th className="px-4 py-3" scope="col">
                         action
@@ -203,8 +172,8 @@ export default function Categories() {
                     </tr>
                   </thead>
                   <tbody className="">
-                    {paginatedCategories && paginatedCategories.length > 0 ? (
-                      paginatedCategories.map((cat, index) => (
+                    {paginatedColors && paginatedColors.length > 0 ? (
+                      paginatedColors.map((color, index) => (
                         <tr key={index} className="border-b border-slate-700">
                           <td
                             className="px-4 py-2 whitespace-nowrap font-primaryRegular"
@@ -212,39 +181,61 @@ export default function Categories() {
                           >
                             {index + 1 + (currentPage - 1) * parPage}
                           </td>
+
                           <td
                             className="px-4 py-2 whitespace-nowrap font-primaryRegular"
                             scope="col"
                           >
-                            <img
-                              src={
-                                typeof cat.photo === "string" && cat.photo
-                                  ? cat.photo
-                                  : "/images/default-image.png"
-                              }
-                              alt={cat.name || "Category"}
-                              className="w-[80px] h-[80px] object-contain"
-                            />
+                            <span>{color.name}</span>
                           </td>
+
                           <td
                             className="px-4 py-2 whitespace-nowrap font-primaryRegular"
                             scope="col"
                           >
-                            <span>{cat.name}</span>
+                            {color.colorCode ? (
+                              <div
+                                style={{
+                                  display: "flex",
+                                  alignItems: "center",
+                                  gap: "8px",
+                                }}
+                              >
+                                {/* Circle with the color */}
+                                <div
+                                  style={{
+                                    backgroundColor:
+                                      typeof color.colorCode === "string" &&
+                                      /^#[0-9A-F]{6}$/i.test(color.colorCode)
+                                        ? color.colorCode
+                                        : "transparent",
+                                    width: "20px",
+                                    height: "20px",
+                                    borderRadius: "50%",
+                                    border: "1px solid backgroundColor",
+                                  }}
+                                ></div>
+                                {/* Text for color code */}
+                                <span>{color.colorCode}</span>
+                              </div>
+                            ) : (
+                              <span>No Color</span>
+                            )}
                           </td>
+
                           <td
                             className="px-4 py-2 whitespace-nowrap font-primaryRegular"
                             scope="col"
                           >
                             <div className="flex items-center justify-start gap-4">
                               <Link
-                                to={`/admin/categories/editCategory/${cat._id}`}
+                                to={`/admin/colors/editColor/${color._id}`}
                                 className="px-3 py-2 text-white bg-blue-500 rounded hover:shadow-lg hover:shadow-blue-500/50"
                               >
                                 <FaEdit />
                               </Link>
                               <button
-                                onClick={() => handleCategoryDelete(cat._id)}
+                                onClick={() => handleColorDelete(color._id)}
                                 className="px-3 py-2 text-white bg-red-500 rounded hover:shadow-lg hover:shadow-red-500/50"
                               >
                                 <FaTrash />
@@ -268,7 +259,7 @@ export default function Categories() {
                 <Pagination
                   pageNumber={currentPage}
                   setPageNumber={setCurrentPage}
-                  totalItem={filteredCategories.length}
+                  totalItem={filteredColors.length}
                   parPage={parPage}
                   showItem={3}
                 />
@@ -285,7 +276,7 @@ export default function Categories() {
               <div className="bg-[#283046] lg:rounded-md h-screen lg:h-auto px-3 py-2 text-[#d0d2d6] ">
                 <div className="flex items-center justify-between">
                   <h1 className="w-full mb-4 text-xl lg:text-center font-primaryMedium ">
-                    Add A New Category
+                    Add A New Color
                   </h1>
 
                   <button
@@ -303,53 +294,35 @@ export default function Categories() {
                       htmlFor="name"
                       className="text-lg font-primaryMedium"
                     >
-                      Category Name
+                      Color Name
                     </label>
                     <input
                       type="text"
                       className="px-4 py-2 border border-slate-700 focus:border-indigo-500 bg-[#283046] rounded-md outline-none text-[#d0d2d6] font-primaryRegular"
-                      placeholder="Type Category Name"
+                      placeholder="Type Color Name"
                       name="name"
                       value={input.name}
                       onChange={handleInputChange}
                     />
                   </div>
-                  {/* image */}
-                  <div className="my-3">
+                  {/* color */}
+                  <div className="flex flex-col w-full gap-2 my-3 mb-3">
                     <label
-                      htmlFor="image"
-                      className="text-lg font-primaryMedium flex flex-col justify-center items-center w-full h-[238px] border border-dashed border-[#d0d2d6] hover:border-indigo-500 cursor-pointer "
+                      htmlFor="colorCode"
+                      className="text-lg font-primaryMedium"
                     >
-                      {imagePreview ? (
-                        <div className="relative flex items-center justify-center w-full h-full">
-                          <img
-                            src={imagePreview}
-                            alt="Preview"
-                            className="max-h-[200px] object-contain"
-                          />
-                          <button
-                            type="button"
-                            onClick={handleRemoveImage}
-                            className="absolute p-1 text-white bg-red-500 rounded-full top-2 right-2 hover:bg-red-600"
-                          >
-                            <ImCross size={10} />
-                          </button>
-                        </div>
-                      ) : (
-                        <>
-                          <BsImage size={20} />
-                          <span>Select Image</span>
-                        </>
-                      )}
+                      Color Code
                     </label>
                     <input
-                      type="file"
-                      id="image"
-                      accept="image/*"
-                      onChange={handleImageChange}
-                      className="hidden"
+                      type="text"
+                      className="px-4 py-2 border border-slate-700 focus:border-indigo-500 bg-[#283046] rounded-md outline-none text-[#d0d2d6] font-primaryRegular"
+                      placeholder="Type Color Code"
+                      name="colorCode"
+                      value={input.colorCode}
+                      onChange={handleInputChange}
                     />
                   </div>
+
                   <div className="my-3">
                     <button
                       type="submit"
@@ -363,7 +336,7 @@ export default function Categories() {
                           cssOverride={loaderStyle}
                         />
                       ) : (
-                        "Add Category"
+                        "Add Color"
                       )}
                     </button>
                   </div>

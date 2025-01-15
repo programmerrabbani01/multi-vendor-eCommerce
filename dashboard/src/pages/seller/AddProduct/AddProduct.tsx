@@ -6,7 +6,7 @@ import { IoCloseSharp } from "react-icons/io5";
 import { useDispatch, useSelector } from "react-redux";
 import { getBrandData } from "../../../features/brand/brandSlice.ts";
 import { getCategoryData } from "../../../features/category/categorySlice.ts";
-import { getProductData } from "../../../features/product/productSlice.ts";
+// import { getProductData } from "../../../features/product/productSlice.ts";
 
 import { Brand, Category } from "../../../types.ts";
 import { AppDispatch, RootState } from "../../../app/store.ts";
@@ -32,7 +32,7 @@ export default function AddProduct() {
   const { category } = useSelector((state: RootState) =>
     getCategoryData(state)
   ) || { category: [] };
-  const { products, error, message, loader } = useSelector(getProductData);
+  // const { products, error, message, loader } = useSelector(getProductData);
 
   const [cateShow, setCatShow] = useState(false);
   const [brandShow, setBrandShow] = useState(false);

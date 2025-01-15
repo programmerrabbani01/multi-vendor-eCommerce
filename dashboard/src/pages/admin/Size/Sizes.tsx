@@ -9,26 +9,25 @@ import { createToaster } from "../../../utils/tostify.ts";
 import { AppDispatch } from "../../../app/store.ts";
 import swal from "sweetalert";
 import { Link } from "react-router-dom";
-import {
-  getColorData,
-  setMessageEmpty,
-} from "../../../features/color/colorSlice.ts";
-import {
-  createColor,
-  deleteColor,
-  getAllColors,
-} from "../../../features/color/colorApiSlice.ts";
 import { ScaleLoader } from "react-spinners";
+import {
+  getSizeData,
+  setMessageEmpty,
+} from "../../../features/size/sizeSlice.ts";
+import {
+  createSize,
+  deleteSize,
+  getAllSizes,
+} from "../../../features/size/sizeApiSlice.ts";
 
-export default function Colors() {
+export default function Sizes() {
   const title = "Colors";
 
-  const { colors, error, message, loader } = useSelector(getColorData);
+  const { sizes, error, message, loader } = useSelector(getSizeData);
 
   // Define the initial state directly
   const { input, handleInputChange, resetForm } = useFormFields({
     name: "",
-    colorCode: "",
   });
 
   const [parPage, setParPage] = useState(5);
@@ -38,9 +37,9 @@ export default function Colors() {
 
   const dispatch = useDispatch<AppDispatch>();
 
-  // handle color delete
+  // handle size delete
 
-  const handleColorDelete = (id: string | number) => {
+  const handleSizeDelete = (id: string | number) => {
     if (id) {
       swal({
         title: "Are you sure?",
@@ -50,7 +49,7 @@ export default function Colors() {
         dangerMode: true,
       }).then((willDelete: boolean) => {
         if (willDelete) {
-          dispatch(deleteColor(String(id)));
+          dispatch(deleteSize(String(id)));
           // swal  ("Proof! Your Imaginary File Has Been Deleted", {
           //   icon: "success",
           // });
@@ -61,24 +60,24 @@ export default function Colors() {
     }
   };
 
-  // handle color creation
-  const handleColorCreate = (e: React.FormEvent<HTMLFormElement>) => {
+  // handle size creation
+  const handleSizeCreate = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    dispatch(createColor(input as { name: string; colorCode: string }));
+    dispatch(createSize(input as { name: string }));
 
     resetForm();
     setShow(false);
   };
 
-  // category filtering
-  const filteredColors =
-    colors?.filter((color) =>
-      color?.name?.toLowerCase().includes(searchTerm.toLowerCase())
+  // size filtering
+  const filteredSizes =
+    sizes?.filter((size) =>
+      size?.name?.toLowerCase().includes(searchTerm.toLowerCase())
     ) || [];
 
-  // color pagination
-  const paginatedColors = filteredColors?.slice(
+  // size pagination
+  const paginatedSizes = filteredSizes?.slice(
     (currentPage - 1) * parPage,
     currentPage * parPage
   );
@@ -95,9 +94,9 @@ export default function Colors() {
     }
   }, [dispatch, error, message]);
 
-  // get all categories
+  // get all sizes
   useEffect(() => {
-    dispatch(getAllColors());
+    dispatch(getAllSizes());
   }, [dispatch]);
 
   // style for loader
@@ -110,7 +109,6 @@ export default function Colors() {
     color: "#fff",
     message: "0 auto",
   };
-
   return (
     <>
       <MetaData title={title} />
@@ -118,7 +116,7 @@ export default function Colors() {
       <div className="px-2 pt-5 lg:px-7">
         <div className="flex lg:hidden justify-between items-center mb-5 p-4 bg-[#283046] rounded-md ">
           <h2 className="text-[#d0d2d6] text-base font-primaryMedium ">
-            Colors
+            Sizes
           </h2>
           <button
             onClick={() => setShow(true)}
@@ -164,16 +162,13 @@ export default function Colors() {
                         name
                       </th>
                       <th className="px-4 py-3" scope="col">
-                        color code
-                      </th>
-                      <th className="px-4 py-3" scope="col">
                         action
                       </th>
                     </tr>
                   </thead>
                   <tbody className="">
-                    {paginatedColors && paginatedColors.length > 0 ? (
-                      paginatedColors.map((color, index) => (
+                    {paginatedSizes && paginatedSizes.length > 0 ? (
+                      paginatedSizes.map((size, index) => (
                         <tr key={index} className="border-b border-slate-700">
                           <td
                             className="px-4 py-2 whitespace-nowrap font-primaryRegular"
@@ -186,41 +181,7 @@ export default function Colors() {
                             className="px-4 py-2 whitespace-nowrap font-primaryRegular"
                             scope="col"
                           >
-                            <span>{color.name}</span>
-                          </td>
-
-                          <td
-                            className="px-4 py-2 whitespace-nowrap font-primaryRegular"
-                            scope="col"
-                          >
-                            {color.colorCode ? (
-                              <div
-                                style={{
-                                  display: "flex",
-                                  alignItems: "center",
-                                  gap: "8px",
-                                }}
-                              >
-                                {/* Circle with the color */}
-                                <div
-                                  style={{
-                                    backgroundColor:
-                                      typeof color.colorCode === "string" &&
-                                      /^#[0-9A-F]{6}$/i.test(color.colorCode)
-                                        ? color.colorCode
-                                        : "transparent",
-                                    width: "20px",
-                                    height: "20px",
-                                    borderRadius: "50%",
-                                    border: "1px solid backgroundColor",
-                                  }}
-                                ></div>
-                                {/* Text for color code */}
-                                <span>{color.colorCode}</span>
-                              </div>
-                            ) : (
-                              <span>No Color</span>
-                            )}
+                            <span>{size.name}</span>
                           </td>
 
                           <td
@@ -229,13 +190,13 @@ export default function Colors() {
                           >
                             <div className="flex items-center justify-start gap-4">
                               <Link
-                                to={`/admin/colors/editColor/${color._id}`}
+                                to={`/admin/sizes/editSize/${size._id}`}
                                 className="px-3 py-2 text-white bg-blue-500 rounded hover:shadow-lg hover:shadow-blue-500/50"
                               >
                                 <FaEdit />
                               </Link>
                               <button
-                                onClick={() => handleColorDelete(color._id)}
+                                onClick={() => handleSizeDelete(size._id)}
                                 className="px-3 py-2 text-white bg-red-500 rounded hover:shadow-lg hover:shadow-red-500/50"
                               >
                                 <FaTrash />
@@ -259,7 +220,7 @@ export default function Colors() {
                 <Pagination
                   pageNumber={currentPage}
                   setPageNumber={setCurrentPage}
-                  totalItem={filteredColors.length}
+                  totalItem={filteredSizes.length}
                   parPage={parPage}
                   showItem={3}
                 />
@@ -276,7 +237,7 @@ export default function Colors() {
               <div className="bg-[#283046] lg:rounded-md h-screen lg:h-auto px-3 py-2 text-[#d0d2d6] ">
                 <div className="flex items-center justify-between">
                   <h1 className="w-full mb-4 text-xl lg:text-center font-primaryMedium ">
-                    Add A New Color
+                    Add A New Size
                   </h1>
 
                   <button
@@ -287,42 +248,24 @@ export default function Colors() {
                   </button>
                 </div>
                 {/* form */}
-                <form onSubmit={handleColorCreate}>
+                <form onSubmit={handleSizeCreate}>
                   {/* name */}
                   <div className="flex flex-col w-full gap-2 my-3 mb-3">
                     <label
                       htmlFor="name"
                       className="text-lg font-primaryMedium"
                     >
-                      Color Name
+                      Size Name
                     </label>
                     <input
                       type="text"
                       className="px-4 py-2 border border-slate-700 focus:border-indigo-500 bg-[#283046] rounded-md outline-none text-[#d0d2d6] font-primaryRegular"
-                      placeholder="Type Color Name"
+                      placeholder="Type Size Name"
                       name="name"
                       value={input.name}
                       onChange={handleInputChange}
                     />
                   </div>
-                  {/* color */}
-                  <div className="flex flex-col w-full gap-2 my-3 mb-3">
-                    <label
-                      htmlFor="colorCode"
-                      className="text-lg font-primaryMedium"
-                    >
-                      Color Code
-                    </label>
-                    <input
-                      type="text"
-                      className="px-4 py-2 border border-slate-700 focus:border-indigo-500 bg-[#283046] rounded-md outline-none text-[#d0d2d6] font-primaryRegular"
-                      placeholder="Type Color Code"
-                      name="colorCode"
-                      value={input.colorCode}
-                      onChange={handleInputChange}
-                    />
-                  </div>
-
                   <div className="my-3">
                     <button
                       type="submit"
@@ -336,7 +279,7 @@ export default function Colors() {
                           cssOverride={loaderStyle}
                         />
                       ) : (
-                        "Add Color"
+                        "Add Size"
                       )}
                     </button>
                   </div>

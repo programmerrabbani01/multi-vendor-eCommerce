@@ -5,71 +5,67 @@ import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch } from "../../../app/store.ts";
 import useFormFields from "../../../hooks/useFormFields.ts";
 import { createToaster } from "../../../utils/tostify.ts";
-import {
-  getColorData,
-  setMessageEmpty,
-} from "../../../features/color/colorSlice.ts";
-import { updateColor } from "../../../features/color/colorApiSlice.ts";
 import axios from "axios";
 import { RiseLoader } from "react-spinners";
+import {
+  getSizeData,
+  setMessageEmpty,
+} from "../../../features/size/sizeSlice.ts";
+import { updateSize } from "../../../features/size/sizeApiSlice.ts";
 
-interface ColorValues {
-  name: string; // Name of the color
-  colorCode: string; // Color code (e.g., a hex value or similar)
+interface sizeValues {
+  name: string; // Name of the size
 }
 
-export default function EditColor() {
+export default function EditSize() {
   const title = "Edit Color";
 
   const { id } = useParams<{ id: string }>();
 
-  const { colors, error, message, loader } = useSelector(getColorData);
+  const { sizes, error, message, loader } = useSelector(getSizeData);
 
   const { input, handleInputChange, setInput } = useFormFields({
     name: "",
-    colorCode: "",
   });
 
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
 
-  // get previous name and photo
+  // get previous name
   useEffect(() => {
-    if (colors && colors.length > 0) {
-      const colorsToEdit = colors.find((c) => c._id === id);
+    if (sizes && sizes.length > 0) {
+      const sizesToEdit = sizes.find((s) => s._id === id);
 
-      if (colorsToEdit) {
+      if (sizesToEdit) {
         setInput({
-          name: colorsToEdit.name || "",
-          colorCode: (colorsToEdit.colorCode as string | number) || "",
+          name: sizesToEdit.name || "",
         });
       }
     }
-  }, [colors, id, setInput]);
+  }, [sizes, id, setInput]);
 
   // Handle form submission
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (!id) {
-      createToaster("Color ID is missing", "error");
+      createToaster("Size ID is missing", "error");
       return;
     }
 
-    if (!input.name || !input.colorCode) {
+    if (!input.name) {
       createToaster("Please fill out all fields", "error");
       return;
     }
 
-    const colorData: ColorValues = {
+    const colorData: sizeValues = {
       name: String(input.name),
-      colorCode: String(input.colorCode),
     };
 
     try {
-      await dispatch(updateColor({ id, values: colorData })).unwrap();
-      createToaster("Color updated successfully!", "success");
-      navigate("/admin/colors"); // Redirect to the colors list
+      await dispatch(updateSize({ id, values: colorData })).unwrap();
+      createToaster("Size updated successfully!", "success");
+      navigate("/admin/sizes"); // Redirect to the sizes list
     } catch (error: unknown) {
       if (axios.isAxiosError(error)) {
         createToaster(
@@ -104,7 +100,6 @@ export default function EditColor() {
     color: "#fff",
     message: "0 auto",
   };
-
   return (
     <>
       <MetaData title={title} />
@@ -113,44 +108,30 @@ export default function EditColor() {
         <div className="w-full pt-4 pl-4 pr-4 pb-6 bg-[#283046] text-[#d0d2d6] rounded-md ">
           {/* top */}
           <div className="flex items-center justify-between pb-4">
-            <h1 className="text-2xl font-primarySemiBold">Edit Color</h1>
+            <h1 className="text-2xl font-primarySemiBold">Edit Size</h1>
             <Link
-              to="/admin/colors"
+              to="/admin/sizes"
               className="py-2 my-2 text-lg bg-indigo-500 rounded-md px-7 hover:shadow-indigo-500/50 hover:shadow-lg font-primaryMedium"
             >
-              Colors
+              Sizes
             </Link>
           </div>
           {/* form */}
           <div className="">
             <form onSubmit={handleSubmit}>
-              {/* category Name */}
+              {/* Size Name */}
               <div className="flex flex-col w-full gap-4 mb-3 md:flex-row">
                 <div className="flex flex-col w-full gap-1">
                   <label htmlFor="name" className="font-primarySemiBold">
-                    Color Name
+                    Size Name
                   </label>
                   <input
                     type="text"
                     name="name"
                     id="name"
-                    placeholder="Color Name"
+                    placeholder="Size Name"
                     onChange={handleInputChange}
                     value={input.name}
-                    className="px-3 py-2 outline-none border border-slate-700 bg-transparent rounded-md text-[#d0d2d6] focus:border-indigo-500 overflow-hidden font-primaryMedium"
-                  />
-                </div>
-                <div className="flex flex-col w-full gap-1">
-                  <label htmlFor="colorCode" className="font-primarySemiBold">
-                    Color Code
-                  </label>
-                  <input
-                    type="text"
-                    name="colorCode"
-                    id="colorCode"
-                    placeholder="Color Code"
-                    onChange={handleInputChange}
-                    value={input.colorCode}
                     className="px-3 py-2 outline-none border border-slate-700 bg-transparent rounded-md text-[#d0d2d6] focus:border-indigo-500 overflow-hidden font-primaryMedium"
                   />
                 </div>
@@ -169,7 +150,7 @@ export default function EditColor() {
                     cssOverride={loaderStyle}
                   />
                 ) : (
-                  "Update Color"
+                  "Update Size"
                 )}
               </button>
             </form>

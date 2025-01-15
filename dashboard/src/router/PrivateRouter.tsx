@@ -24,6 +24,8 @@ const Brands = lazy(() => import("../pages/admin/Brand/Brands.tsx"));
 const EditBrand = lazy(() => import("../pages/admin/Brand/EditBrand.tsx"));
 const Colors = lazy(() => import("../pages/admin/Colors/Colors.tsx"));
 const EditColor = lazy(() => import("../pages/admin/Colors/EditColor.tsx"));
+const Sizes = lazy(() => import("../pages/admin/Size/Sizes.tsx"));
+const EditSize = lazy(() => import("../pages/admin/Size/EditSize.tsx"));
 const Sellers = lazy(() => import("../pages/admin/Sellers/Sellers.tsx"));
 const PaymentRequests = lazy(
   () => import("../pages/admin/PaymentRequests/PaymentRequests.tsx")
@@ -194,20 +196,34 @@ const privateRouter = [
               </Suspense>
             ),
           },
-          // {
-          //   path: "/admin/sizes",
-          //   element: (
-          //     <Suspense
-          //       fallback={
-          //         <div className="min-h-[80vh] min-w-screen flex items-center justify-center">
-          //           <ClockLoader size={100} color="#2EA3DC" />
-          //         </div>
-          //       }
-          //     >
-          //       <Sizes />
-          //     </Suspense>
-          //   ),
-          // },
+          {
+            path: "/admin/sizes",
+            element: (
+              <Suspense
+                fallback={
+                  <div className="min-h-[80vh] min-w-screen flex items-center justify-center">
+                    <ClockLoader size={100} color="#2EA3DC" />
+                  </div>
+                }
+              >
+                <Sizes />
+              </Suspense>
+            ),
+          },
+          {
+            path: "/admin/sizes/editSize/:id",
+            element: (
+              <Suspense
+                fallback={
+                  <div className="min-h-[80vh] min-w-screen flex items-center justify-center">
+                    <ClockLoader size={100} color="#2EA3DC" />
+                  </div>
+                }
+              >
+                <EditSize />
+              </Suspense>
+            ),
+          },
           {
             path: "/admin/brands",
             element: (

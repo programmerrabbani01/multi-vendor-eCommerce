@@ -3,7 +3,7 @@ import { RootState } from "../../app/store";
 import {
   createSize,
   deleteSize,
-  getAllSize,
+  getAllSizes,
   updateSize,
 } from "./sizeApiSlice.ts";
 
@@ -43,15 +43,15 @@ const sizeSlice = createSlice({
   extraReducers: (builder) => {
     builder
       // getAllSizes
-      .addCase(getAllSize.pending, (state) => {
+      .addCase(getAllSizes.pending, (state) => {
         state.loader = true;
       })
-      .addCase(getAllSize.rejected, (state, action) => {
+      .addCase(getAllSizes.rejected, (state, action) => {
         state.error = action.error.message || "An error occurred.";
         state.loader = false;
       })
       .addCase(
-        getAllSize.fulfilled,
+        getAllSizes.fulfilled,
         (state, action: PayloadAction<{ sizes: Size[] }>) => {
           state.sizes = action.payload.sizes;
           state.loader = false;
@@ -68,10 +68,10 @@ const sizeSlice = createSlice({
       })
       .addCase(
         createSize.fulfilled,
-        (state, action: PayloadAction<{ sizes: Size; message: string }>) => {
+        (state, action: PayloadAction<{ size: Size; message: string }>) => {
           state.sizes = state.sizes ?? [];
           // Push the new sizes into the array
-          state.sizes.push(action.payload.sizes);
+          state.sizes.push(action.payload.size);
           state.message = action.payload.message;
           state.loader = false;
         }
@@ -88,7 +88,7 @@ const sizeSlice = createSlice({
       .addCase(deleteSize.fulfilled, (state, action) => {
         if (state.sizes) {
           state.sizes = state.sizes.filter(
-            (data) => data._id !== action.payload.id // Use `id` instead of `category._id`
+            (data) => data._id !== action.payload.id // Use `id` instead of `size._id`
           );
         }
         state.message = action.payload.message;
@@ -110,7 +110,7 @@ const sizeSlice = createSlice({
 
           if (!updatedSize || !updatedSize._id) {
             console.error(
-              "Updated sizes is missing or malformed:",
+              "Updated colors is missing or malformed:",
               updatedSize
             );
             return;

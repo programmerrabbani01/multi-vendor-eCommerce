@@ -85,18 +85,6 @@ const colorSlice = createSlice({
         state.error = action.error.message || "An error occurred.";
         state.loader = false;
       })
-      // .addCase(
-      //   deleteColor.fulfilled,
-      //   (state, action: PayloadAction<{ id: string; message: string }>) => {
-      //     if (state.colors) {
-      //       state.colors = state.colors.filter(
-      //         (data) => data._id !== action.payload.id
-      //       );
-      //     }
-      //     state.message = action.payload.message;
-      //     state.loader = false;
-      //   }
-      // )
       .addCase(deleteColor.fulfilled, (state, action) => {
         if (state.colors) {
           state.colors = state.colors.filter(

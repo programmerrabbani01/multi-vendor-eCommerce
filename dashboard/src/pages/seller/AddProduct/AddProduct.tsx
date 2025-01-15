@@ -8,10 +8,14 @@ import { getBrandData } from "../../../features/brand/brandSlice.ts";
 import { getCategoryData } from "../../../features/category/categorySlice.ts";
 // import { getProductData } from "../../../features/product/productSlice.ts";
 
-import { Brand, Category } from "../../../types.ts";
+import { Brand, Category, Color, Size } from "../../../types.ts";
 import { AppDispatch, RootState } from "../../../app/store.ts";
 import { getAllBrands } from "../../../features/brand/brandApiSlice.ts";
 import { getAllCategories } from "../../../features/category/categoryApiSlice.ts";
+import { getSizeData } from "../../../features/size/sizeSlice.ts";
+import { getColorData } from "../../../features/color/colorSlice.ts";
+import { getAllColors } from "../../../features/color/colorApiSlice.ts";
+import { getAllSizes } from "../../../features/size/sizeApiSlice.ts";
 
 export default function AddProduct() {
   const title = "Add Product";
@@ -24,6 +28,8 @@ export default function AddProduct() {
     description: "",
     stock: "",
     discount: "",
+    color: "",
+    size: "",
   });
 
   const { brand } = useSelector((state: RootState) => getBrandData(state)) || {
@@ -32,21 +38,35 @@ export default function AddProduct() {
   const { category } = useSelector((state: RootState) =>
     getCategoryData(state)
   ) || { category: [] };
+  const { sizes } = useSelector((state: RootState) => getSizeData(state)) || {
+    sizes: [],
+  };
+  const { colors } = useSelector((state: RootState) => getColorData(state)) || {
+    colors: [],
+  };
+
   // const { products, error, message, loader } = useSelector(getProductData);
 
   const [cateShow, setCatShow] = useState(false);
   const [brandShow, setBrandShow] = useState(false);
+  const [colorShow, setColorShow] = useState(false);
+  const [sizeShow, setSizeShow] = useState(false);
   const [searchValue, setSearchValue] = useState<string>("");
   const [images, setImages] = useState<File[]>([]);
   const [imagePreview, setImagePreview] = useState<{ url: string }[]>([]);
   const [filteredCategories, setFilteredCategories] = useState<Category[]>([]); // Typed state
+  const [filteredColors, setFilteredColors] = useState<Color[]>([]); // Typed state
+  const [filteredSizes, setFilteredSizes] = useState<Size[]>([]); // Typed state
   const [filteredBrands, setFilteredBrands] = useState<Brand[]>([]); // Typed state
   const dispatch = useDispatch<AppDispatch>();
   const categoryDropdownRef = useRef<HTMLDivElement>(null);
+  const colorDropdownRef = useRef<HTMLDivElement>(null);
+  const sizeDropdownRef = useRef<HTMLDivElement>(null);
   const brandDropdownRef = useRef<HTMLDivElement>(null);
   const [selectedBrand, setSelectedBrand] = useState<string[]>([]);
-  // State for selected category
   const [selectedCategory, setSelectedCategory] = useState<string[]>([]);
+  const [selectedColor, setSelectedColor] = useState<string[]>([]);
+  const [selectedSize, setSelectedSize] = useState<string[]>([]);
 
   // Update the selection logic for categories
   const handleCategorySelect = (categoryName: string) => {
@@ -56,6 +76,10 @@ export default function AddProduct() {
           ? prev.filter((c) => c !== categoryName) // Remove if already selected
           : [...prev, categoryName] // Add to the list
     );
+
+    // Reset search value and filtered categories
+    setSearchValue("");
+    setFilteredCategories(category); // Reset to all categories
   };
 
   // Update the selection logic for brands
@@ -66,6 +90,36 @@ export default function AddProduct() {
           ? prev.filter((b) => b !== brandName) // Remove if already selected
           : [...prev, brandName] // Add to the list
     );
+
+    // Reset search value and filtered brands
+    setSearchValue("");
+    setFilteredBrands(brand); // Reset to all brands
+  };
+  // Update the selection logic for colors
+  const handleColorSelect = (colorName: string) => {
+    setSelectedColor(
+      (prev) =>
+        prev.includes(colorName)
+          ? prev.filter((c) => c !== colorName) // Remove if already selected
+          : [...prev, colorName] // Add to the list
+    );
+
+    // Reset search value and filtered colors
+    setSearchValue("");
+    setFilteredColors(colors);
+  };
+  // Update the selection logic for sizes
+  const handleSizeSelect = (sizeName: string) => {
+    setSelectedSize(
+      (prev) =>
+        prev.includes(sizeName)
+          ? prev.filter((s) => s !== sizeName) // Remove if already selected
+          : [...prev, sizeName] // Add to the list
+    );
+
+    // Reset search value and filtered sizes
+    setSearchValue("");
+    setFilteredSizes(sizes); // Reset to all sizes
   };
 
   // handle Input Change
@@ -84,16 +138,14 @@ export default function AddProduct() {
     const search = e.target.value.toLowerCase();
     setSearchValue(search);
 
-    // Map categories to ensure they have the right type and fallback id if missing
     const filteredCategories = (category || [])
       .map((c) => ({
-        id: c.id || "defaultId", // Ensure id is either string or number
+        id: c.id || "defaultId",
         name: c.name,
       }))
       .filter((c) => c.name.toLowerCase().includes(search));
 
-    // Ensure filteredCategories is typed correctly as Category[].
-    setFilteredCategories(filteredCategories as Category[]); // Type assertion
+    setFilteredCategories(filteredCategories as Category[]);
   };
 
   // Handle search brand
@@ -101,45 +153,78 @@ export default function AddProduct() {
     const search = e.target.value.toLowerCase();
     setSearchValue(search);
 
-    // Map brands to ensure they have the right type and fallback id if missing
     const filteredBrands = (brand || [])
       .map((b) => ({
-        id: b.id || "defaultId", // Ensure id is either string or number
+        id: b.id || "defaultId",
         name: b.name,
       }))
       .filter((b) => b.name.toLowerCase().includes(search));
 
-    // Ensure filteredBrands is typed correctly as Brand[].
-    setFilteredBrands(filteredBrands as Brand[]); // Type assertion
+    setFilteredBrands(filteredBrands as Brand[]);
+  };
+
+  // Handle search color
+  const colorSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const search = e.target.value.toLowerCase();
+    setSearchValue(search);
+
+    // Filter the colors based on the search input
+    const filteredColors = (colors || [])
+      .map((c) => ({
+        id: c.id || "defaultId",
+        name: c.name,
+        colorCode: c.colorCode,
+      }))
+      .filter((c) => c.name.toLowerCase().includes(search));
+
+    setFilteredColors(filteredColors as Color[]);
+  };
+  // Handle search size
+  const sizeSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const search = e.target.value.toLowerCase();
+    setSearchValue(search);
+
+    const filteredSizes = (sizes || [])
+      .map((s) => ({
+        id: s.id || "defaultId",
+        name: s.name,
+      }))
+      .filter((s) => s.name.toLowerCase().includes(search));
+
+    setFilteredSizes(filteredSizes as Size[]);
   };
 
   useEffect(() => {
-    if (category !== null) {
-      // Assuming category objects don't have id, we can map over them and ensure the proper shape
-      const fixedCategories = category.map((cat) => ({
-        ...cat,
-        id: cat.id || "defaultId", // Add a default id if missing
-      }));
-      setFilteredCategories(fixedCategories as Category[]);
-    } else {
-      setFilteredCategories([]); // Fallback if category is null
+    if (cateShow) {
+      setFilteredCategories(category); // Reset to all categories when dropdown is opened
     }
-    if (brand !== null) {
-      // Assuming category objects don't have id, we can map over them and ensure the proper shape
-      const fixedBrands = brand.map((brand) => ({
-        ...brand,
-        id: brand.id || "defaultId", // Add a default id if missing
-      }));
-      setFilteredBrands(fixedBrands as Brand[]);
-    } else {
-      setFilteredBrands([]); // Fallback if category is null
+    if (brandShow) {
+      setFilteredBrands(brand); // Reset to all brands when dropdown is opened
     }
-  }, [category, brand]);
+    if (colorShow) {
+      setFilteredColors(colors);
+    }
+
+    if (sizeShow) {
+      setFilteredSizes(sizes); // Reset to all sizes when dropdown is opened
+    }
+  }, [
+    category,
+    brand,
+    colors,
+    sizes,
+    colorShow,
+    sizeShow,
+    cateShow,
+    brandShow,
+  ]);
 
   // get all category and brand
   useEffect(() => {
     dispatch(getAllCategories());
     dispatch(getAllBrands());
+    dispatch(getAllColors());
+    dispatch(getAllSizes());
   }, [dispatch]);
 
   // Close the dropdown when clicking outside
@@ -156,6 +241,18 @@ export default function AddProduct() {
         !brandDropdownRef.current.contains(e.target as Node)
       ) {
         setBrandShow(false);
+      }
+      if (
+        colorDropdownRef.current &&
+        !colorDropdownRef.current.contains(e.target as Node)
+      ) {
+        setCatShow(false);
+      }
+      if (
+        sizeDropdownRef.current &&
+        !sizeDropdownRef.current.contains(e.target as Node)
+      ) {
+        setCatShow(false);
       }
     };
 
@@ -251,7 +348,7 @@ export default function AddProduct() {
 
                   <div
                     ref={brandDropdownRef}
-                    className={`absolute top-[101%] bg-slate-800 w-full transition-all duration-300 ${
+                    className={`absolute top-[101%] bg-slate-800 w-full transition-all duration-300 z-10 ${
                       brandShow ? "scale-100" : "scale-0"
                     }`}
                   >
@@ -305,7 +402,7 @@ export default function AddProduct() {
                   />
                   <div
                     ref={categoryDropdownRef}
-                    className={`absolute top-[101%] bg-slate-800 w-full transition-all duration-300 ${
+                    className={`absolute top-[101%] bg-slate-800 w-full transition-all duration-300 z-10 ${
                       cateShow ? "scale-100" : "scale-0"
                     }`}
                   >
@@ -391,6 +488,120 @@ export default function AddProduct() {
                     value={input.discount}
                     className="px-3 py-2 outline-none border border-slate-700 bg-transparent rounded-md text-[#d0d2d6] focus:border-indigo-500 overflow-hidden font-primaryMedium"
                   />
+                </div>
+              </div>
+              {/* size and color */}
+              <div className="flex flex-col w-full gap-4 mb-3 md:flex-row">
+                {/* color */}
+                <div className="relative flex flex-col w-full gap-1">
+                  <label htmlFor="color" className="font-primarySemiBold">
+                    Product Colors
+                  </label>
+                  <input
+                    type="text"
+                    id="color"
+                    placeholder="Search or Select Colors"
+                    onClick={() => setColorShow((prev) => !prev)}
+                    readOnly
+                    value={selectedColor.join(", ")} // Display selected colors
+                    className="px-3 py-2 outline-none border border-slate-700 bg-transparent rounded-md text-[#d0d2d6] focus:border-indigo-500 overflow-hidden font-primaryMedium"
+                  />
+                  <div
+                    ref={colorDropdownRef}
+                    className={`absolute top-[101%] bg-slate-800 w-full transition-all duration-300 ${
+                      colorShow ? "scale-100" : "scale-0"
+                    }`}
+                  >
+                    <div className="flex w-full px-4 py-2">
+                      <input
+                        onChange={colorSearch}
+                        type="text"
+                        name="search"
+                        value={searchValue}
+                        placeholder="search"
+                        className="px-3 py-2 outline-none border border-slate-700 bg-transparent rounded-md text-[#d0d2d6] focus:border-indigo-500 overflow-hidden font-primaryMedium"
+                      />
+                    </div>
+                    <div className="pt-4"></div>
+                    <div className="flex flex-col justify-start items-start h-[150px] overflow-y-scroll sidebar">
+                      {Array.isArray(filteredColors) &&
+                        filteredColors.map((color, i) => (
+                          <div
+                            key={i}
+                            className={`flex items-center gap-2 px-4 py-2 text-sm font-primaryRegular hover:bg-indigo-500 hover:shadow-lg hover:shadow-indigo-500/50 w-full cursor-pointer ${
+                              selectedColor.includes(color.name) &&
+                              "bg-indigo-500"
+                            }`}
+                            onClick={() => {
+                              setColorShow(false);
+                              handleColorSelect(color.name);
+                              setSearchValue("");
+                            }}
+                          >
+                            <div
+                              className="w-4 h-4 rounded-full"
+                              style={{
+                                backgroundColor: color.colorCode,
+                              }}
+                            ></div>
+                            {color.name}
+                          </div>
+                        ))}
+                    </div>
+                  </div>
+                </div>
+
+                {/* size */}
+                <div className="relative flex flex-col w-full gap-1">
+                  <label htmlFor="size" className="font-primarySemiBold">
+                    Product Sizes
+                  </label>
+                  <input
+                    type="text"
+                    id="size"
+                    placeholder="Search or Select Category"
+                    onClick={() => setSizeShow((prev) => !prev)}
+                    readOnly
+                    value={selectedSize.join(", ")} // Display selected categories
+                    className="px-3 py-2 outline-none border border-slate-700 bg-transparent rounded-md text-[#d0d2d6] focus:border-indigo-500 overflow-hidden font-primaryMedium"
+                  />
+                  <div
+                    ref={sizeDropdownRef}
+                    className={`absolute top-[101%] bg-slate-800 w-full transition-all duration-300 ${
+                      sizeShow ? "scale-100" : "scale-0"
+                    }`}
+                  >
+                    <div className="flex w-full px-4 py-2">
+                      <input
+                        onChange={sizeSearch}
+                        type="text"
+                        name="search"
+                        value={searchValue}
+                        placeholder="search"
+                        className="px-3 py-2 outline-none border border-slate-700 bg-transparent rounded-md text-[#d0d2d6] focus:border-indigo-500 overflow-hidden font-primaryMedium"
+                      />
+                    </div>
+                    <div className="pt-4"></div>
+                    <div className="flex flex-col justify-start items-start h-[150px] overflow-y-scroll sidebar">
+                      {Array.isArray(filteredSizes) &&
+                        filteredSizes.map((size, i) => (
+                          <div
+                            key={i}
+                            className={`px-4 py-2 text-sm font-primaryRegular hover:bg-indigo-500 hover:shadow-lg hover:shadow-indigo-500/50 w-full cursor-pointer ${
+                              selectedSize.includes(size.name) &&
+                              "bg-indigo-500"
+                            }`}
+                            onClick={() => {
+                              setSizeShow(false);
+                              handleSizeSelect(size.name);
+                              setSearchValue("");
+                            }}
+                          >
+                            {size.name}
+                          </div>
+                        ))}
+                    </div>
+                  </div>
                 </div>
               </div>
               {/* description */}

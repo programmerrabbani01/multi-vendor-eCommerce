@@ -37,6 +37,16 @@ export interface Brand {
   name: string;
 }
 
+export interface Color {
+  id: string | number;
+  name: string;
+  colorCode: string;
+}
+export interface Size {
+  id: number;
+  name: string;
+}
+
 export interface RegistrationData {
   firstName: string;
   lastName: string;

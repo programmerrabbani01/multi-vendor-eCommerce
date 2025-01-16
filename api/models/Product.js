@@ -38,16 +38,26 @@ const productSchema = mongoose.Schema(
       max: [100, "Discount cannot exceed 100%."],
       default: 0,
     },
-    category: {
-      type: [mongoose.Schema.Types.ObjectId],
-      ref: "Category",
-      required: [true, "At least one category is required."],
-    },
-    brand: {
-      type: [mongoose.Schema.Types.ObjectId],
-      ref: "Brand",
-      required: [true, "At least one brand is required."],
-    },
+    // brand: {
+    //   type: [mongoose.Schema.Types.ObjectId],
+    //   ref: "Brand",
+    // },
+    // category: {
+    //   type: [mongoose.Schema.Types.ObjectId],
+    //   ref: "Category",
+    // },
+    // sizes: {
+    //   type: [mongoose.Schema.Types.ObjectId],
+    //   ref: "Size",
+    // },
+    // colors: {
+    //   type: [mongoose.Schema.Types.ObjectId],
+    //   ref: "Color",
+    // },
+    brand: [{ type: mongoose.Schema.Types.ObjectId, ref: "Brand" }],
+    category: [{ type: mongoose.Schema.Types.ObjectId, ref: "Category" }],
+    colors: [{ type: mongoose.Schema.Types.ObjectId, ref: "Color" }],
+    sizes: [{ type: mongoose.Schema.Types.ObjectId, ref: "Size" }],
     photos: [{ public_id: String, url: String }],
     status: {
       type: Boolean,

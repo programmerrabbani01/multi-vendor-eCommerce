@@ -10,6 +10,12 @@ import fs from "fs";
 import { findFolderPath } from "../helpers/findFolderPath.js";
 import { findPublicId } from "../helpers/findPublicId.js";
 import Product from "../models/product.js";
+import Brand from "../models/Brand.js";
+import Color from "../models/Color.js";
+import Size from "../models/Size.js";
+import Category from "../models/Category.js";
+
+import { isValidObjectId } from "mongoose";
 
 /**
  * @desc get all Product data
@@ -33,31 +39,55 @@ export const getAllProduct = asyncHandler(async (req, res) => {
  * @access PRIVATE
  */
 
+const parseAndValidateIds = (items) => {
+  const parsedItems = JSON.parse(items || "[]");
+  return parsedItems.filter((item) => isValidObjectId(item));
+};
+
 export const createProduct = asyncHandler(async (req, res) => {
   try {
-    // Get data from request body
-    const { title, desc, price, stock, discount, brand, category } = req.body;
+    const {
+      title,
+      desc,
+      price,
+      stock,
+      discount,
+      brand,
+      category,
+      colors,
+      sizes,
+    } = req.body;
 
-    // Validation
+    console.log("Request Body:", req.body);
+
     if (!title || !price || !stock) {
       return res
         .status(400)
         .json({ message: "Title, price, and stock are required." });
     }
 
-    // Sanitize price (remove commas and convert to number)
     const sanitizedPrice = parseFloat(price.replace(/,/g, ""));
     if (isNaN(sanitizedPrice)) {
       return res.status(400).json({ message: "Invalid price format." });
     }
 
-    // Check if title already exists
     const titleCheck = await Product.findOne({ title });
     if (titleCheck) {
       return res.status(400).json({ message: "Product title already exists." });
     }
 
-    // File upload handling
+    // Validate ObjectIds for brand, category, colors, and sizes
+    const brandIds = parseAndValidateIds(brand);
+    const categoryIds = parseAndValidateIds(category);
+    const colorIds = parseAndValidateIds(colors);
+    const sizeIds = parseAndValidateIds(sizes);
+
+    if (!brandIds.length || !categoryIds.length) {
+      return res
+        .status(400)
+        .json({ message: "Invalid brand or category IDs." });
+    }
+
     let photos = [];
     if (req.files && req.files.length > 0) {
       const filePaths = req.files.map((file) => file.path);
@@ -73,39 +103,42 @@ export const createProduct = asyncHandler(async (req, res) => {
       }));
     }
 
-    // Parse category and brand
-    const categoryArray = Array.isArray(category)
-      ? category
-      : JSON.parse(category.replace(/'/g, '"'));
-    const brandArray = Array.isArray(brand)
-      ? brand
-      : JSON.parse(brand.replace(/'/g, '"'));
-
-    // Create product
-    const product = await Product.create({
+    const newProduct = new Product({
       title,
-      slug: createSlug(title, { lower: true }),
+      slug: createSlug(title),
       desc,
       price: sanitizedPrice,
-      brand: brandArray,
       stock,
       discount,
-      category: categoryArray,
-      photos: photos.length > 0 ? photos : null,
+      brand: brandIds,
+      category: categoryIds,
+      colors: colorIds,
+      sizes: sizeIds,
+      photos,
     });
 
-    // Populate and return the created product
-    const findProduct = await Product.findById(product.id)
+    // Save the product
+    await newProduct.save();
+
+    // Populate references
+    const populatedProduct = await Product.findById(newProduct._id)
+      .populate("colors")
       .populate("brand")
+      .populate("sizes")
       .populate("category");
-    return res
-      .status(201)
-      .json({ message: "Product created successfully", product: findProduct });
+
+    res.status(201).json({
+      success: true,
+      message: "Product created successfully.",
+      newProduct: populatedProduct,
+    });
   } catch (error) {
     console.error("Error creating product:", error);
-    return res
-      .status(500)
-      .json({ message: "An error occurred while creating the product." });
+    res.status(500).json({
+      success: false,
+      message: "Failed to create product.",
+      error: error.message,
+    });
   }
 });
 
@@ -129,17 +162,6 @@ export const getSingleProduct = asyncHandler(async (req, res) => {
   res.json(product);
 });
 
-/**
- * @desc delete Product data
- * @route DELETE /product/:id
- * @access PRIVATE
- */
-
-/**
- * @desc delete Product data
- * @route DELETE /product/:id
- * @access PRIVATE
- */
 /**
  * @desc delete Product data
  * @route DELETE /product/:id
@@ -219,6 +241,8 @@ export const updateProduct = asyncHandler(async (req, res) => {
     brand,
     category,
     photosToRemove,
+    colors,
+    sizes,
   } = req.body;
 
   // Validation
@@ -246,14 +270,16 @@ export const updateProduct = asyncHandler(async (req, res) => {
     return res.status(404).json({ message: "Product not found" });
   }
 
+  // Ensure product.photos is an array
+  let updatedPhotos = Array.isArray(product.photos) ? [...product.photos] : [];
+
   // Remove specific photos from Cloudinary and the database
-  let updatedPhotos = [...product.photos];
   if (photosToRemove && Array.isArray(photosToRemove)) {
     for (const publicId of photosToRemove) {
       try {
         // Remove photo from Cloudinary
         await cloudDelete(publicId);
-        // Remove photo from the database array
+        // Remove photo from the database array only if Cloudinary deletion is successful
         updatedPhotos = updatedPhotos.filter(
           (photo) => photo.public_id !== publicId
         );
@@ -273,10 +299,17 @@ export const updateProduct = asyncHandler(async (req, res) => {
             lower: true,
           })}`,
         });
-        uploadedPhotos.push({
-          url: uploadedFile.secure_url,
-          public_id: uploadedFile.public_id,
-        });
+        // Avoid duplicating photos
+        if (
+          !updatedPhotos.some(
+            (photo) => photo.public_id === uploadedFile.public_id
+          )
+        ) {
+          uploadedPhotos.push({
+            url: uploadedFile.secure_url,
+            public_id: uploadedFile.public_id,
+          });
+        }
       }
       updatedPhotos = [...updatedPhotos, ...uploadedPhotos];
     } catch (error) {
@@ -285,9 +318,11 @@ export const updateProduct = asyncHandler(async (req, res) => {
     }
   }
 
-  // Parse brand and category if provided as strings
+  // Parse brand, category, colors, and sizes if provided as strings
   let parsedBrand = Array.isArray(brand) ? brand : [];
   let parsedCategory = Array.isArray(category) ? category : [];
+  let parsedColor = Array.isArray(colors) ? colors : [];
+  let parsedSize = Array.isArray(sizes) ? sizes : [];
   try {
     if (typeof brand === "string") {
       parsedBrand = JSON.parse(brand.replace(/'/g, '"'));
@@ -295,11 +330,20 @@ export const updateProduct = asyncHandler(async (req, res) => {
     if (typeof category === "string") {
       parsedCategory = JSON.parse(category.replace(/'/g, '"'));
     }
+    if (typeof colors === "string") {
+      parsedColor = JSON.parse(colors.replace(/'/g, '"'));
+    }
+    if (typeof sizes === "string") {
+      parsedSize = JSON.parse(sizes.replace(/'/g, '"'));
+    }
   } catch (parseError) {
-    console.error("Error parsing brand or category:", parseError);
+    console.error(
+      "Error parsing brand, category, colors or sizes:",
+      parseError
+    );
     return res
       .status(400)
-      .json({ message: "Invalid brand or category format" });
+      .json({ message: "Invalid brand, category, colors or sizes format" });
   }
 
   // Update product data
@@ -314,11 +358,15 @@ export const updateProduct = asyncHandler(async (req, res) => {
       discount,
       brand: parsedBrand,
       category: parsedCategory,
+      colors: parsedColor,
+      sizes: parsedSize,
       photos: updatedPhotos,
     },
     { new: true }
   )
     .populate("brand")
+    .populate("colors")
+    .populate("sizes")
     .populate("category");
 
   // Respond with success

@@ -1,223 +1,309 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import MetaData from "../../../components/MetaData.tsx";
 import { useEffect, useRef, useState } from "react";
-import { BsImage } from "react-icons/bs";
-import { IoCloseSharp } from "react-icons/io5";
 import { useDispatch, useSelector } from "react-redux";
-import { getBrandData } from "../../../features/brand/brandSlice.ts";
-import { getCategoryData } from "../../../features/category/categorySlice.ts";
-// import { getProductData } from "../../../features/product/productSlice.ts";
-
-import { Brand, Category, Color, Size } from "../../../types.ts";
-import { AppDispatch, RootState } from "../../../app/store.ts";
-import { getAllBrands } from "../../../features/brand/brandApiSlice.ts";
+import { AppDispatch } from "../../../app/store.ts";
 import { getAllCategories } from "../../../features/category/categoryApiSlice.ts";
-import { getSizeData } from "../../../features/size/sizeSlice.ts";
+import { getCategoryData } from "../../../features/category/categorySlice.ts";
+import useFormFields from "../../../hooks/useFormFields.ts";
+import { getBrandData } from "../../../features/brand/brandSlice.ts";
+import { getAllBrands } from "../../../features/brand/brandApiSlice.ts";
 import { getColorData } from "../../../features/color/colorSlice.ts";
 import { getAllColors } from "../../../features/color/colorApiSlice.ts";
+import { getSizeData } from "../../../features/size/sizeSlice.ts";
 import { getAllSizes } from "../../../features/size/sizeApiSlice.ts";
+import { BsImage } from "react-icons/bs";
+import { IoCloseSharp } from "react-icons/io5";
+import {
+  getProductData,
+  setMessageEmpty,
+} from "../../../features/product/productSlice.ts";
+import { createToaster } from "../../../utils/tostify.ts";
+import { ScaleLoader } from "react-spinners";
+import { createProductAPi } from "../../../features/product/productApiSlice.ts";
 
 export default function AddProduct() {
   const title = "Add Product";
 
-  const [input, setInput] = useState({
+  const { input, handleInputChange, setInput } = useFormFields({
     title: "",
-    category: "",
-    brand: "",
     price: "",
-    description: "",
+    desc: "",
     stock: "",
     discount: "",
-    color: "",
-    size: "",
   });
 
-  const { brand } = useSelector((state: RootState) => getBrandData(state)) || {
-    brand: [],
-  };
-  const { category } = useSelector((state: RootState) =>
-    getCategoryData(state)
-  ) || { category: [] };
-  const { sizes } = useSelector((state: RootState) => getSizeData(state)) || {
-    sizes: [],
-  };
-  const { colors } = useSelector((state: RootState) => getColorData(state)) || {
-    colors: [],
-  };
+  const { category } = useSelector(getCategoryData);
+  const { brand } = useSelector(getBrandData);
+  const { colors } = useSelector(getColorData);
+  const { sizes } = useSelector(getSizeData);
+  const { error, message, loader } = useSelector(getProductData);
 
-  // const { products, error, message, loader } = useSelector(getProductData);
-
-  const [cateShow, setCatShow] = useState(false);
+  const [catShow, setCatShow] = useState(false);
   const [brandShow, setBrandShow] = useState(false);
   const [colorShow, setColorShow] = useState(false);
   const [sizeShow, setSizeShow] = useState(false);
+
   const [searchValue, setSearchValue] = useState<string>("");
-  const [images, setImages] = useState<File[]>([]);
-  const [imagePreview, setImagePreview] = useState<{ url: string }[]>([]);
-  const [filteredCategories, setFilteredCategories] = useState<Category[]>([]); // Typed state
-  const [filteredColors, setFilteredColors] = useState<Color[]>([]); // Typed state
-  const [filteredSizes, setFilteredSizes] = useState<Size[]>([]); // Typed state
-  const [filteredBrands, setFilteredBrands] = useState<Brand[]>([]); // Typed state
+
+  const [filteredCategories, setFilteredCategories] = useState(category);
+  const [filteredBrands, setFilteredBrands] = useState(brand);
+  const [filteredColors, setFilteredColors] = useState(colors);
+  const [filteredSizes, setFilteredSizes] = useState(sizes);
+
   const dispatch = useDispatch<AppDispatch>();
+  const navigate = useNavigate();
+
   const categoryDropdownRef = useRef<HTMLDivElement>(null);
-  const colorDropdownRef = useRef<HTMLDivElement>(null);
-  const sizeDropdownRef = useRef<HTMLDivElement>(null);
+  const [selectedCategory, setSelectedCategory] = useState<string[]>([]);
+
   const brandDropdownRef = useRef<HTMLDivElement>(null);
   const [selectedBrand, setSelectedBrand] = useState<string[]>([]);
-  const [selectedCategory, setSelectedCategory] = useState<string[]>([]);
+
+  const colorDropdownRef = useRef<HTMLDivElement>(null);
   const [selectedColor, setSelectedColor] = useState<string[]>([]);
+
+  const sizeDropdownRef = useRef<HTMLDivElement>(null);
   const [selectedSize, setSelectedSize] = useState<string[]>([]);
 
-  // Update the selection logic for categories
-  const handleCategorySelect = (categoryName: string) => {
-    setSelectedCategory(
-      (prev) =>
-        prev.includes(categoryName)
-          ? prev.filter((c) => c !== categoryName) // Remove if already selected
-          : [...prev, categoryName] // Add to the list
-    );
+  const [productPhoto, setProductPhoto] = useState<File[]>([]);
+  const [imagePreview, setImagePreview] = useState<{ url: string }[]>([]);
 
-    // Reset search value and filtered categories
-    setSearchValue("");
-    setFilteredCategories(category); // Reset to all categories
+  // Handle category selection for dropdowns
+  const handleSelectCategory = (category: string) => {
+    if (selectedCategory.includes(category)) {
+      // Remove category if already selected
+      setSelectedCategory(selectedCategory.filter((c) => c !== category));
+    } else {
+      // Add category
+      setSelectedCategory([...selectedCategory, category]);
+    }
   };
-
-  // Update the selection logic for brands
-  const handleBrandSelect = (brandName: string) => {
-    setSelectedBrand(
-      (prev) =>
-        prev.includes(brandName)
-          ? prev.filter((b) => b !== brandName) // Remove if already selected
-          : [...prev, brandName] // Add to the list
-    );
-
-    // Reset search value and filtered brands
-    setSearchValue("");
-    setFilteredBrands(brand); // Reset to all brands
-  };
-  // Update the selection logic for colors
-  const handleColorSelect = (colorName: string) => {
-    setSelectedColor(
-      (prev) =>
-        prev.includes(colorName)
-          ? prev.filter((c) => c !== colorName) // Remove if already selected
-          : [...prev, colorName] // Add to the list
-    );
-
-    // Reset search value and filtered colors
-    setSearchValue("");
-    setFilteredColors(colors);
-  };
-  // Update the selection logic for sizes
-  const handleSizeSelect = (sizeName: string) => {
-    setSelectedSize(
-      (prev) =>
-        prev.includes(sizeName)
-          ? prev.filter((s) => s !== sizeName) // Remove if already selected
-          : [...prev, sizeName] // Add to the list
-    );
-
-    // Reset search value and filtered sizes
-    setSearchValue("");
-    setFilteredSizes(sizes); // Reset to all sizes
-  };
-
-  // handle Input Change
-
-  const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    setInput((prevState) => ({
-      ...prevState,
-      [e.target.name]: e.target.value,
-    }));
-  };
-
   // Handle search category
   const categorySearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     const search = e.target.value.toLowerCase();
     setSearchValue(search);
 
-    const filteredCategories = (category || [])
-      .map((c) => ({
-        id: c.id || "defaultId",
-        name: c.name,
-      }))
-      .filter((c) => c.name.toLowerCase().includes(search));
+    // Avoid errors if category is undefined or null
+    const filtered = (category || []).filter((c) =>
+      c.name?.toLowerCase().includes(search)
+    );
 
-    setFilteredCategories(filteredCategories as Category[]);
+    setFilteredCategories(filtered);
   };
 
+  // Handle brand selection for dropdowns
+  const handleSelectBrand = (brand: string) => {
+    if (selectedBrand.includes(brand)) {
+      // Remove brand if already selected
+      setSelectedBrand(selectedBrand.filter((b) => b !== brand));
+    } else {
+      // Add brand
+      setSelectedBrand([...selectedBrand, brand]);
+    }
+  };
   // Handle search brand
   const brandSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     const search = e.target.value.toLowerCase();
     setSearchValue(search);
 
-    const filteredBrands = (brand || [])
-      .map((b) => ({
-        id: b.id || "defaultId",
-        name: b.name,
-      }))
-      .filter((b) => b.name.toLowerCase().includes(search));
+    // Avoid errors if brand is undefined or null
+    const filtered = (brand || []).filter((b) =>
+      b.name?.toLowerCase().includes(search)
+    );
 
-    setFilteredBrands(filteredBrands as Brand[]);
+    setFilteredBrands(filtered);
   };
 
+  // Handle color selection for dropdowns
+  const handleSelectColor = (colors: string) => {
+    if (selectedColor.includes(colors)) {
+      // Remove color if already selected
+      setSelectedColor(selectedColor.filter((b) => b !== colors));
+    } else {
+      // Add color
+      setSelectedColor([...selectedColor, colors]);
+    }
+  };
   // Handle search color
   const colorSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     const search = e.target.value.toLowerCase();
     setSearchValue(search);
 
-    // Filter the colors based on the search input
-    const filteredColors = (colors || [])
-      .map((c) => ({
-        id: c.id || "defaultId",
-        name: c.name,
-        colorCode: c.colorCode,
-      }))
-      .filter((c) => c.name.toLowerCase().includes(search));
+    // Avoid errors if color is undefined or null
+    const filtered = (colors || []).filter((b) =>
+      b.name?.toLowerCase().includes(search)
+    );
 
-    setFilteredColors(filteredColors as Color[]);
+    setFilteredColors(filtered);
+  };
+
+  // Handle size selection for dropdowns
+  const handleSelectSize = (sizes: string) => {
+    if (selectedSize.includes(sizes)) {
+      // Remove size if already selected
+      setSelectedSize(selectedSize.filter((s) => s !== sizes));
+    } else {
+      // Add size
+      setSelectedSize([...selectedSize, sizes]);
+    }
   };
   // Handle search size
   const sizeSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     const search = e.target.value.toLowerCase();
     setSearchValue(search);
 
-    const filteredSizes = (sizes || [])
-      .map((s) => ({
-        id: s.id || "defaultId",
-        name: s.name,
-      }))
-      .filter((s) => s.name.toLowerCase().includes(search));
+    // Avoid errors if color is undefined or null
+    const filtered = (colors || []).filter((b) =>
+      b.name?.toLowerCase().includes(search)
+    );
 
-    setFilteredSizes(filteredSizes as Size[]);
+    setFilteredColors(filtered);
+  };
+
+  console.log("selectedBrand:", selectedBrand);
+  console.log("selectedCategory:", selectedCategory);
+  console.log("selectedColor:", selectedColor);
+  console.log("selectedSize:", selectedSize);
+
+  // handle image
+
+  const handleImage = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files) return;
+
+    const allowedTypes = ["image/jpeg", "image/png", "image/jpg", "image/webp"];
+    const maxSize = 5 * 1024 * 1024; // 5MB
+
+    const validFiles = Array.from(files).filter(
+      (file) => allowedTypes.includes(file.type) && file.size <= maxSize
+    );
+
+    if (validFiles.length > 0) {
+      setProductPhoto((prev) => [...prev, ...validFiles]);
+      const imageURLs = validFiles.map((file) => ({
+        url: URL.createObjectURL(file),
+      }));
+      setImagePreview((prev) => [...prev, ...imageURLs]);
+    } else {
+      alert("Only JPG/PNG images under 5MB are allowed.");
+    }
+  };
+
+  //  handle remove images
+  const removeImage = (index: number) => {
+    setProductPhoto((prev) => prev.filter((_, i) => i !== index)); // Remove the selected image from the `images` array
+    setImagePreview((prev) => prev.filter((_, i) => i !== index)); // Remove the corresponding preview
+  };
+
+  // create product
+  const handleCreateProduct = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    // Check if the selected categories and brands have data
+    if (!selectedBrand.length || !selectedCategory.length) {
+      console.error("Brand or Category is missing.");
+      return; // Don't proceed without valid brand/category
+    }
+
+    const formData = new FormData();
+    formData.append("title", input.title.trim());
+    formData.append("desc", input.desc.trim());
+    formData.append("price", input.price.trim());
+    formData.append("stock", input.stock.trim());
+    formData.append("discount", input.discount.trim());
+
+    // Ensure brand and category values are valid and serialized as JSON arrays of ObjectIds
+    formData.append(
+      "brand",
+      JSON.stringify(
+        selectedBrand.filter((id) => id.trim()).map((id) => id.trim())
+      )
+    );
+    formData.append(
+      "category",
+      JSON.stringify(
+        selectedCategory.filter((id) => id.trim()).map((id) => id.trim())
+      )
+    );
+
+    formData.append(
+      "colors",
+      JSON.stringify(
+        selectedColor.filter((id) => id.trim()).map((id) => id.trim())
+      )
+    );
+    formData.append(
+      "sizes",
+      JSON.stringify(
+        selectedSize.filter((id) => id.trim()).map((id) => id.trim())
+      )
+    );
+
+    // Add product photos to FormData
+    if (productPhoto.length) {
+      productPhoto.forEach((photo) => {
+        formData.append("productPhoto", photo);
+      });
+    } else {
+      console.error("Product photo is missing.");
+      return;
+    }
+
+    // Debug: Log FormData entries
+    for (const pair of formData.entries()) {
+      console.log(`${pair[0]}:`, pair[1]);
+    }
+
+    try {
+      // Dispatch the action to create the product
+      await dispatch(createProductAPi(formData)).unwrap();
+
+      // Reset the form state upon success
+      setInput({ title: "", price: "", desc: "", stock: "", discount: "" });
+      setSelectedBrand([]);
+      setSelectedCategory([]);
+      setSelectedColor([]);
+      setSelectedSize([]);
+      setProductPhoto([]);
+      setImagePreview([]);
+
+      // Navigate to the "All Products" page
+      // navigate("/seller/allProducts");
+    } catch (error) {
+      console.error("Error creating product:", error);
+    }
+  };
+
+  // message handler
+  useEffect(() => {
+    if (error) {
+      createToaster(error);
+      dispatch(setMessageEmpty());
+    }
+    if (message) {
+      createToaster(message, "success");
+      dispatch(setMessageEmpty());
+    }
+  }, [dispatch, error, message]);
+
+  // style for loader
+
+  const loaderStyle = {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    height: "24px",
+    color: "#fff",
+    message: "0 auto",
   };
 
   useEffect(() => {
-    if (cateShow) {
-      setFilteredCategories(category); // Reset to all categories when dropdown is opened
-    }
-    if (brandShow) {
-      setFilteredBrands(brand); // Reset to all brands when dropdown is opened
-    }
-    if (colorShow) {
-      setFilteredColors(colors);
-    }
-
-    if (sizeShow) {
-      setFilteredSizes(sizes); // Reset to all sizes when dropdown is opened
-    }
-  }, [
-    category,
-    brand,
-    colors,
-    sizes,
-    colorShow,
-    sizeShow,
-    cateShow,
-    brandShow,
-  ]);
+    setFilteredCategories(category);
+    setFilteredBrands(brand);
+    setFilteredColors(colors);
+    setFilteredSizes(sizes);
+  }, [category, brand, colors, sizes]);
 
   // get all category and brand
   useEffect(() => {
@@ -246,13 +332,13 @@ export default function AddProduct() {
         colorDropdownRef.current &&
         !colorDropdownRef.current.contains(e.target as Node)
       ) {
-        setCatShow(false);
+        setColorShow(false);
       }
       if (
         sizeDropdownRef.current &&
         !sizeDropdownRef.current.contains(e.target as Node)
       ) {
-        setCatShow(false);
+        setSizeShow(false);
       }
     };
 
@@ -261,36 +347,6 @@ export default function AddProduct() {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
-
-  // handle image
-
-  const handleImage = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (!files) return;
-
-    const allowedTypes = ["image/jpeg", "image/png", "image/jpg", "image/webp"];
-    const maxSize = 5 * 1024 * 1024; // 5MB
-
-    const validFiles = Array.from(files).filter(
-      (file) => allowedTypes.includes(file.type) && file.size <= maxSize
-    );
-
-    if (validFiles.length > 0) {
-      setImages((prev) => [...prev, ...validFiles]);
-      const imageURLs = validFiles.map((file) => ({
-        url: URL.createObjectURL(file),
-      }));
-      setImagePreview((prev) => [...prev, ...imageURLs]);
-    } else {
-      alert("Only JPG/PNG images under 5MB are allowed.");
-    }
-  };
-
-  //  handle remove images
-  const removeImage = (index: number) => {
-    setImages((prev) => prev.filter((_, i) => i !== index)); // Remove the selected image from the `images` array
-    setImagePreview((prev) => prev.filter((_, i) => i !== index)); // Remove the corresponding preview
-  };
 
   return (
     <>
@@ -312,7 +368,7 @@ export default function AddProduct() {
           </div>
           {/* form */}
           <div className="">
-            <form action="">
+            <form onSubmit={handleCreateProduct}>
               {/* product & brand */}
               <div className="flex flex-col w-full gap-4 mb-3 md:flex-row">
                 {/* name */}
@@ -322,121 +378,137 @@ export default function AddProduct() {
                   </label>
                   <input
                     type="text"
-                    name="name"
+                    name="title"
                     id="name"
-                    placeholder="Product Name"
+                    placeholder="Product title"
                     onChange={handleInputChange}
                     value={input.title}
                     className="px-3 py-2 outline-none border border-slate-700 bg-transparent rounded-md text-[#d0d2d6] focus:border-indigo-500 overflow-hidden font-primaryMedium"
                   />
                 </div>
                 {/* brand */}
+
                 <div className="relative flex flex-col w-full gap-1">
+                  {/* Label */}
                   <label htmlFor="brand" className="font-primarySemiBold">
                     Product Brand
                   </label>
+
+                  {/* Input Field */}
                   <input
                     type="text"
                     name="brand"
                     id="brand"
                     placeholder="Search or Select Brand"
-                    onFocus={() => setBrandShow(true)}
-                    value={selectedBrand.join(", ")} // Use the selectedBrand state here
+                    onFocus={() => setBrandShow(true)} // Show the dropdown on focus
+                    value={selectedBrand.join(", ")} // Display selected brands as comma-separated values
                     readOnly
-                    className="px-3 py-2 outline-none border border-slate-700 bg-transparent rounded-md text-[#d0d2d6] focus:border-indigo-500 overflow-hidden font-primaryMedium"
+                    className="px-3 py-2 outline-none border border-slate-700 bg-transparent rounded-md text-[#d0d2d6] focus:border-indigo-500 font-primaryMedium"
                   />
 
-                  <div
-                    ref={brandDropdownRef}
-                    className={`absolute top-[101%] bg-slate-800 w-full transition-all duration-300 z-10 ${
-                      brandShow ? "scale-100" : "scale-0"
-                    }`}
-                  >
-                    <div className="flex w-full px-4 py-2">
-                      <input
-                        onChange={brandSearch}
-                        type="text"
-                        name="search"
-                        value={searchValue}
-                        placeholder="search"
-                        className="px-3 py-2 outline-none border border-slate-700 bg-transparent rounded-md text-[#d0d2d6] focus:border-indigo-500 overflow-hidden font-primaryMedium"
-                      />
-                    </div>
-                    <div className="pt-4"></div>
-                    <div className="flex flex-col justify-start items-start h-[150px] overflow-y-scroll sidebar">
-                      {Array.isArray(filteredBrands) &&
-                        filteredBrands.map((b, i) => (
+                  {/* Dropdown */}
+                  {brandShow && (
+                    <div
+                      ref={brandDropdownRef}
+                      className="absolute top-[101%] bg-slate-800 w-full z-10 rounded-md shadow-lg transition-transform transform scale-100"
+                    >
+                      {/* Search Input */}
+                      <div className="flex w-full px-4 py-2">
+                        <input
+                          type="text"
+                          name="search"
+                          value={searchValue}
+                          placeholder="Search brands..."
+                          onChange={brandSearch}
+                          className="w-full px-3 py-2 outline-none border border-slate-700 bg-transparent rounded-md text-[#d0d2d6] focus:border-indigo-500 font-primaryMedium"
+                        />
+                      </div>
+
+                      {/* Brand List */}
+                      <div className="flex flex-col justify-start items-start h-[150px] overflow-y-auto py-2 scrollbar-thin scrollbar-thumb-indigo-500 scrollbar-track-transparent">
+                        {filteredBrands?.map((b, index) => (
                           <div
-                            key={i}
-                            className={`px-4 py-2 text-sm font-primaryRegular hover:bg-indigo-500 hover:shadow-lg hover:shadow-indigo-500/50 w-full cursor-pointer ${
-                              selectedBrand.includes(b.name) && "bg-indigo-500"
+                            key={index}
+                            className={`px-4 py-2 text-sm font-primaryRegular w-full cursor-pointer hover:bg-indigo-500 hover:text-white ${
+                              selectedBrand.includes(b.name)
+                                ? "bg-indigo-500 text-white"
+                                : ""
                             }`}
                             onClick={() => {
-                              setBrandShow(false);
-                              handleBrandSelect(b.name); // Update selected brand
-                              setSearchValue("");
+                              handleSelectBrand(b.name);
+                              setBrandShow(false); // Close dropdown
+                              setSearchValue(""); // Clear search field
                             }}
                           >
                             {b.name}
                           </div>
                         ))}
+                      </div>
                     </div>
-                  </div>
+                  )}
                 </div>
               </div>
               {/* category & stock */}
               <div className="flex flex-col w-full gap-4 mb-3 md:flex-row">
                 {/* category */}
                 <div className="relative flex flex-col w-full gap-1">
+                  {/* Label */}
                   <label htmlFor="category" className="font-primarySemiBold">
                     Product Category
                   </label>
+
+                  {/* Input Field */}
                   <input
                     type="text"
+                    name="category"
                     id="category"
                     placeholder="Search or Select Category"
-                    onFocus={() => setCatShow(true)}
+                    onFocus={() => setCatShow(true)} // Show the dropdown on focus
+                    value={selectedCategory.join(", ")} // Display selected brands as comma-separated values
                     readOnly
-                    value={selectedCategory.join(", ")} // Display selected categories
-                    className="px-3 py-2 outline-none border border-slate-700 bg-transparent rounded-md text-[#d0d2d6] focus:border-indigo-500 overflow-hidden font-primaryMedium"
+                    className="px-3 py-2 outline-none border border-slate-700 bg-transparent rounded-md text-[#d0d2d6] focus:border-indigo-500 font-primaryMedium"
                   />
-                  <div
-                    ref={categoryDropdownRef}
-                    className={`absolute top-[101%] bg-slate-800 w-full transition-all duration-300 z-10 ${
-                      cateShow ? "scale-100" : "scale-0"
-                    }`}
-                  >
-                    <div className="flex w-full px-4 py-2">
-                      <input
-                        onChange={categorySearch}
-                        type="text"
-                        name="search"
-                        value={searchValue}
-                        placeholder="search"
-                        className="px-3 py-2 outline-none border border-slate-700 bg-transparent rounded-md text-[#d0d2d6] focus:border-indigo-500 overflow-hidden font-primaryMedium"
-                      />
-                    </div>
-                    <div className="pt-4"></div>
-                    <div className="flex flex-col justify-start items-start h-[150px] overflow-y-scroll sidebar">
-                      {Array.isArray(filteredCategories) &&
-                        filteredCategories.map((c, i) => (
+
+                  {/* Dropdown */}
+                  {catShow && (
+                    <div
+                      ref={categoryDropdownRef}
+                      className="absolute top-[101%] bg-slate-800 w-full z-10 rounded-md shadow-lg transition-transform transform scale-100"
+                    >
+                      {/* Search Input */}
+                      <div className="flex w-full px-4 py-2">
+                        <input
+                          type="text"
+                          name="search"
+                          value={searchValue}
+                          placeholder="Search Categories..."
+                          onChange={categorySearch}
+                          className="w-full px-3 py-2 outline-none border border-slate-700 bg-transparent rounded-md text-[#d0d2d6] focus:border-indigo-500 font-primaryMedium"
+                        />
+                      </div>
+
+                      {/* Brand List */}
+                      <div className="flex flex-col justify-start items-start h-[150px] overflow-y-auto py-2 scrollbar-thin scrollbar-thumb-indigo-500 scrollbar-track-transparent">
+                        {filteredCategories?.map((c, index) => (
                           <div
-                            key={i}
-                            className={`px-4 py-2 text-sm font-primaryRegular hover:bg-indigo-500 hover:shadow-lg hover:shadow-indigo-500/50 w-full cursor-pointer ${
-                              selectedCategory.includes(c.name) &&
-                              "bg-indigo-500"
+                            key={index}
+                            className={`px-4 py-2 text-sm font-primaryRegular w-full cursor-pointer hover:bg-indigo-500 hover:text-white ${
+                              selectedCategory.includes(c.name)
+                                ? "bg-indigo-500 text-white"
+                                : ""
                             }`}
                             onClick={() => {
-                              setCatShow(false);
-                              handleCategorySelect(c.name);
-                              setSearchValue("");
+                              handleSelectCategory(c.name);
+                              setCatShow(false); // Close dropdown
+                              setSearchValue(""); // Clear search field
                             }}
                           >
                             {c.name}
                           </div>
                         ))}
+                      </div>
                     </div>
-                  </div>
+                  )}
                 </div>
                 {/* stock */}
                 <div className="flex flex-col w-full gap-1">
@@ -493,6 +565,7 @@ export default function AddProduct() {
               {/* size and color */}
               <div className="flex flex-col w-full gap-4 mb-3 md:flex-row">
                 {/* color */}
+
                 <div className="relative flex flex-col w-full gap-1">
                   <label htmlFor="color" className="font-primarySemiBold">
                     Product Colors
@@ -508,23 +581,27 @@ export default function AddProduct() {
                   />
                   <div
                     ref={colorDropdownRef}
-                    className={`absolute top-[101%] bg-slate-800 w-full transition-all duration-300 ${
+                    className={`absolute top-[101%] bg-slate-800 w-full transition-all duration-300 z-10 ${
                       colorShow ? "scale-100" : "scale-0"
                     }`}
                   >
+                    {/* Search Input */}
                     <div className="flex w-full px-4 py-2">
                       <input
                         onChange={colorSearch}
                         type="text"
                         name="search"
                         value={searchValue}
-                        placeholder="search"
+                        placeholder="Search"
                         className="px-3 py-2 outline-none border border-slate-700 bg-transparent rounded-md text-[#d0d2d6] focus:border-indigo-500 overflow-hidden font-primaryMedium"
                       />
                     </div>
                     <div className="pt-4"></div>
+
+                    {/* Colors List */}
                     <div className="flex flex-col justify-start items-start h-[150px] overflow-y-scroll sidebar">
                       {Array.isArray(filteredColors) &&
+                      filteredColors.length > 0 ? (
                         filteredColors.map((color, i) => (
                           <div
                             key={i}
@@ -533,11 +610,12 @@ export default function AddProduct() {
                               "bg-indigo-500"
                             }`}
                             onClick={() => {
+                              handleSelectColor(color.name);
                               setColorShow(false);
-                              handleColorSelect(color.name);
                               setSearchValue("");
                             }}
                           >
+                            {/* Color Circle */}
                             <div
                               className="w-4 h-4 rounded-full"
                               style={{
@@ -546,11 +624,15 @@ export default function AddProduct() {
                             ></div>
                             {color.name}
                           </div>
-                        ))}
+                        ))
+                      ) : (
+                        <div className="px-4 py-2 text-sm font-primaryRegular text-[#d0d2d6]">
+                          No matching colors found.
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
-
                 {/* size */}
                 <div className="relative flex flex-col w-full gap-1">
                   <label htmlFor="size" className="font-primarySemiBold">
@@ -559,31 +641,35 @@ export default function AddProduct() {
                   <input
                     type="text"
                     id="size"
-                    placeholder="Search or Select Category"
+                    placeholder="Search or Select Size"
                     onClick={() => setSizeShow((prev) => !prev)}
                     readOnly
-                    value={selectedSize.join(", ")} // Display selected categories
+                    value={selectedSize.join(", ")}
                     className="px-3 py-2 outline-none border border-slate-700 bg-transparent rounded-md text-[#d0d2d6] focus:border-indigo-500 overflow-hidden font-primaryMedium"
                   />
                   <div
                     ref={sizeDropdownRef}
-                    className={`absolute top-[101%] bg-slate-800 w-full transition-all duration-300 ${
+                    className={`absolute top-[101%] bg-slate-800 w-full transition-all duration-300 z-10 ${
                       sizeShow ? "scale-100" : "scale-0"
                     }`}
                   >
+                    {/* Search Input */}
                     <div className="flex w-full px-4 py-2">
                       <input
                         onChange={sizeSearch}
                         type="text"
                         name="search"
                         value={searchValue}
-                        placeholder="search"
+                        placeholder="Search"
                         className="px-3 py-2 outline-none border border-slate-700 bg-transparent rounded-md text-[#d0d2d6] focus:border-indigo-500 overflow-hidden font-primaryMedium"
                       />
                     </div>
                     <div className="pt-4"></div>
+
+                    {/* Sizes List */}
                     <div className="flex flex-col justify-start items-start h-[150px] overflow-y-scroll sidebar">
                       {Array.isArray(filteredSizes) &&
+                      filteredSizes.length > 0 ? (
                         filteredSizes.map((size, i) => (
                           <div
                             key={i}
@@ -592,30 +678,35 @@ export default function AddProduct() {
                               "bg-indigo-500"
                             }`}
                             onClick={() => {
-                              setSizeShow(false);
-                              handleSizeSelect(size.name);
-                              setSearchValue("");
+                              handleSelectSize(size.name); // Add or remove size
+                              setSearchValue(""); // Clear search input
+                              setSizeShow(false); // Close dropdown
                             }}
                           >
                             {size.name}
                           </div>
-                        ))}
+                        ))
+                      ) : (
+                        <div className="px-4 py-2 text-sm font-primaryRegular text-[#d0d2d6]">
+                          No matching sizes found.
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
               </div>
               {/* description */}
               <div className="flex flex-col w-full gap-1 mb-5">
-                <label htmlFor="description" className="font-primarySemiBold">
+                <label htmlFor="desc" className="font-primarySemiBold">
                   Product Description
                 </label>
                 <textarea
-                  name="description"
-                  id="description"
+                  name="desc"
+                  id="desc"
                   rows={4}
                   placeholder="Product Description"
                   onChange={handleInputChange}
-                  value={input.description}
+                  value={input.desc}
                   className="px-3 py-2 outline-none border border-slate-700 bg-transparent rounded-md text-[#d0d2d6] focus:border-indigo-500 overflow-hidden font-primaryMedium"
                 ></textarea>
               </div>
@@ -660,9 +751,18 @@ export default function AddProduct() {
               {/* button */}
               <button
                 type="submit"
+                disabled={loader ? true : false}
                 className="w-full py-2 text-lg bg-blue-500 rounded-md hover:shadow-blue-500/50 hover:shadow-lg font-primaryMedium "
               >
-                Add Product
+                {loader ? (
+                  <ScaleLoader
+                    size={10}
+                    color="#fff"
+                    cssOverride={loaderStyle}
+                  />
+                ) : (
+                  "Add Product"
+                )}
               </button>
             </form>
           </div>

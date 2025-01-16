@@ -1,6 +1,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "../../app/store";
 import { deleteProduct, getAllProducts } from "./productApiSlice.ts";
+import { Color, Size } from "../../types.ts";
 
 interface Category {
   name: string;
@@ -14,13 +15,16 @@ interface Brand {
 interface Product {
   _id: string;
   title: string;
+  desc: string;
   photos?: { url: string }[];
-  category?: Category[]; // Define as an optional array of Category objects
-  brand?: Brand[]; // Define as an optional array of Brand objects
-  price: number; // Define price as a number
-  discount?: string; // Define discount as an optional string
-  stock: number; // Define stock as a number
-  [key: string]: unknown; // Allow additional unknown properties if necessary
+  category?: Category[];
+  brand?: Brand[];
+  colors?: Color[];
+  Sizes?: Size[];
+  price: number;
+  discount?: number;
+  stock: number;
+  [key: string]: unknown;
 }
 
 // Define the initial state type

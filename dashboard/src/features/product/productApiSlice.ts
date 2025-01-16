@@ -1,5 +1,6 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
+import { Brand, Category, Color, Size } from "../../types.ts";
 
 // get all products
 
@@ -27,6 +28,55 @@ export const getAllProducts = createAsyncThunk(
     }
   }
 );
+
+// create product
+
+interface Product {
+  _id: string;
+  title: string;
+  desc: string;
+  photos?: { url: string }[];
+  category?: Category[];
+  brand?: Brand[];
+  colors?: Color[];
+  sizes?: Size[];
+  discount?: number;
+  stock: number;
+  [key: string]: unknown;
+}
+
+interface CreateProductError {
+  message: string;
+}
+export const createProductAPi = createAsyncThunk<
+  { product: Product; message: string },
+  FormData,
+  { rejectValue: CreateProductError }
+>("product/createProduct", async (data, { rejectWithValue }) => {
+  try {
+    const response = await axios.post(
+      "http://localhost:5050/api/v1/product",
+      data,
+      {
+        withCredentials: true, // Include credentials (cookies)
+      }
+    );
+
+    return {
+      product: response.data.newProduct, // Ensure this matches your API response
+      message: response.data.message || "Product created successfully",
+    };
+  } catch (error) {
+    // Handle Axios error
+    if (axios.isAxiosError(error)) {
+      return rejectWithValue({
+        message: error.response?.data?.message || "Failed to create product",
+      });
+    }
+    // Handle unexpected error
+    return rejectWithValue({ message: "An unexpected error occurred" });
+  }
+});
 
 // delete product
 

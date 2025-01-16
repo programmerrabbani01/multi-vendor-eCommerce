@@ -1,5 +1,5 @@
 import asyncHandler from "express-async-handler";
-import Color from "../models/ColorModel.js";
+import Color from "../models/Color.js";
 import { createSlug } from "../helpers/slug.js";
 /**
  * @description get all colors

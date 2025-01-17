@@ -41,6 +41,7 @@ interface Product {
   colors?: Color[];
   sizes?: Size[];
   discount?: number;
+  price: number;
   stock: number;
   [key: string]: unknown;
 }

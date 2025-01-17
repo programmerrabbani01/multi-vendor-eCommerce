@@ -76,7 +76,12 @@ export default function EditBrand() {
     }
 
     const formData = new FormData();
-    formData.append("name", input.name);
+    if (typeof input.name === "string") {
+      formData.append("name", input.name.trim());
+    } else {
+      console.error("Brand name must be a string");
+      return;
+    }
     if (image) formData.append("brandPhoto", image);
 
     try {
@@ -117,8 +122,7 @@ export default function EditBrand() {
     justifyContent: "center",
     alignItems: "center",
     height: "24px",
-    color: "#fff",
-    message: "0 auto",
+    margin: "0 auto",
   };
   return (
     <>

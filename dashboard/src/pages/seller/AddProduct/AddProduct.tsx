@@ -25,7 +25,7 @@ import { createProductAPi } from "../../../features/product/productApiSlice.ts";
 export default function AddProduct() {
   const title = "Add Product";
 
-  const { input, handleInputChange, setInput } = useFormFields({
+  const { input, handleInputChange, resetForm } = useFormFields({
     title: "",
     price: "",
     desc: "",
@@ -70,13 +70,13 @@ export default function AddProduct() {
   const [imagePreview, setImagePreview] = useState<{ url: string }[]>([]);
 
   // Handle category selection for dropdowns
-  const handleSelectCategory = (category: string) => {
-    if (selectedCategory.includes(category)) {
+  const handleSelectCategory = (categoryId: string) => {
+    if (selectedCategory.includes(categoryId)) {
       // Remove category if already selected
-      setSelectedCategory(selectedCategory.filter((c) => c !== category));
+      setSelectedCategory(selectedCategory.filter((id) => id !== categoryId));
     } else {
       // Add category
-      setSelectedCategory([...selectedCategory, category]);
+      setSelectedCategory([...selectedCategory, categoryId]);
     }
   };
   // Handle search category
@@ -93,13 +93,13 @@ export default function AddProduct() {
   };
 
   // Handle brand selection for dropdowns
-  const handleSelectBrand = (brand: string) => {
-    if (selectedBrand.includes(brand)) {
+  const handleSelectBrand = (brandId: string) => {
+    if (selectedBrand.includes(brandId)) {
       // Remove brand if already selected
-      setSelectedBrand(selectedBrand.filter((b) => b !== brand));
+      setSelectedBrand(selectedBrand.filter((id) => id !== brandId));
     } else {
       // Add brand
-      setSelectedBrand([...selectedBrand, brand]);
+      setSelectedBrand([...selectedBrand, brandId]);
     }
   };
   // Handle search brand
@@ -116,13 +116,13 @@ export default function AddProduct() {
   };
 
   // Handle color selection for dropdowns
-  const handleSelectColor = (colors: string) => {
-    if (selectedColor.includes(colors)) {
+  const handleSelectColor = (colorsId: string) => {
+    if (selectedColor.includes(colorsId)) {
       // Remove color if already selected
-      setSelectedColor(selectedColor.filter((b) => b !== colors));
+      setSelectedColor(selectedColor.filter((id) => id !== colorsId));
     } else {
       // Add color
-      setSelectedColor([...selectedColor, colors]);
+      setSelectedColor([...selectedColor, colorsId]);
     }
   };
   // Handle search color
@@ -139,13 +139,13 @@ export default function AddProduct() {
   };
 
   // Handle size selection for dropdowns
-  const handleSelectSize = (sizes: string) => {
-    if (selectedSize.includes(sizes)) {
+  const handleSelectSize = (sizesId: string) => {
+    if (selectedSize.includes(sizesId)) {
       // Remove size if already selected
-      setSelectedSize(selectedSize.filter((s) => s !== sizes));
+      setSelectedSize(selectedSize.filter((id) => id !== sizesId));
     } else {
       // Add size
-      setSelectedSize([...selectedSize, sizes]);
+      setSelectedSize([...selectedSize, sizesId]);
     }
   };
   // Handle search size
@@ -161,10 +161,20 @@ export default function AddProduct() {
     setFilteredColors(filtered);
   };
 
-  console.log("selectedBrand:", selectedBrand);
-  console.log("selectedCategory:", selectedCategory);
-  console.log("selectedColor:", selectedColor);
-  console.log("selectedSize:", selectedSize);
+  useEffect(() => {
+    if (selectedBrand.length > 0) {
+      console.log("Selected Brand IDs:", selectedBrand);
+    }
+    if (selectedCategory.length > 0) {
+      console.log("Selected Category IDs:", selectedCategory);
+    }
+    if (selectedColor.length > 0) {
+      console.log("Selected Color IDs:", selectedColor);
+    }
+    if (selectedSize.length > 0) {
+      console.log("Selected Size IDs:", selectedSize);
+    }
+  }, [selectedBrand, selectedCategory, selectedColor, selectedSize]);
 
   // handle image
 
@@ -200,76 +210,58 @@ export default function AddProduct() {
   const handleCreateProduct = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    // Check if the selected categories and brands have data
-    if (!selectedBrand.length || !selectedCategory.length) {
-      console.error("Brand or Category is missing.");
-      return; // Don't proceed without valid brand/category
-    }
-
-    const formData = new FormData();
-    formData.append("title", input.title.trim());
-    formData.append("desc", input.desc.trim());
-    formData.append("price", input.price.trim());
-    formData.append("stock", input.stock.trim());
-    formData.append("discount", input.discount.trim());
-
-    // Ensure brand and category values are valid and serialized as JSON arrays of ObjectIds
-    formData.append(
-      "brand",
-      JSON.stringify(
-        selectedBrand.filter((id) => id.trim()).map((id) => id.trim())
-      )
-    );
-    formData.append(
-      "category",
-      JSON.stringify(
-        selectedCategory.filter((id) => id.trim()).map((id) => id.trim())
-      )
-    );
-
-    formData.append(
-      "colors",
-      JSON.stringify(
-        selectedColor.filter((id) => id.trim()).map((id) => id.trim())
-      )
-    );
-    formData.append(
-      "sizes",
-      JSON.stringify(
-        selectedSize.filter((id) => id.trim()).map((id) => id.trim())
-      )
-    );
-
-    // Add product photos to FormData
-    if (productPhoto.length) {
-      productPhoto.forEach((photo) => {
-        formData.append("productPhoto", photo);
-      });
-    } else {
-      console.error("Product photo is missing.");
+    if (
+      !input.title ||
+      !input.price ||
+      !input.stock ||
+      !selectedBrand.length ||
+      !selectedCategory.length
+    ) {
+      alert("Please fill in all required fields.");
       return;
     }
 
-    // Debug: Log FormData entries
-    for (const pair of formData.entries()) {
-      console.log(`${pair[0]}:`, pair[1]);
-    }
+    const formData = new FormData();
+    formData.append(
+      "title",
+      typeof input.title === "string" ? input.title.trim() : String(input.title)
+    );
+    formData.append(
+      "desc",
+      typeof input.desc === "string" ? input.desc.trim() : String(input.desc)
+    );
+    formData.append(
+      "price",
+      typeof input.price === "string" ? input.price.trim() : String(input.price)
+    );
+    formData.append(
+      "stock",
+      typeof input.stock === "string" ? input.stock.trim() : String(input.stock)
+    );
+    formData.append(
+      "discount",
+      typeof input.discount === "string"
+        ? input.discount.trim()
+        : String(input.discount)
+    );
+
+    formData.append("brand", JSON.stringify(selectedBrand));
+    formData.append("category", JSON.stringify(selectedCategory));
+    formData.append("colors", JSON.stringify(selectedColor));
+    formData.append("sizes", JSON.stringify(selectedSize));
+
+    productPhoto.forEach((photo) => formData.append("productPhoto", photo));
 
     try {
-      // Dispatch the action to create the product
       await dispatch(createProductAPi(formData)).unwrap();
-
-      // Reset the form state upon success
-      setInput({ title: "", price: "", desc: "", stock: "", discount: "" });
-      setSelectedBrand([]);
+      // Reset the form after successful creation
+      resetForm(); // Reset the form using the hook method
       setSelectedCategory([]);
+      setSelectedBrand([]);
       setSelectedColor([]);
       setSelectedSize([]);
       setProductPhoto([]);
       setImagePreview([]);
-
-      // Navigate to the "All Products" page
-      // navigate("/seller/allProducts");
     } catch (error) {
       console.error("Error creating product:", error);
     }
@@ -284,8 +276,9 @@ export default function AddProduct() {
     if (message) {
       createToaster(message, "success");
       dispatch(setMessageEmpty());
+      navigate(`/seller/allProducts`);
     }
-  }, [dispatch, error, message]);
+  }, [dispatch, error, message, navigate]);
 
   // style for loader
 
@@ -294,8 +287,7 @@ export default function AddProduct() {
     justifyContent: "center",
     alignItems: "center",
     height: "24px",
-    color: "#fff",
-    message: "0 auto",
+    margin: "0 auto",
   };
 
   useEffect(() => {
@@ -426,16 +418,16 @@ export default function AddProduct() {
 
                       {/* Brand List */}
                       <div className="flex flex-col justify-start items-start h-[150px] overflow-y-auto py-2 scrollbar-thin scrollbar-thumb-indigo-500 scrollbar-track-transparent">
-                        {filteredBrands?.map((b, index) => (
+                        {filteredBrands?.map((b) => (
                           <div
-                            key={index}
+                            key={b._id}
                             className={`px-4 py-2 text-sm font-primaryRegular w-full cursor-pointer hover:bg-indigo-500 hover:text-white ${
-                              selectedBrand.includes(b.name)
+                              selectedBrand.includes(b._id)
                                 ? "bg-indigo-500 text-white"
                                 : ""
                             }`}
                             onClick={() => {
-                              handleSelectBrand(b.name);
+                              handleSelectBrand(b._id);
                               setBrandShow(false); // Close dropdown
                               setSearchValue(""); // Clear search field
                             }}
@@ -487,18 +479,18 @@ export default function AddProduct() {
                         />
                       </div>
 
-                      {/* Brand List */}
+                      {/* category List */}
                       <div className="flex flex-col justify-start items-start h-[150px] overflow-y-auto py-2 scrollbar-thin scrollbar-thumb-indigo-500 scrollbar-track-transparent">
-                        {filteredCategories?.map((c, index) => (
+                        {filteredCategories?.map((c) => (
                           <div
-                            key={index}
+                            key={c._id}
                             className={`px-4 py-2 text-sm font-primaryRegular w-full cursor-pointer hover:bg-indigo-500 hover:text-white ${
-                              selectedCategory.includes(c.name)
+                              selectedCategory.includes(c._id)
                                 ? "bg-indigo-500 text-white"
                                 : ""
                             }`}
                             onClick={() => {
-                              handleSelectCategory(c.name);
+                              handleSelectCategory(c._id);
                               setCatShow(false); // Close dropdown
                               setSearchValue(""); // Clear search field
                             }}
@@ -600,36 +592,31 @@ export default function AddProduct() {
 
                     {/* Colors List */}
                     <div className="flex flex-col justify-start items-start h-[150px] overflow-y-scroll sidebar">
-                      {Array.isArray(filteredColors) &&
-                      filteredColors.length > 0 ? (
-                        filteredColors.map((color, i) => (
+                      {filteredColors?.map((color) => (
+                        <div
+                          key={color._id}
+                          className={`flex items-center gap-2 px-4 py-2 text-sm font-primaryRegular hover:bg-indigo-500 hover:shadow-lg hover:shadow-indigo-500/50 w-full cursor-pointer ${
+                            selectedColor.includes(color._id) && "bg-indigo-500"
+                          }`}
+                          onClick={() => {
+                            handleSelectColor(color._id);
+                            setColorShow(false);
+                            setSearchValue("");
+                          }}
+                        >
+                          {/* Color Circle */}
                           <div
-                            key={i}
-                            className={`flex items-center gap-2 px-4 py-2 text-sm font-primaryRegular hover:bg-indigo-500 hover:shadow-lg hover:shadow-indigo-500/50 w-full cursor-pointer ${
-                              selectedColor.includes(color.name) &&
-                              "bg-indigo-500"
-                            }`}
-                            onClick={() => {
-                              handleSelectColor(color.name);
-                              setColorShow(false);
-                              setSearchValue("");
+                            className="w-4 h-4 rounded-full"
+                            style={{
+                              backgroundColor:
+                                typeof color.colorCode === "string"
+                                  ? color.colorCode
+                                  : undefined,
                             }}
-                          >
-                            {/* Color Circle */}
-                            <div
-                              className="w-4 h-4 rounded-full"
-                              style={{
-                                backgroundColor: color.colorCode,
-                              }}
-                            ></div>
-                            {color.name}
-                          </div>
-                        ))
-                      ) : (
-                        <div className="px-4 py-2 text-sm font-primaryRegular text-[#d0d2d6]">
-                          No matching colors found.
+                          ></div>
+                          {color.name}
                         </div>
-                      )}
+                      ))}
                     </div>
                   </div>
                 </div>
@@ -668,29 +655,21 @@ export default function AddProduct() {
 
                     {/* Sizes List */}
                     <div className="flex flex-col justify-start items-start h-[150px] overflow-y-scroll sidebar">
-                      {Array.isArray(filteredSizes) &&
-                      filteredSizes.length > 0 ? (
-                        filteredSizes.map((size, i) => (
-                          <div
-                            key={i}
-                            className={`px-4 py-2 text-sm font-primaryRegular hover:bg-indigo-500 hover:shadow-lg hover:shadow-indigo-500/50 w-full cursor-pointer ${
-                              selectedSize.includes(size.name) &&
-                              "bg-indigo-500"
-                            }`}
-                            onClick={() => {
-                              handleSelectSize(size.name); // Add or remove size
-                              setSearchValue(""); // Clear search input
-                              setSizeShow(false); // Close dropdown
-                            }}
-                          >
-                            {size.name}
-                          </div>
-                        ))
-                      ) : (
-                        <div className="px-4 py-2 text-sm font-primaryRegular text-[#d0d2d6]">
-                          No matching sizes found.
+                      {filteredSizes?.map((size) => (
+                        <div
+                          key={size._id}
+                          className={`px-4 py-2 text-sm font-primaryRegular hover:bg-indigo-500 hover:shadow-lg hover:shadow-indigo-500/50 w-full cursor-pointer ${
+                            selectedSize.includes(size._id) && "bg-indigo-500"
+                          }`}
+                          onClick={() => {
+                            handleSelectSize(size._id);
+                            setSearchValue("");
+                            setSizeShow(false);
+                          }}
+                        >
+                          {size.name}
                         </div>
-                      )}
+                      ))}
                     </div>
                   </div>
                 </div>
@@ -756,9 +735,12 @@ export default function AddProduct() {
               >
                 {loader ? (
                   <ScaleLoader
-                    size={10}
+                    height={15}
+                    width={5}
+                    radius={2}
+                    margin={2}
                     color="#fff"
-                    cssOverride={loaderStyle}
+                    cssOverride={loaderStyle} // Valid CSS properties
                   />
                 ) : (
                   "Add Product"

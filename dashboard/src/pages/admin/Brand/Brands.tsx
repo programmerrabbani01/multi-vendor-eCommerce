@@ -62,7 +62,12 @@ export default function Brands() {
     const formData = new FormData();
 
     // Ensure input.name is a string
-    formData.append("name", input.name);
+    if (typeof input.name === "string") {
+      formData.append("name", input.name.trim());
+    } else {
+      console.error("Brand name must be a string");
+      return;
+    }
 
     // Ensure brandLogo is a valid File or null
     if (brandLogo instanceof File) {
@@ -134,8 +139,7 @@ export default function Brands() {
     justifyContent: "center",
     alignItems: "center",
     height: "24px",
-    color: "#fff",
-    message: "0 auto",
+    margin: "0 auto",
   };
 
   return (
@@ -356,7 +360,10 @@ export default function Brands() {
                     >
                       {loader ? (
                         <ScaleLoader
-                          size={10}
+                          height={15}
+                          width={5}
+                          radius={2}
+                          margin={2}
                           color="#fff"
                           cssOverride={loaderStyle}
                         />

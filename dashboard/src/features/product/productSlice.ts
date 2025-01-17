@@ -1,6 +1,10 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "../../app/store";
-import { deleteProduct, getAllProducts } from "./productApiSlice.ts";
+import {
+  createProductAPi,
+  deleteProduct,
+  getAllProducts,
+} from "./productApiSlice.ts";
 import { Color, Size } from "../../types.ts";
 
 interface Category {
@@ -55,7 +59,7 @@ const productSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      // getAllBrands
+      // get All Products
       .addCase(getAllProducts.pending, (state) => {
         state.loader = true;
       })
@@ -70,7 +74,7 @@ const productSlice = createSlice({
           state.loader = false;
         }
       )
-      // delete brand
+      // delete product
       .addCase(deleteProduct.pending, (state) => {
         state.loader = true;
       })
@@ -81,10 +85,30 @@ const productSlice = createSlice({
       .addCase(deleteProduct.fulfilled, (state, action) => {
         if (state.products) {
           state.products = state.products.filter(
-            (data) => data._id !== action.payload.id // Use `id` instead of `brand._id`
+            (data) => data._id !== action.payload.id
           );
         }
         state.message = action.payload.message;
+        state.loader = false;
+      })
+      .addCase(createProductAPi.pending, (state) => {
+        state.loader = true;
+      })
+      .addCase(createProductAPi.rejected, (state, action) => {
+        state.error = action.error.message || "An error occurred.";
+        state.loader = false;
+      })
+      .addCase(createProductAPi.fulfilled, (state, action) => {
+        state.message = action.payload.message;
+
+        // Check if `state.products` is not null and append the new product
+        if (state.products) {
+          state.products = [...state.products, action.payload.product];
+        } else {
+          // Initialize `state.products` with the new product
+          state.products = [action.payload.product];
+        }
+
         state.loader = false;
       });
   },

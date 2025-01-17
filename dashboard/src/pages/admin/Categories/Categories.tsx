@@ -64,7 +64,12 @@ export default function Categories() {
     const formData = new FormData();
 
     // Ensure input.name is a string
-    formData.append("name", input.name);
+    if (typeof input.name === "string") {
+      formData.append("name", input.name.trim());
+    } else {
+      console.error("Category name must be a string");
+      return;
+    }
 
     // Ensure categoryLogo is a valid File or null
     if (categoryLogo instanceof File) {
@@ -137,7 +142,7 @@ export default function Categories() {
     alignItems: "center",
     height: "24px",
     color: "#fff",
-    message: "0 auto",
+    margin: "0 auto",
   };
 
   return (
@@ -358,9 +363,12 @@ export default function Categories() {
                     >
                       {loader ? (
                         <ScaleLoader
-                          size={10}
+                          height={15}
+                          width={5}
+                          radius={2}
+                          margin={2}
                           color="#fff"
-                          cssOverride={loaderStyle}
+                          cssOverride={loaderStyle} // Valid CSS properties
                         />
                       ) : (
                         "Add Category"

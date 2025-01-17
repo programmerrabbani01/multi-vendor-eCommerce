@@ -77,7 +77,13 @@ export default function EditCategory() {
     }
 
     const formData = new FormData();
-    formData.append("name", input.name);
+    if (typeof input.name === "string") {
+      formData.append("name", input.name.trim());
+    } else {
+      console.error("Category name must be a string");
+      return;
+    }
+
     if (image) formData.append("categoryPhoto", image);
 
     try {

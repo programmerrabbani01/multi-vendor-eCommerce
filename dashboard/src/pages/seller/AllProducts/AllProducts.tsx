@@ -139,6 +139,12 @@ export default function AllProducts() {
                     brand
                   </th>
                   <th className="px-4 py-3" scope="col">
+                    color
+                  </th>
+                  <th className="px-4 py-3" scope="col">
+                    size
+                  </th>
+                  <th className="px-4 py-3" scope="col">
                     price
                   </th>
                   <th className="px-4 py-3" scope="col">
@@ -184,22 +190,94 @@ export default function AllProducts() {
                         >
                           {truncateWords(product.title, 4)}
                         </td>
+
                         <td
                           className="px-4 py-2 whitespace-nowrap font-primaryRegular"
                           scope="col"
                         >
                           <span className="">
-                            {product.category?.[0]?.name || "N/A"}
+                            {Array.isArray(product?.category) &&
+                            product?.category.length > 0 ? (
+                              <div className="flex flex-col gap-1">
+                                {product.category.map((cat, index) => (
+                                  <div key={index}>
+                                    {truncateWords(cat.name, 2)}
+                                  </div>
+                                ))}
+                              </div>
+                            ) : (
+                              <span>N/A</span>
+                            )}
                           </span>
                         </td>
                         <td
                           className="px-4 py-2 whitespace-nowrap font-primaryRegular"
                           scope="col"
                         >
-                          <span className="">
-                            {product.brand?.[0]?.name || "N/A"}
-                          </span>
+                          {Array.isArray(product?.brand) &&
+                          product?.brand.length > 0 ? (
+                            <div className="flex flex-col gap-1">
+                              {product.brand.map((br, index) => (
+                                <div key={index}>
+                                  {truncateWords(br.name, 1)}
+                                </div>
+                              ))}
+                            </div>
+                          ) : (
+                            <span>N/A</span>
+                          )}
                         </td>
+
+                        <td
+                          className="px-4 py-2 whitespace-nowrap font-primaryRegular"
+                          scope="col"
+                        >
+                          {product.colors && product.colors.length > 0 ? (
+                            <div className="flex flex-wrap gap-2">
+                              {product.colors.map((color, index) => (
+                                <div
+                                  key={index}
+                                  className="flex items-center gap-1 w-[calc(50%-0.5rem)]" // Adjust width for two items per row
+                                >
+                                  <div
+                                    className="w-4 h-4 rounded-full"
+                                    style={{
+                                      backgroundColor:
+                                        typeof color.colorCode === "string"
+                                          ? color.colorCode
+                                          : undefined,
+                                    }}
+                                  ></div>
+                                </div>
+                              ))}
+                            </div>
+                          ) : (
+                            <span>N/A</span>
+                          )}
+                        </td>
+
+                        <td
+                          className="px-4 py-2 whitespace-nowrap font-primaryRegular"
+                          scope="col"
+                        >
+                          {(product.sizes as { name: string }[]).length > 0 ? (
+                            <div className="flex flex-wrap gap-4">
+                              {(product.sizes as { name: string }[]).map(
+                                (size, index) => (
+                                  <div
+                                    key={index}
+                                    className="flex items-center gap-1 w-[calc(50%-0.5rem)]"
+                                  >
+                                    {size.name}
+                                  </div>
+                                )
+                              )}
+                            </div>
+                          ) : (
+                            <span>N/A</span>
+                          )}
+                        </td>
+
                         <td
                           className="px-4 py-2 whitespace-nowrap font-primaryRegular"
                           scope="col"
@@ -269,7 +347,7 @@ export default function AllProducts() {
             <Pagination
               pageNumber={currentPage}
               setPageNumber={setCurrentPage}
-              totalItem={50}
+              totalItem={filteredProducts.length}
               parPage={parPage}
               showItem={3}
             />

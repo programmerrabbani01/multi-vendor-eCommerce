@@ -24,7 +24,11 @@ import { isValidObjectId } from "mongoose";
  */
 
 export const getAllProduct = asyncHandler(async (req, res) => {
-  const products = await Product.find().populate("brand").populate("category");
+  const products = await Product.find()
+    .populate("brand")
+    .populate("category")
+    .populate("colors")
+    .populate("sizes");
 
   if (products.length > 0) {
     return res.status(200).json({ products });
@@ -40,6 +44,9 @@ export const getAllProduct = asyncHandler(async (req, res) => {
  */
 
 const parseAndValidateIds = (items) => {
+  if (!items || items === "[]") {
+    return [];
+  }
   const parsedItems = JSON.parse(items || "[]");
   return parsedItems.filter((item) => isValidObjectId(item));
 };
@@ -57,6 +64,9 @@ export const createProduct = asyncHandler(async (req, res) => {
       colors,
       sizes,
     } = req.body;
+
+    console.log("Brand Field:", req.body.brand);
+    console.log("Category Field:", req.body.category);
 
     console.log("Request Body:", req.body);
 

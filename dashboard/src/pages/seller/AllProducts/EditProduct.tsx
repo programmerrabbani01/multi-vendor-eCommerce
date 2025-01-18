@@ -1,129 +1,302 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import MetaData from "../../../components/MetaData.tsx";
-import { useEffect, useMemo, useRef, useState } from "react";
-import { Category } from "../../../types.ts";
+import { useEffect, useRef, useState } from "react";
 import { BsImage } from "react-icons/bs";
 import { IoCloseSharp } from "react-icons/io5";
+import useFormFields from "../../../hooks/useFormFields.ts";
+import { useDispatch, useSelector } from "react-redux";
+import { getCategoryData } from "../../../features/category/categorySlice.ts";
+import { getBrandData } from "../../../features/brand/brandSlice.ts";
+import {
+  getProductData,
+  setMessageEmpty,
+} from "../../../features/product/productSlice.ts";
+import { getAllCategories } from "../../../features/category/categoryApiSlice.ts";
+import { getAllBrands } from "../../../features/brand/brandApiSlice.ts";
+import { AppDispatch } from "../../../app/store.ts";
+import { RiseLoader } from "react-spinners";
+import { createToaster } from "../../../utils/tostify.ts";
+import { updateProductApi } from "../../../features/product/productApiSlice.ts";
 
 export default function EditProduct() {
   const title = "Edit Product";
 
-  const [input, setInput] = useState({
-    name: "",
-    category: "",
-    price: 0,
-    description: "",
-    brand: "",
-    stock: 0,
-    discount: 0,
+  const { id } = useParams<{ id: string }>();
+
+  const { input, handleInputChange, setInput } = useFormFields({
+    title: "",
+    price: "",
+    desc: "",
+    stock: "",
+    discount: "",
   });
 
-  const [cateShow, setCatShow] = useState(false);
-  const [category, setCategory] = useState<string>("");
-  const [allCategory, setAllCategory] = useState<Category[]>([]);
+  const dispatch = useDispatch<AppDispatch>();
+  const navigate = useNavigate();
+
+  const { category } = useSelector(getCategoryData);
+  const { brand } = useSelector(getBrandData);
+  const { products, error, message, loader } = useSelector(getProductData);
+
+  const [catShow, setCatShow] = useState(false);
+  const [brandShow, setBrandShow] = useState(false);
+
+  const [filteredCategories, setFilteredCategories] = useState(category);
+  const [filteredBrands, setFilteredBrands] = useState(brand);
+
+  const categoryDropdownRef = useRef<HTMLDivElement>(null);
+  const [selectedCategory, setSelectedCategory] = useState<string[]>([]);
+
+  const brandDropdownRef = useRef<HTMLDivElement>(null);
+  const [selectedBrand, setSelectedBrand] = useState<string[]>([]);
+
   const [searchValue, setSearchValue] = useState<string>("");
-  const [images, setImages] = useState<File[]>([]);
+
+  const [productPhoto, setProductPhoto] = useState<File[]>([]);
   const [imagePreview, setImagePreview] = useState<{ url: string }[]>([]);
 
-  const dropdownRef = useRef<HTMLDivElement>(null); // Ref for the dropdown container
+  const [photosToRemove, setPhotosToRemove] = useState<string[]>([]);
 
-  // Memoize the categories array to avoid re-initialization on every render
-  const categories: Category[] = useMemo(
-    () => [
-      { id: 1, name: "Electronics" },
-      { id: 2, name: "Clothing" },
-      { id: 3, name: "Home & Garden" },
-      { id: 4, name: "Sports & Outdoors" },
-      { id: 5, name: "Beauty & Health" },
-      { id: 6, name: "Books & Stationery" },
-      { id: 7, name: "Toys & Hobbies" },
-      { id: 8, name: "Movies & Music" },
-      { id: 9, name: "Business & Finance" },
-      { id: 10, name: "Other" },
-    ],
-    []
-  );
-
-  // handle input change
-  const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    setInput((prevState) => ({
-      ...prevState,
-      [e.target.name]: e.target.value,
-    }));
+  // Handle category selection for dropdowns
+  const handleSelectCategory = (categoryId: string) => {
+    if (selectedCategory.includes(categoryId)) {
+      // Remove category if already selected
+      setSelectedCategory(selectedCategory.filter((id) => id !== categoryId));
+    } else {
+      // Add category
+      setSelectedCategory([...selectedCategory, categoryId]);
+    }
   };
-
-  // handle search category
-
-  const categorySearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+  // Handle search category
+  const handleCategorySearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     const search = e.target.value.toLowerCase();
     setSearchValue(search);
-    setAllCategory(
-      categories.filter((c) => c.name.toLowerCase().includes(search))
+    setFilteredCategories(
+      category?.filter((c) => c.name?.toLowerCase().includes(search)) || []
     );
   };
+
+  // Handle brand selection for dropdowns
+  const handleSelectBrand = (brandId: string) => {
+    if (selectedBrand.includes(brandId)) {
+      // Remove brand if already selected
+      setSelectedBrand(selectedBrand.filter((id) => id !== brandId));
+    } else {
+      // Add brand
+      setSelectedBrand([...selectedBrand, brandId]);
+    }
+  };
+  // Handle search brand
+  const handleBrandSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const search = e.target.value.toLowerCase();
+    setSearchValue(search);
+    setFilteredBrands(
+      brand?.filter((b) => b.name?.toLowerCase().includes(search)) || []
+    );
+  };
+
+  // Populate product data for editing
+  useEffect(() => {
+    if (products) {
+      const productToEdit = products.find((p) => p._id === id);
+      if (productToEdit) {
+        setInput({
+          title: productToEdit.title || "",
+          price: productToEdit.price || "",
+          desc: productToEdit.desc || "",
+          stock: productToEdit.stock || "",
+          discount: productToEdit.discount || "",
+        });
+
+        // Set existing image previews
+        const imagePreview =
+          Array.isArray(productToEdit.photos) && productToEdit.photos.length > 0
+            ? productToEdit.photos.map((img) => ({
+                url: img.url,
+                public_id: img.public_id,
+              })) // Include public_id
+            : [];
+        setImagePreview(imagePreview);
+
+        // Set other fields like category and brand
+        setSelectedCategory(
+          Array.isArray(productToEdit.category)
+            ? productToEdit.category.map((cat: any) => cat._id)
+            : []
+        );
+        setSelectedBrand(
+          Array.isArray(productToEdit.brand)
+            ? productToEdit.brand.map((br: any) => br._id)
+            : []
+        );
+      }
+    }
+  }, [products, id, setInput]);
+
+  useEffect(() => {
+    return () => {
+      imagePreview.forEach((img) => {
+        if (img.url.startsWith("blob:")) {
+          URL.revokeObjectURL(img.url);
+        }
+      });
+    };
+  }, [imagePreview]);
+
   //
   useEffect(() => {
-    setAllCategory(categories);
-  }, [categories]);
+    setFilteredCategories(category);
+    setFilteredBrands(brand);
+  }, [category, brand]);
+
+  // get all category and brand
+  useEffect(() => {
+    dispatch(getAllCategories());
+    dispatch(getAllBrands());
+  }, [dispatch]);
 
   // Close the dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(e.target as Node)
+        categoryDropdownRef.current &&
+        !categoryDropdownRef.current.contains(e.target as Node)
       ) {
         setCatShow(false);
       }
+      if (
+        brandDropdownRef.current &&
+        !brandDropdownRef.current.contains(e.target as Node)
+      ) {
+        setBrandShow(false);
+      }
     };
+
     document.addEventListener("mousedown", handleClickOutside);
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
 
-  // handle image
-
+  // Handle image selection
   const handleImage = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files; // `files` is FileList | null
-    if (files && files.length > 0) {
-      const filesArray = Array.from(files); // Convert FileList to an array
-      setImages((prev) => [...prev, ...filesArray]);
+    const files = Array.from(e.target.files || []);
+    const newPreviews = files.map((file) => ({
+      url: URL.createObjectURL(file), // Generate preview URL
+      file,
+    }));
 
-      const imageURLs = filesArray.map((file) => ({
-        url: URL.createObjectURL(file),
-      }));
-      setImagePreview((prev) => [...prev, ...imageURLs]);
+    setProductPhoto((prev) => [...prev, ...files]); // Add new images
+    setImagePreview((prev) => [...prev, ...newPreviews]); // Add previews
+  };
+
+  // Remove selected image (new or existing)
+  const removeImage = (index: number, isExisting = false) => {
+    const imageObject = imagePreview[index];
+    if (!imageObject) {
+      console.error(`No image found at index ${index}`);
+      return;
+    }
+
+    // If the image is an existing Cloudinary image, it should have a public_id
+    if (isExisting) {
+      const publicId = imageObject.public_id;
+      if (publicId) {
+        // Handle removal from Cloudinary
+        setPhotosToRemove((prev) => [...prev, publicId]);
+        setImagePreview((prev) => prev.filter((_, i) => i !== index));
+      } else {
+        console.error("No public_id found for this Cloudinary image.");
+      }
+    } else {
+      // For new images (local previews), no public_id, just revoke URL if necessary
+      const urlToRevoke = imageObject.url;
+      if (urlToRevoke?.startsWith("blob:")) {
+        // Revoke blob URL for local preview images
+        URL.revokeObjectURL(urlToRevoke);
+      }
+      // Remove from imagePreview and productPhoto
+      setImagePreview((prev) => prev.filter((_, i) => i !== index));
+      setProductPhoto((prev) => prev.filter((_, i) => i !== index));
     }
   };
 
-  //  handle remove images
-  const removeImage = (index: number) => {
-    setImages((prev) => prev.filter((_, i) => i !== index)); // Remove the selected image from the `images` array
-    setImagePreview((prev) => prev.filter((_, i) => i !== index)); // Remove the corresponding preview
+  // Handle product update
+  const handleUpdateProduct = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    const formData = new FormData();
+
+    // Append product fields to FormData
+    formData.append(
+      "title",
+      typeof input.title === "string" ? input.title.trim() : String(input.title)
+    );
+    formData.append(
+      "desc",
+      typeof input.desc === "string" ? input.desc.trim() : String(input.desc)
+    );
+    formData.append(
+      "price",
+      typeof input.price === "string" ? input.price.trim() : String(input.price)
+    );
+    formData.append(
+      "stock",
+      typeof input.stock === "string" ? input.stock.trim() : String(input.stock)
+    );
+    formData.append(
+      "discount",
+      typeof input.discount === "string"
+        ? input.discount.trim()
+        : String(input.discount)
+    );
+
+    formData.append("brand", JSON.stringify(selectedBrand));
+    formData.append("category", JSON.stringify(selectedCategory));
+
+    // Append photosToRemove array (if any)
+    if (photosToRemove.length > 0) {
+      photosToRemove.forEach((photoId) => {
+        formData.append("photosToRemove[]", photoId);
+      });
+    }
+    console.log("Photos to Remove:", photosToRemove);
+
+    // Append new product photos
+    productPhoto.forEach((photo) => {
+      formData.append("productPhoto", photo);
+    });
+
+    try {
+      // Update product
+      await dispatch(updateProductApi({ DataId: id, formData })).unwrap();
+      navigate("/seller/allProducts");
+    } catch (error) {
+      console.error("Error updating product:", error);
+    }
   };
 
+  // message handler
   useEffect(() => {
-    const initialCategory = "Electronics";
-    setInput({
-      name: "Jersey T-Shirt Fabric Soft...",
-      category: initialCategory,
-      price: 565,
-      description: "Jersey T-Shirt Fabric Soft...",
-      brand: "Easy",
-      stock: 100,
-      discount: 5,
-    });
-    setCategory(initialCategory);
-    setImagePreview([
-      { url: "http://localhost:3001/public/images/seller.png" },
-      { url: "http://localhost:3001/public/images/seller.png" },
-      { url: "http://localhost:3001/public/images/seller.png" },
-    ]);
-  }, []);
+    if (error) {
+      createToaster(error);
+      dispatch(setMessageEmpty());
+    }
+    if (message) {
+      createToaster(message, "success");
+      dispatch(setMessageEmpty());
+    }
+  }, [dispatch, error, message]);
 
+  // style for loader
+
+  // const loaderStyle = {
+  //   display: "flex",
+  //   justifyContent: "center",
+  //   alignItems: "center",
+  //   height: "24px",
+  //   margin: "0 auto",
+  // };
   return (
     <>
       <MetaData title={title} />
@@ -144,26 +317,28 @@ export default function EditProduct() {
           </div>
           {/* form */}
           <div className="">
-            <form action="">
+            <form onSubmit={handleUpdateProduct}>
               {/* product & brand */}
               <div className="flex flex-col w-full gap-4 mb-3 md:flex-row">
                 {/* name */}
                 <div className="flex flex-col w-full gap-1">
-                  <label htmlFor="name" className="font-primarySemiBold">
+                  <label htmlFor="title" className="font-primarySemiBold">
                     Product Name
                   </label>
                   <input
                     type="text"
-                    name="name"
-                    id="name"
-                    placeholder="Product Name"
+                    name="title"
+                    id="title"
+                    placeholder="Product Title"
                     onChange={handleInputChange}
-                    value={input.name}
+                    value={input.title}
                     className="px-3 py-2 outline-none border border-slate-700 bg-transparent rounded-md text-[#d0d2d6] focus:border-indigo-500 overflow-hidden font-primaryMedium"
                   />
                 </div>
                 {/* brand */}
-                <div className="flex flex-col w-full gap-1">
+
+                {/* Brand */}
+                <div className="relative flex flex-col w-full gap-1">
                   <label htmlFor="brand" className="font-primarySemiBold">
                     Product Brand
                   </label>
@@ -171,11 +346,45 @@ export default function EditProduct() {
                     type="text"
                     name="brand"
                     id="brand"
-                    placeholder="Product brand"
-                    onChange={handleInputChange}
-                    value={input.brand}
+                    placeholder="Search or Select Brand"
+                    onFocus={() => setBrandShow(true)}
+                    value={selectedBrand.join(", ")}
                     className="px-3 py-2 outline-none border border-slate-700 bg-transparent rounded-md text-[#d0d2d6] focus:border-indigo-500 overflow-hidden font-primaryMedium"
                   />
+                  <div
+                    ref={brandDropdownRef}
+                    className={`absolute top-[101%] bg-slate-800 w-full transition-all duration-300 ${
+                      brandShow ? "scale-100" : "scale-0"
+                    }`}
+                  >
+                    <div className="flex w-full px-4 py-2">
+                      <input
+                        onChange={handleBrandSearch}
+                        type="text"
+                        name="search"
+                        value={searchValue}
+                        placeholder="Search"
+                        className="px-3 py-2 outline-none border border-slate-700 bg-transparent rounded-md text-[#d0d2d6] focus:border-indigo-500 overflow-hidden font-primaryMedium"
+                      />
+                    </div>
+                    <div className="pt-4"></div>
+                    <div className="flex flex-col justify-start items-start h-[150px] overflow-y-scroll sidebar">
+                      {Array.isArray(filteredBrands) &&
+                        filteredBrands.map((b) => (
+                          <div
+                            key={b._id}
+                            className={`px-4 py-2 text-sm font-primaryRegular hover:bg-indigo-500 hover:shadow-lg hover:shadow-indigo-500/50 w-full cursor-pointer ${
+                              selectedBrand.includes(b._id)
+                                ? "bg-indigo-500"
+                                : ""
+                            }`}
+                            onClick={() => handleSelectBrand(b._id)}
+                          >
+                            {b.name}
+                          </div>
+                        ))}
+                    </div>
+                  </div>
                 </div>
               </div>
               {/* category & stock */}
@@ -190,42 +399,38 @@ export default function EditProduct() {
                     name="category"
                     id="category"
                     placeholder="Search or Select Category"
-                    onFocus={() => setCatShow(true)} // Show dropdown on focus
-                    value={category} // Bind selected category
-                    onChange={(e) => setCategory(e.target.value)}
+                    onFocus={() => setCatShow(true)}
+                    value={selectedCategory.join(", ")}
                     className="px-3 py-2 outline-none border border-slate-700 bg-transparent rounded-md text-[#d0d2d6] focus:border-indigo-500 overflow-hidden font-primaryMedium"
                   />
                   <div
-                    ref={dropdownRef}
+                    ref={categoryDropdownRef}
                     className={`absolute top-[101%] bg-slate-800 w-full transition-all duration-300 ${
-                      cateShow ? "scale-100" : "scale-0"
-                    } `}
+                      catShow ? "scale-100" : "scale-0"
+                    }`}
                   >
                     <div className="flex w-full px-4 py-2">
                       <input
-                        onChange={categorySearch}
+                        onChange={handleCategorySearch}
                         type="text"
                         name="search"
                         value={searchValue}
-                        placeholder="search"
+                        placeholder="Search"
                         className="px-3 py-2 outline-none border border-slate-700 bg-transparent rounded-md text-[#d0d2d6] focus:border-indigo-500 overflow-hidden font-primaryMedium"
                       />
                     </div>
                     <div className="pt-4"></div>
                     <div className="flex flex-col justify-start items-start h-[150px] overflow-y-scroll sidebar">
-                      {Array.isArray(allCategory) &&
-                        allCategory.map((c, i) => (
+                      {Array.isArray(filteredCategories) &&
+                        filteredCategories.map((c) => (
                           <div
-                            key={i}
+                            key={c._id}
                             className={`px-4 py-2 text-sm font-primaryRegular hover:bg-indigo-500 hover:shadow-lg hover:shadow-indigo-500/50 w-full cursor-pointer ${
-                              category === c.name && "bg-indigo-500"
+                              selectedCategory.includes(c._id)
+                                ? "bg-indigo-500"
+                                : ""
                             }`}
-                            onClick={() => {
-                              setCatShow(false);
-                              setCategory(c.name);
-                              setSearchValue("");
-                              setAllCategory(categories);
-                            }}
+                            onClick={() => handleSelectCategory(c._id)}
                           >
                             {c.name}
                           </div>
@@ -287,33 +492,32 @@ export default function EditProduct() {
               </div>
               {/* description */}
               <div className="flex flex-col w-full gap-1 mb-5">
-                <label htmlFor="description" className="font-primarySemiBold">
+                <label htmlFor="desc" className="font-primarySemiBold">
                   Product Description
                 </label>
                 <textarea
-                  name="description"
-                  id="description"
+                  name="desc"
+                  id="desc"
                   rows={4}
                   placeholder="Product Description"
                   onChange={handleInputChange}
-                  value={input.description}
+                  value={input.desc}
                   className="px-3 py-2 outline-none border border-slate-700 bg-transparent rounded-md text-[#d0d2d6] focus:border-indigo-500 overflow-hidden font-primaryMedium"
                 ></textarea>
               </div>
               {/* image */}
               <div className="grid w-full grid-cols-1 gap-3 mb-4 lg:grid-cols-4 md:grid-cols-3 sm:grid-cols-2 md:gap-4 sm:gap-4">
-                {/* image preview */}
                 {imagePreview.map((img, i) => {
                   return (
                     <div key={i} className="h-[180px] relative">
                       <img
                         src={img.url}
-                        alt="preview"
+                        alt={`Preview ${i + 1}`}
                         className="object-contain w-full h-full rounded-md"
                       />
                       <div
                         className="absolute z-10 p-2 rounded-full cursor-pointer top-1 right-10 bg-slate-700 hover:shadow-lg hover:shadow-slate-400/50 "
-                        onClick={() => removeImage(i)}
+                        onClick={() => removeImage(i, true)}
                       >
                         <IoCloseSharp />
                       </div>
@@ -341,9 +545,19 @@ export default function EditProduct() {
               {/* button */}
               <button
                 type="submit"
+                // disabled={loader ? true : false}
                 className="py-2 text-lg bg-blue-500 rounded-md px-7 hover:shadow-blue-500/50 hover:shadow-lg font-primaryMedium "
               >
-                Update Product
+                {/* {loader ? (
+                  <RiseLoader
+                    size={10}
+                    color="#fff"
+                    cssOverride={loaderStyle}
+                  />
+                ) : (
+                  "Update Product"
+                )} */}
+                Update
               </button>
             </form>
           </div>

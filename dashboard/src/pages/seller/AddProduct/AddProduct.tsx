@@ -698,7 +698,7 @@ export default function AddProduct() {
                       <img
                         src={img.url}
                         alt="preview"
-                        className="object-cover w-full h-full rounded-md"
+                        className="object-contain w-full h-full rounded-md"
                       />
                       <div
                         className="absolute z-10 p-2 rounded-full cursor-pointer top-1 right-1 bg-slate-700 hover:shadow-lg hover:shadow-slate-400/50 "

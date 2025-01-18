@@ -1,6 +1,12 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
-import { Brand, Category, Color, Size } from "../../types.ts";
+import {
+  Brand,
+  Category,
+  Color,
+  Size,
+  UpdateProductData,
+} from "../../types.ts";
 
 // get all products
 
@@ -103,3 +109,27 @@ export const deleteProduct = createAsyncThunk<
     return rejectWithValue({ message: "An unexpected error occurred" });
   }
 });
+
+//  product update
+
+export const updateProductApi = createAsyncThunk(
+  "product/updateProductApi",
+  async (data: UpdateProductData, { rejectWithValue }) => {
+    try {
+      const response = await axios.put(
+        `http://localhost:5050/api/v1/product/${data.DataId}`,
+        data.formData,
+        { withCredentials: true }
+      );
+      console.log("API Response:", response.data);
+      return response.data;
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error)) {
+        return rejectWithValue(
+          error.response?.data?.message || "Something went wrong"
+        );
+      }
+      return rejectWithValue("An unexpected error occurred");
+    }
+  }
+);

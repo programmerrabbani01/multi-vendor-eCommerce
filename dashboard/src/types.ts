@@ -63,3 +63,8 @@ export interface UpdateBrandData {
   DataId: string;
   formData: FormData;
 }
+
+export interface UpdateProductData {
+  DataId: string;
+  formData: FormData;
+}

@@ -255,14 +255,16 @@ export const updateProduct = asyncHandler(async (req, res) => {
     sizes,
   } = req.body;
 
-  // Validation
+  console.log("Photos to remove:", photosToRemove);
+
+  // Validate required fields
   if (!title || !price || !stock) {
     return res
       .status(400)
       .json({ message: "Title, price, and stock are required" });
   }
 
-  // Convert price to a number
+  // Parse price correctly
   let parsedPrice;
   try {
     parsedPrice =
@@ -271,28 +273,40 @@ export const updateProduct = asyncHandler(async (req, res) => {
       throw new Error("Invalid price value");
     }
   } catch (error) {
+    console.error("Price parsing error:", error.message);
     return res.status(400).json({ message: "Price must be a valid number" });
   }
 
-  // Find the product to update
+  // Fetch the product from the database
   const product = await Product.findById(id);
   if (!product) {
     return res.status(404).json({ message: "Product not found" });
   }
 
-  // Ensure product.photos is an array
-  let updatedPhotos = Array.isArray(product.photos) ? [...product.photos] : [];
-
-  // Remove specific photos from Cloudinary and the database
+  // Parse and handle photosToRemove
+  let parsedPhotosToRemove = [];
   if (photosToRemove && Array.isArray(photosToRemove)) {
-    for (const publicId of photosToRemove) {
+    parsedPhotosToRemove = photosToRemove;
+  } else if (photosToRemove && typeof photosToRemove === "string") {
+    try {
+      parsedPhotosToRemove = JSON.parse(photosToRemove); // Parse as JSON if stringified
+    } catch (error) {
+      console.error("Error parsing photosToRemove:", error.message);
+      return res.status(400).json({ message: "Invalid photosToRemove format" });
+    }
+  }
+
+  // Remove photos from Cloudinary and filter out from the database
+  let updatedPhotos = Array.isArray(product.photos) ? [...product.photos] : [];
+  if (parsedPhotosToRemove.length > 0) {
+    for (const publicId of parsedPhotosToRemove) {
       try {
-        // Remove photo from Cloudinary
-        await cloudDelete(publicId);
-        // Remove photo from the database array only if Cloudinary deletion is successful
+        console.log(`Removing photo with public_id: ${publicId}`);
+        await cloudDelete(publicId); // Delete photo from Cloudinary
         updatedPhotos = updatedPhotos.filter(
           (photo) => photo.public_id !== publicId
-        );
+        ); // Remove from database photos
+        console.log(`Photo removed successfully: ${publicId}`);
       } catch (error) {
         console.warn(`Error removing photo ${publicId}:`, error.message);
       }
@@ -309,54 +323,52 @@ export const updateProduct = asyncHandler(async (req, res) => {
             lower: true,
           })}`,
         });
-        // Avoid duplicating photos
-        if (
-          !updatedPhotos.some(
-            (photo) => photo.public_id === uploadedFile.public_id
-          )
-        ) {
-          uploadedPhotos.push({
-            url: uploadedFile.secure_url,
-            public_id: uploadedFile.public_id,
-          });
-        }
+        uploadedPhotos.push({
+          url: uploadedFile.secure_url,
+          public_id: uploadedFile.public_id,
+        });
       }
-      updatedPhotos = [...updatedPhotos, ...uploadedPhotos];
+      updatedPhotos = [...updatedPhotos, ...uploadedPhotos]; // Add new photos to the product
     } catch (error) {
       console.error("Error uploading new photos:", error.message);
       return res.status(500).json({ message: "Failed to upload new photos" });
     }
   }
 
-  // Parse brand, category, colors, and sizes if provided as strings
+  // Safe Parsing for Brand, Category, Colors, and Sizes
   let parsedBrand = Array.isArray(brand) ? brand : [];
   let parsedCategory = Array.isArray(category) ? category : [];
-  let parsedColor = Array.isArray(colors) ? colors : [];
-  let parsedSize = Array.isArray(sizes) ? sizes : [];
+  let parsedColors = Array.isArray(colors) ? colors : [];
+  let parsedSizes = Array.isArray(sizes) ? sizes : [];
+
   try {
-    if (typeof brand === "string") {
-      parsedBrand = JSON.parse(brand.replace(/'/g, '"'));
-    }
-    if (typeof category === "string") {
-      parsedCategory = JSON.parse(category.replace(/'/g, '"'));
-    }
-    if (typeof colors === "string") {
-      parsedColor = JSON.parse(colors.replace(/'/g, '"'));
-    }
-    if (typeof sizes === "string") {
-      parsedSize = JSON.parse(sizes.replace(/'/g, '"'));
-    }
+    parsedBrand =
+      brand && typeof brand === "string"
+        ? JSON.parse(brand.replace(/'/g, '"'))
+        : parsedBrand;
+    parsedCategory =
+      category && typeof category === "string"
+        ? JSON.parse(category.replace(/'/g, '"'))
+        : parsedCategory;
+    parsedColors =
+      colors && typeof colors === "string"
+        ? JSON.parse(colors.replace(/'/g, '"'))
+        : parsedColors;
+    parsedSizes =
+      sizes && typeof sizes === "string"
+        ? JSON.parse(sizes.replace(/'/g, '"'))
+        : parsedSizes;
   } catch (parseError) {
     console.error(
-      "Error parsing brand, category, colors or sizes:",
+      "Error parsing brand, category, colors, or sizes:",
       parseError
     );
     return res
       .status(400)
-      .json({ message: "Invalid brand, category, colors or sizes format" });
+      .json({ message: "Invalid brand, category, colors, or sizes format" });
   }
 
-  // Update product data
+  // Update the product in the database
   const updatedProduct = await Product.findByIdAndUpdate(
     id,
     {
@@ -368,9 +380,9 @@ export const updateProduct = asyncHandler(async (req, res) => {
       discount,
       brand: parsedBrand,
       category: parsedCategory,
-      colors: parsedColor,
-      sizes: parsedSize,
-      photos: updatedPhotos,
+      colors: parsedColors,
+      sizes: parsedSizes,
+      photos: updatedPhotos, // Update photos
     },
     { new: true }
   )
@@ -379,7 +391,6 @@ export const updateProduct = asyncHandler(async (req, res) => {
     .populate("sizes")
     .populate("category");
 
-  // Respond with success
   res.json({
     message: "Product updated successfully",
     product: updatedProduct,

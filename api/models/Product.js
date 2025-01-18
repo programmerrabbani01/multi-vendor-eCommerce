@@ -38,22 +38,7 @@ const productSchema = mongoose.Schema(
       max: [100, "Discount cannot exceed 100%."],
       default: 0,
     },
-    // brand: {
-    //   type: [mongoose.Schema.Types.ObjectId],
-    //   ref: "Brand",
-    // },
-    // category: {
-    //   type: [mongoose.Schema.Types.ObjectId],
-    //   ref: "Category",
-    // },
-    // sizes: {
-    //   type: [mongoose.Schema.Types.ObjectId],
-    //   ref: "Size",
-    // },
-    // colors: {
-    //   type: [mongoose.Schema.Types.ObjectId],
-    //   ref: "Color",
-    // },
+
     brand: [{ type: mongoose.Schema.Types.ObjectId, ref: "Brand" }],
     category: [{ type: mongoose.Schema.Types.ObjectId, ref: "Category" }],
     colors: [{ type: mongoose.Schema.Types.ObjectId, ref: "Color" }],

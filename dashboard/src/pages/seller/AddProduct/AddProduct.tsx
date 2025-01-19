@@ -21,11 +21,12 @@ import {
 import { createToaster } from "../../../utils/tostify.ts";
 import { ScaleLoader } from "react-spinners";
 import { createProductAPi } from "../../../features/product/productApiSlice.ts";
+import EmojiPicker from "emoji-picker-react";
 
 export default function AddProduct() {
   const title = "Add Product";
 
-  const { input, handleInputChange, resetForm } = useFormFields({
+  const { input, handleInputChange, resetForm, setInput } = useFormFields({
     title: "",
     price: "",
     desc: "",
@@ -69,6 +70,17 @@ export default function AddProduct() {
   const [productPhoto, setProductPhoto] = useState<File[]>([]);
   const [imagePreview, setImagePreview] = useState<{ url: string }[]>([]);
 
+  const [emojiPickerVisible, setEmojiPickerVisible] = useState(false);
+
+  const handleEmojiClick = (emojiData: { emoji: string }) => {
+    setInput({ ...input, desc: input.desc + emojiData.emoji });
+    setEmojiPickerVisible(false); // Close the emoji picker after selecting an emoji
+  };
+
+  const toggleEmojiPicker = () => {
+    setEmojiPickerVisible((prev) => !prev);
+  };
+
   // Handle category selection for dropdowns
   const handleSelectCategory = (categoryId: string) => {
     if (selectedCategory.includes(categoryId)) {
@@ -78,18 +90,27 @@ export default function AddProduct() {
       // Add category
       setSelectedCategory([...selectedCategory, categoryId]);
     }
+    // Reset the filtered categories and hide the dropdown
+    setFilteredCategories(category || []);
+    setSearchValue(""); // Clear search field
+    setCatShow(false);
   };
   // Handle search category
   const categorySearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     const search = e.target.value.toLowerCase();
     setSearchValue(search);
 
-    // Avoid errors if category is undefined or null
-    const filtered = (category || []).filter((c) =>
-      c.name?.toLowerCase().includes(search)
-    );
+    if (search === "") {
+      // If the search input is cleared, reset the filtered categories to show all
+      setFilteredCategories(category || []);
+    } else {
+      // Filter categories based on the search input
+      const filtered = (category || []).filter((c) =>
+        c.name?.toLowerCase().includes(search)
+      );
 
-    setFilteredCategories(filtered);
+      setFilteredCategories(filtered);
+    }
   };
 
   // Handle brand selection for dropdowns
@@ -101,18 +122,26 @@ export default function AddProduct() {
       // Add brand
       setSelectedBrand([...selectedBrand, brandId]);
     }
+    setFilteredBrands(brand || []);
+    setSearchValue(""); // Clear search field
+    setBrandShow(false);
   };
   // Handle search brand
   const brandSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     const search = e.target.value.toLowerCase();
     setSearchValue(search);
 
-    // Avoid errors if brand is undefined or null
-    const filtered = (brand || []).filter((b) =>
-      b.name?.toLowerCase().includes(search)
-    );
+    if (search === "") {
+      // If the search input is cleared, reset the filtered brands to show all
+      setFilteredBrands(brand || []);
+    } else {
+      // Filter brands based on the search input
+      const filtered = (brand || []).filter((b) =>
+        b.name?.toLowerCase().includes(search)
+      );
 
-    setFilteredBrands(filtered);
+      setFilteredBrands(filtered);
+    }
   };
 
   // Handle color selection for dropdowns
@@ -124,18 +153,26 @@ export default function AddProduct() {
       // Add color
       setSelectedColor([...selectedColor, colorsId]);
     }
+    setFilteredColors(colors || []);
+    setSearchValue(""); // Clear search field
+    setColorShow(false);
   };
   // Handle search color
   const colorSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     const search = e.target.value.toLowerCase();
     setSearchValue(search);
 
-    // Avoid errors if color is undefined or null
-    const filtered = (colors || []).filter((b) =>
-      b.name?.toLowerCase().includes(search)
-    );
+    if (search === "") {
+      // If the search input is cleared, reset the filtered colors to show all
+      setFilteredColors(colors || []);
+    } else {
+      // Filter colors based on the search input
+      const filtered = (colors || []).filter((cl) =>
+        cl.name?.toLowerCase().includes(search)
+      );
 
-    setFilteredColors(filtered);
+      setFilteredColors(filtered);
+    }
   };
 
   // Handle size selection for dropdowns
@@ -147,18 +184,26 @@ export default function AddProduct() {
       // Add size
       setSelectedSize([...selectedSize, sizesId]);
     }
+    setFilteredSizes(sizes || []);
+    setSearchValue(""); // Clear search field
+    setSizeShow(false);
   };
   // Handle search size
   const sizeSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     const search = e.target.value.toLowerCase();
     setSearchValue(search);
 
-    // Avoid errors if color is undefined or null
-    const filtered = (colors || []).filter((b) =>
-      b.name?.toLowerCase().includes(search)
-    );
+    if (search === "") {
+      // If the search input is cleared, reset the filtered sizes to show all
+      setFilteredSizes(sizes || []);
+    } else {
+      // Filter sizes based on the search input
+      const filtered = (sizes || []).filter((sz) =>
+        sz.name?.toLowerCase().includes(search)
+      );
 
-    setFilteredColors(filtered);
+      setFilteredSizes(filtered);
+    }
   };
 
   useEffect(() => {
@@ -675,7 +720,7 @@ export default function AddProduct() {
                 </div>
               </div>
               {/* description */}
-              <div className="flex flex-col w-full gap-1 mb-5">
+              <div className="relative flex flex-col w-full gap-1 mb-5">
                 <label htmlFor="desc" className="font-primarySemiBold">
                   Product Description
                 </label>
@@ -688,6 +733,21 @@ export default function AddProduct() {
                   value={input.desc}
                   className="px-3 py-2 outline-none border border-slate-700 bg-transparent rounded-md text-[#d0d2d6] focus:border-indigo-500 overflow-hidden font-primaryMedium"
                 ></textarea>
+                <button
+                  type="button"
+                  onClick={toggleEmojiPicker}
+                  className="absolute top-0 left-40 text-xl"
+                >
+                  😊
+                </button>
+                {emojiPickerVisible && (
+                  <div className="absolute top-5 left-48 z-50">
+                    <EmojiPicker
+                      onEmojiClick={handleEmojiClick}
+                      lazyLoadEmojis
+                    />
+                  </div>
+                )}
               </div>
               {/* image */}
               <div className="grid w-full grid-cols-1 gap-3 mb-4 lg:grid-cols-4 md:grid-cols-3 sm:grid-cols-2 md:gap-4 sm:gap-4">

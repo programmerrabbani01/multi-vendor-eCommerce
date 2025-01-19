@@ -54,6 +54,11 @@ export interface RegistrationData {
   password: string;
 }
 
+export interface Photo {
+  url: string;
+  public_id: string;
+}
+
 export interface UpdateCategoryData {
   DataId: string;
   formData: FormData;

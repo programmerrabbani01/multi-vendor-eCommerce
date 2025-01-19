@@ -4,6 +4,7 @@ import {
   createProductAPi,
   deleteProduct,
   getAllProducts,
+  updateProductApi,
 } from "./productApiSlice.ts";
 import { Color, Size } from "../../types.ts";
 
@@ -110,6 +111,33 @@ const productSlice = createSlice({
         }
 
         state.loader = false;
+      })
+      // update product
+      .addCase(updateProductApi.pending, (state) => {
+        state.loader = true;
+      })
+      .addCase(updateProductApi.rejected, (state, action) => {
+        state.error = action.error.message || "An error occurred.";
+        state.loader = false;
+      })
+      .addCase(updateProductApi.fulfilled, (state, action) => {
+        state.loader = false;
+
+        // Ensure action.payload contains the updated product
+        const updatedProduct = action.payload.product;
+
+        // Find the index of the product that was updated
+        const updatedProductIndex = state.products?.findIndex(
+          (item) => item._id === updatedProduct?._id
+        );
+
+        // If the product exists, update it in the state
+        if (updatedProductIndex !== undefined && updatedProductIndex !== -1) {
+          state.products![updatedProductIndex] = updatedProduct;
+        }
+
+        // Set the success message
+        state.message = action.payload.message;
       });
   },
 });
